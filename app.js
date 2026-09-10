@@ -62,6 +62,13 @@ function calculateSalary() {
   const insurance = gross * 0.09;
   const net = gross - insurance;
 
+  alert(
+  "Wage: " + wage +
+  "\nDays: " + days +
+  "\nGross: " + gross +
+  "\nNet: " + net
+);
+  
   // Calculator page results
   document.getElementById("grossSalary").textContent = formatWon(gross);
   document.getElementById("insurance").textContent = formatWon(insurance);
