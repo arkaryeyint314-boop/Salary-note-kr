@@ -119,26 +119,30 @@ function loadHistory() {
 
 loadHistory();
 
-// ===== Bottom Navigation =====
+// ===== Bottom Navigation (Fixed) =====
 
 const tabs = document.querySelectorAll(".tab");
 const pages = document.querySelectorAll(".page");
 
+function openPage(pageId) {
+  pages.forEach(page => page.classList.remove("activePage"));
+  tabs.forEach(tab => tab.classList.remove("active"));
+
+  document.getElementById(pageId).classList.add("activePage");
+
+  document
+    .querySelector(`.tab[data-page="${pageId}"]`)
+    .classList.add("active");
+}
+
 tabs.forEach(tab => {
   tab.addEventListener("click", () => {
-
-    tabs.forEach(t => t.classList.remove("active"));
-    pages.forEach(p => p.classList.remove("activePage"));
-
-    tab.classList.add("active");
-
-    const page = document.getElementById(tab.dataset.page);
-    if(page){
-      page.classList.add("activePage");
-    }
-
+    openPage(tab.dataset.page);
   });
 });
+
+// Start on Home
+openPage("home");
 
 // ===== Theme =====
 
