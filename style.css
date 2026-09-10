@@ -485,3 +485,149 @@ input:focus{
   color:white;
 
 }
+
+/* ===========================
+   Part 2 - Navigation + Theme
+=========================== */
+
+/* Bottom Navigation */
+
+.bottomNav{
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(92%,480px);
+
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(20px);
+
+    border-radius:28px;
+    padding:10px 8px;
+
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+
+    border:1px solid #E5E7EB;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+
+.tab{
+    flex:1;
+    border:none;
+    background:transparent;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+
+    color:#94A3B8;
+    font-size:20px;
+    padding:8px;
+}
+
+.tab span{
+    font-size:11px;
+    font-weight:600;
+}
+
+.tab.active{
+    color:#4F46E5;
+}
+
+/* Animation */
+
+.card,
+.heroCard,
+.miniCard,
+.resultCard,
+.profileCard{
+    animation:fadeUp .35s ease;
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+/* ---------- DARK MODE ---------- */
+
+body.dark{
+
+    --bg:#090B13;
+    --card:#131826;
+    --text:#F8FAFC;
+    --sub:#94A3B8;
+    --line:#222B3D;
+
+    background:#090B13;
+
+}
+
+body.dark .iconBtn{
+    background:#1E293B;
+    color:white;
+}
+
+body.dark input{
+    background:#1E293B;
+    color:white;
+}
+
+body.dark .quickBtn,
+body.dark .language,
+body.dark .chip{
+    background:#1E293B;
+    color:#E5E7EB;
+}
+
+body.dark .bottomNav{
+    background:rgba(18,24,38,.95);
+    border:1px solid #273449;
+}
+
+body.dark .tab{
+    color:#64748B;
+}
+
+body.dark .tab.active{
+    color:#60A5FA;
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width:420px){
+
+    .phone{
+        padding:14px 14px 90px;
+    }
+
+    .heroCard h2{
+        font-size:30px;
+    }
+
+    .miniCard h3{
+        font-size:18px;
+    }
+
+    .grid2Inputs{
+        grid-template-columns:1fr;
+    }
+
+    .quickGrid{
+        grid-template-columns:1fr 1fr;
+    }
+
+}
