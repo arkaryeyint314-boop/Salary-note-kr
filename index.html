@@ -1,159 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>WorkPay KR</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkPay KR Pro</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="app">
+<div class="phone">
 
   <!-- Header -->
-  <header class="header">
-
+  <header class="topHeader">
     <div>
-      <h1>🇰🇷 WorkPay KR</h1>
-      <p>Korea Salary Calculator</p>
+      <p class="smallText">🇰🇷 September Salary</p>
+      <h1>WorkPay KR</h1>
     </div>
-
-    <button id="themeBtn">🌙</button>
-
+    <button id="themeBtn" class="iconBtn">🌙</button>
   </header>
 
-  <!-- Language -->
-  <section class="card">
+  <!-- HOME -->
+  <main id="home" class="page activePage">
 
-    <div class="sectionTitle">🌐 Language</div>
+    <section class="heroCard">
+      <p>This Month Take Home</p>
+      <h2 id="homeSalary">₩0</h2>
+      <span>Expected salary after insurance</span>
+    </section>
 
-    <div class="langButtons">
-      <button class="lang active">English</button>
-      <button class="lang">한국어</button>
-      <button class="lang">မြန်မာ</button>
-    </div>
+    <section class="grid2">
+      <div class="miniCard blue">
+        <p>Hourly Wage</p>
+        <h3 id="homeWage">₩10,320</h3>
+      </div>
 
-  </section>
+      <div class="miniCard green">
+        <p>Working Days</p>
+        <h3 id="homeDays">22</h3>
+      </div>
+    </section>
 
-  <!-- Account -->
-  <section class="card">
+    <section class="card">
+      <h3>Today's Shift</h3>
 
-    <div class="sectionTitle">💰 Account</div>
+      <div class="chips">
+        <button class="chip active">☀️ Day</button>
+        <button class="chip">🌙 Night</button>
+        <button class="chip">🎌 Holiday</button>
+      </div>
+    </section>
 
-    <label>Hourly Wage (₩)</label>
-    <input type="number" id="hourlyWage" placeholder="10320">
+    <section class="card">
+      <h3>Quick Actions</h3>
 
-    <label>Meal Allowance (₩)</label>
-    <input type="number" id="mealAllowance" placeholder="100000">
+      <div class="quickGrid">
+        <button class="quickBtn">🧮 Calculator</button>
+        <button class="quickBtn">📄 Payslip</button>
+        <button class="quickBtn">📅 History</button>
+        <button class="quickBtn">👤 Profile</button>
+      </div>
+    </section>
 
-    <label>Working Days</label>
-    <input type="number" id="workingDays" placeholder="22">
+  </main>
 
-  </section>
+  <!-- CALCULATOR -->
+  <main id="calculator" class="page">
 
-  <!-- Work Setup -->
-  <section class="card">
+    <section class="card">
+      <h2>Salary Calculator</h2>
 
-    <div class="sectionTitle">🕒 Work Setup</div>
+      <label>Hourly Wage (₩)</label>
+      <input id="hourlyWage" type="number" placeholder="10320">
 
-    <label>Basic Hours / Day</label>
-    <input type="number" id="basicHours" value="8">
+      <label>Working Days</label>
+      <input id="workingDays" type="number" placeholder="22">
 
-    <label>Overtime Hours</label>
-    <input type="number" id="otHours" value="0">
+      <label>Meal Allowance</label>
+      <input id="mealAllowance" type="number" placeholder="100000">
+    </section>
 
-    <label>Night Hours</label>
-    <input type="number" id="nightHours" value="0">
+    <section class="card">
+      <h3>Working Hours</h3>
 
-    <label>Holiday Hours</label>
-    <input type="number" id="holidayHours" value="0">
+      <div class="grid2Inputs">
 
-  </section>
+        <div>
+          <label>Basic Hours</label>
+          <input id="basicHours" type="number" value="8">
+        </div>
 
-  <!-- Buttons -->
-  <section class="card buttonsCard">
+        <div>
+          <label>OT Hours</label>
+          <input id="otHours" type="number" value="0">
+        </div>
 
-    <button class="calculateBtn" onclick="calculateSalary()">
+        <div>
+          <label>Night Hours</label>
+          <input id="nightHours" type="number" value="0">
+        </div>
+
+        <div>
+          <label>Holiday Hours</label>
+          <input id="holidayHours" type="number" value="0">
+        </div>
+
+      </div>
+    </section>
+
+    <button class="primaryBtn" onclick="calculateSalary()">
       Calculate Salary
     </button>
 
-    <button class="clearBtn" onclick="clearAll()">
-      Clear
-    </button>
+    <section class="resultSection">
 
-  </section>
-
-  <!-- Result -->
-  <section class="card">
-
-    <div class="sectionTitle">📊 Salary Result</div>
-
-    <div class="resultGrid">
-
-      <div class="resultBox">
-        <span>Basic Pay</span>
-        <h3 id="basicPay">₩0</h3>
+      <div class="resultCard">
+        <span>Take Home Salary</span>
+        <h2 id="netSalary">₩0</h2>
       </div>
 
-      <div class="resultBox green">
-        <span>Overtime Pay</span>
-        <h3 id="otPay">₩0</h3>
+      <div class="grid2">
+
+        <div class="miniResult blue">
+          <p>Gross Salary</p>
+          <h4 id="grossSalary">₩0</h4>
+        </div>
+
+        <div class="miniResult red">
+          <p>Insurance</p>
+          <h4 id="insurance">₩0</h4>
+        </div>
+
+        <div class="miniResult green">
+          <p>OT Pay</p>
+          <h4 id="otPay">₩0</h4>
+        </div>
+
+        <div class="miniResult purple">
+          <p>Night Pay</p>
+          <h4 id="nightPay">₩0</h4>
+        </div>
+
       </div>
 
-      <div class="resultBox purple">
-        <span>Night Pay</span>
-        <h3 id="nightPay">₩0</h3>
+    </section>
+
+  </main>
+
+  <!-- HISTORY -->
+  <main id="history" class="page">
+
+    <section class="card">
+      <h2>Monthly History</h2>
+      <div id="historyList">No salary history.</div>
+    </section>
+
+  </main>
+
+  <!-- PAYSLIP -->
+  <main id="payslip" class="page">
+
+    <section class="card">
+      <h2>Payslip Compare</h2>
+
+      <label>Expected Salary</label>
+      <input type="number" placeholder="2500000">
+
+      <label>Actual Salary</label>
+      <input type="number" placeholder="2450000">
+
+      <button class="primaryBtn small">Compare</button>
+    </section>
+
+  </main>
+
+  <!-- PROFILE -->
+  <main id="profile" class="page">
+
+    <section class="profileCard">
+      <div class="avatar">👤</div>
+      <h2>My Profile</h2>
+      <p>Myanmar Worker in Korea</p>
+    </section>
+
+    <section class="card">
+      <h3>🌐 Language</h3>
+
+      <div class="languageList">
+        <button class="language active">English</button>
+        <button class="language">한국어</button>
+        <button class="language">မြန်မာ</button>
       </div>
+    </section>
 
-      <div class="resultBox orange">
-        <span>Holiday Pay</span>
-        <h3 id="holidayPay">₩0</h3>
+    <section class="card">
+      <h3>🎨 Appearance</h3>
+
+      <div class="languageList">
+        <button class="language active">Auto</button>
+        <button class="language">Light</button>
+        <button class="language">Dark</button>
       </div>
+    </section>
 
-    </div>
+    <section class="card">
+      <h3>🏭 Work Profile</h3>
 
-    <div class="divider"></div>
+      <input placeholder="Company Name">
+      <input placeholder="Hourly Wage">
+      <input placeholder="Visa Type (E9 / F2 / D2)">
+    </section>
 
-    <div class="summaryRow">
-      <span>Meal Allowance</span>
-      <strong id="mealPay">₩0</strong>
-    </div>
+  </main>
 
-    <div class="summaryRow">
-      <span>Gross Salary</span>
-      <strong id="grossSalary">₩0</strong>
-    </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottomNav">
 
-    <div class="summaryRow red">
-      <span>Estimated Insurance</span>
-      <strong id="insurance">₩0</strong>
-    </div>
+    <button class="tab active" data-page="home">🏠<span>Home</span></button>
+    <button class="tab" data-page="calculator">🧮<span>Calc</span></button>
+    <button class="tab" data-page="history">📅<span>History</span></button>
+    <button class="tab" data-page="payslip">📄<span>Payslip</span></button>
+    <button class="tab" data-page="profile">👤<span>Profile</span></button>
 
-    <div class="summaryRow total">
-      <span>Take Home Salary</span>
-      <strong id="netSalary">₩0</strong>
-    </div>
-
-  </section>
-
-  <!-- History -->
-  <section class="card">
-
-    <div class="sectionTitle">📅 Monthly History</div>
-
-    <div id="historyList" class="historyList">
-      No salary history yet.
-    </div>
-
-  </section>
+  </nav>
 
 </div>
 
