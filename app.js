@@ -1,15 +1,14 @@
-// ===============================
-// WorkPay KR PRO v2 - Phase 1
-// Navigation + Theme + Calculator
-// ===============================
+// ===== WorkPay KR PRO =====
 
-// ---------- Navigation ----------
+// ---------- Elements ----------
 const tabs = document.querySelectorAll(".tab");
 const pages = document.querySelectorAll(".page");
+const themeBtn = document.getElementById("themeBtn");
 
+// ---------- Navigation ----------
 function openPage(pageId) {
-  pages.forEach((page) => page.classList.remove("activePage"));
-  tabs.forEach((tab) => tab.classList.remove("active"));
+  pages.forEach(page => page.classList.remove("activePage"));
+  tabs.forEach(tab => tab.classList.remove("active"));
 
   const page = document.getElementById(pageId);
   if (page) page.classList.add("activePage");
@@ -18,63 +17,56 @@ function openPage(pageId) {
   if (activeTab) activeTab.classList.add("active");
 }
 
-tabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    openPage(tab.dataset.page);
-  });
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => openPage(tab.dataset.page));
 });
 
 openPage("home");
 
 // ---------- Theme ----------
-const themeBtn = document.getElementById("themeBtn");
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  themeBtn.textContent = "☀️";
+}
 
-themeBtn?.addEventListener("click", () => {
+themeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark");
 
   const dark = document.body.classList.contains("dark");
-
   themeBtn.textContent = dark ? "☀️" : "🌙";
   localStorage.setItem("theme", dark ? "dark" : "light");
 });
 
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  if (themeBtn) themeBtn.textContent = "☀️";
-}
-
-// ---------- Salary Calculator ----------
+// ---------- Calculator ----------
 function formatWon(num) {
-  return "₩" + Math.round(num).toLocaleString("en-US");
+  return "₩" + Math.round(num).toLocaleString();
 }
 
 function calculateSalary() {
-  const wage = Number(hourlyWage.value || 0);
-  const days = Number(workingDays.value || 0);
-  const meal = Number(mealAllowance.value || 0);
-  const basic = Number(basicHours.value || 8);
-  const ot = Number(otHours.value || 0);
-  const night = Number(nightHours.value || 0);
-  const holiday = Number(holidayHours.value || 0);
+  const wage = Number(document.getElementById("hourlyWage").value) || 0;
+  const days = Number(document.getElementById("workingDays").value) || 0;
+  const meal = Number(document.getElementById("mealAllowance").value) || 0;
+  const basic = Number(document.getElementById("basicHours").value) || 8;
+  const ot = Number(document.getElementById("otHours").value) || 0;
+  const night = Number(document.getElementById("nightHours").value) || 0;
+  const holiday = Number(document.getElementById("holidayHours").value) || 0;
 
   const basicPay = wage * basic * days;
-  const otPayValue = wage * 1.5 * ot;
-  const nightPayValue = wage * 1.5 * night;
-  const holidayPayValue = wage * 2 * holiday;
+  const otPay = wage * 1.5 * ot;
+  const nightPay = wage * 1.5 * night;
+  const holidayPay = wage * 2 * holiday;
 
-  const gross =
-    basicPay + otPayValue + nightPayValue + holidayPayValue + meal;
+  const gross = basicPay + otPay + nightPay + holidayPay + meal;
+  const insurance = gross * 0.09;
+  const net = gross - insurance;
 
-  const insuranceValue = gross * 0.09;
-  const net = gross - insuranceValue;
+  document.getElementById("grossSalary").textContent = formatWon(gross);
+  document.getElementById("insurance").textContent = formatWon(insurance);
+  document.getElementById("otPay").textContent = formatWon(otPay);
+  document.getElementById("nightPay").textContent = formatWon(nightPay);
+  document.getElementById("netSalary").textContent = formatWon(net);
 
-  grossSalary.textContent = formatWon(gross);
-  insurance.textContent = formatWon(insuranceValue);
-  otPay.textContent = formatWon(otPayValue);
-  nightPay.textContent = formatWon(nightPayValue);
-  netSalary.textContent = formatWon(net);
-
-  homeSalary.textContent = formatWon(net);
-  homeWage.textContent = formatWon(wage);
-  homeDays.textContent = days || 0;
+  document.getElementById("homeSalary").textContent = formatWon(net);
+  document.getElementById("homeWage").textContent = formatWon(wage);
+  document.getElementById("homeDays").textContent = days;
 }
