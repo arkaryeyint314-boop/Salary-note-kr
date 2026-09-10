@@ -118,3 +118,47 @@ function loadHistory() {
 }
 
 loadHistory();
+
+// ===== Bottom Navigation =====
+
+const tabs = document.querySelectorAll(".tab");
+const pages = document.querySelectorAll(".page");
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+
+    tabs.forEach(t => t.classList.remove("active"));
+    pages.forEach(p => p.classList.remove("activePage"));
+
+    tab.classList.add("active");
+
+    const page = document.getElementById(tab.dataset.page);
+    if(page){
+      page.classList.add("activePage");
+    }
+
+  });
+});
+
+// ===== Theme =====
+
+const themeBtn = document.getElementById("themeBtn");
+
+themeBtn.addEventListener("click",()=>{
+
+  document.body.classList.toggle("dark");
+
+  if(document.body.classList.contains("dark")){
+      themeBtn.innerHTML="☀️";
+      localStorage.setItem("theme","dark");
+  }else{
+      themeBtn.innerHTML="🌙";
+      localStorage.setItem("theme","light");
+  }
+
+});
+
+if(localStorage.getItem("theme")==="dark"){
+    document.body.classList.add("dark");
+    themeBtn.innerHTML="☀️";
+}
