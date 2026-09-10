@@ -1,168 +1,80 @@
-// ===== WorkPay KR Salary Calculator =====
+// ===============================
+// WorkPay KR PRO v2 - Phase 1
+// Navigation + Theme + Calculator
+// ===============================
 
-// Money formatter
-function formatWon(value) {
-  return "₩" + Math.round(value).toLocaleString("en-US");
-}
-
-// Calculate salary
-function calculateSalary() {
-  const wage = Number(document.getElementById("hourlyWage").value) || 0;
-  const meal = Number(document.getElementById("mealAllowance").value) || 0;
-  const days = Number(document.getElementById("workingDays").value) || 0;
-
-  const basicHours = Number(document.getElementById("basicHours").value) || 0;
-  const otHours = Number(document.getElementById("otHours").value) || 0;
-  const nightHours = Number(document.getElementById("nightHours").value) || 0;
-  const holidayHours = Number(document.getElementById("holidayHours").value) || 0;
-
-  const basicPay = wage * basicHours * days;
-  const overtimePay = wage * 1.5 * otHours;
-  const nightPay = wage * 1.5 * nightHours;
-  const holidayPay = wage * 2 * holidayHours;
-
-  const grossSalary =
-    basicPay + overtimePay + nightPay + holidayPay + meal;
-
-  // Simple estimate (about 9%)
-  const insurance = grossSalary * 0.09;
-
-  const netSalary = grossSalary - insurance;
-
-  // Show results
-  document.getElementById("basicPay").innerText = formatWon(basicPay);
-  document.getElementById("otPay").innerText = formatWon(overtimePay);
-  document.getElementById("nightPay").innerText = formatWon(nightPay);
-  document.getElementById("holidayPay").innerText = formatWon(holidayPay);
-
-  document.getElementById("mealPay").innerText = formatWon(meal);
-  document.getElementById("grossSalary").innerText = formatWon(grossSalary);
-  document.getElementById("insurance").innerText = formatWon(insurance);
-  document.getElementById("netSalary").innerText = formatWon(netSalary);
-
-  saveHistory(netSalary);
-}
-
-// Clear inputs
-function clearAll() {
-  document.querySelectorAll("input").forEach(input => {
-    if (input.type === "number") input.value = "";
-  });
-
-  document.getElementById("basicHours").value = 8;
-  document.getElementById("otHours").value = 0;
-  document.getElementById("nightHours").value = 0;
-  document.getElementById("holidayHours").value = 0;
-
-  ["basicPay","otPay","nightPay","holidayPay",
-   "mealPay","grossSalary","insurance","netSalary"]
-   .forEach(id=>{
-      document.getElementById(id).innerText="₩0";
-   });
-}
-
-// ===== Theme =====
-const themeBtn = document.getElementById("themeBtn");
-
-themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("light");
-
-  if (document.body.classList.contains("light")) {
-    themeBtn.innerText = "☀️";
-  } else {
-    themeBtn.innerText = "🌙";
-  }
-});
-
-// ===== History =====
-function saveHistory(netSalary) {
-
-  const history =
-    JSON.parse(localStorage.getItem("salaryHistory")) || [];
-
-  history.unshift({
-    date: new Date().toLocaleDateString("en-GB"),
-    salary: netSalary
-  });
-
-  if (history.length > 12) history.pop();
-
-  localStorage.setItem("salaryHistory", JSON.stringify(history));
-
-  loadHistory();
-}
-
-function loadHistory() {
-
-  const history =
-    JSON.parse(localStorage.getItem("salaryHistory")) || [];
-
-  const list = document.getElementById("historyList");
-
-  if (history.length === 0) {
-    list.innerHTML = "No salary history yet.";
-    return;
-  }
-
-  list.innerHTML = history.map(item => `
-    <div style="
-      display:flex;
-      justify-content:space-between;
-      padding:12px 0;
-      border-bottom:1px solid #273449;">
-        <span>${item.date}</span>
-        <strong>${formatWon(item.salary)}</strong>
-    </div>
-  `).join("");
-
-}
-
-loadHistory();
-
-// ===== Bottom Navigation (Fixed) =====
-
+// ---------- Navigation ----------
 const tabs = document.querySelectorAll(".tab");
 const pages = document.querySelectorAll(".page");
 
 function openPage(pageId) {
-  pages.forEach(page => page.classList.remove("activePage"));
-  tabs.forEach(tab => tab.classList.remove("active"));
+  pages.forEach((page) => page.classList.remove("activePage"));
+  tabs.forEach((tab) => tab.classList.remove("active"));
 
-  document.getElementById(pageId).classList.add("activePage");
+  const page = document.getElementById(pageId);
+  if (page) page.classList.add("activePage");
 
-  document
-    .querySelector(`.tab[data-page="${pageId}"]`)
-    .classList.add("active");
+  const activeTab = document.querySelector(`.tab[data-page="${pageId}"]`);
+  if (activeTab) activeTab.classList.add("active");
 }
 
-tabs.forEach(tab => {
+tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     openPage(tab.dataset.page);
   });
 });
 
-// Start on Home
 openPage("home");
 
-// ===== Theme =====
-
+// ---------- Theme ----------
 const themeBtn = document.getElementById("themeBtn");
 
-themeBtn.addEventListener("click",()=>{
-
+themeBtn?.addEventListener("click", () => {
   document.body.classList.toggle("dark");
 
-  if(document.body.classList.contains("dark")){
-      themeBtn.innerHTML="☀️";
-      localStorage.setItem("theme","dark");
-  }else{
-      themeBtn.innerHTML="🌙";
-      localStorage.setItem("theme","light");
-  }
+  const dark = document.body.classList.contains("dark");
 
+  themeBtn.textContent = dark ? "☀️" : "🌙";
+  localStorage.setItem("theme", dark ? "dark" : "light");
 });
 
-if(localStorage.getItem("theme")==="dark"){
-    document.body.classList.add("dark");
-    themeBtn.innerHTML="☀️";
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+  if (themeBtn) themeBtn.textContent = "☀️";
+}
+
+// ---------- Salary Calculator ----------
+function formatWon(num) {
+  return "₩" + Math.round(num).toLocaleString("en-US");
+}
+
+function calculateSalary() {
+  const wage = Number(hourlyWage.value || 0);
+  const days = Number(workingDays.value || 0);
+  const meal = Number(mealAllowance.value || 0);
+  const basic = Number(basicHours.value || 8);
+  const ot = Number(otHours.value || 0);
+  const night = Number(nightHours.value || 0);
+  const holiday = Number(holidayHours.value || 0);
+
+  const basicPay = wage * basic * days;
+  const otPayValue = wage * 1.5 * ot;
+  const nightPayValue = wage * 1.5 * night;
+  const holidayPayValue = wage * 2 * holiday;
+
+  const gross =
+    basicPay + otPayValue + nightPayValue + holidayPayValue + meal;
+
+  const insuranceValue = gross * 0.09;
+  const net = gross - insuranceValue;
+
+  grossSalary.textContent = formatWon(gross);
+  insurance.textContent = formatWon(insuranceValue);
+  otPay.textContent = formatWon(otPayValue);
+  nightPay.textContent = formatWon(nightPayValue);
+  netSalary.textContent = formatWon(net);
+
+  homeSalary.textContent = formatWon(net);
+  homeWage.textContent = formatWon(wage);
+  homeDays.textContent = days || 0;
 }
