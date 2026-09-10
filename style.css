@@ -625,3 +625,23 @@ body.dark .tab.active{
     }
 
 }
+
+/* ---------- Page Navigation ---------- */
+
+.page{
+  display:none;
+}
+
+.page.activePage{
+  display:block;
+}
+
+/* Active bottom tab */
+
+.tab.active{
+  color:var(--primary);
+}
+
+.tab.active span{
+  color:var(--primary);
+}
