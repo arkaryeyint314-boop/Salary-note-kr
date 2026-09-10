@@ -70,3 +70,5 @@ function calculateSalary() {
   document.getElementById("homeWage").textContent = formatWon(wage);
   document.getElementById("homeDays").textContent = days;
 }
+
+console.log("WorkPay KR JS Loaded");
