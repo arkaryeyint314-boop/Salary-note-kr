@@ -44,6 +44,21 @@ function formatWon(num) {
 }
 
 function calculateSalary() {
+  // Validate required fields
+const wageInput = document.getElementById("hourlyWage");
+const daysInput = document.getElementById("workingDays");
+
+if (wageInput.value.trim() === "") {
+  alert("Please enter your hourly wage.");
+  wageInput.focus();
+  return;
+}
+
+if (daysInput.value.trim() === "") {
+  alert("Please enter working days.");
+  daysInput.focus();
+  return;
+}
   const wage = Number(document.getElementById("hourlyWage").value) || 0;
   const days = Number(document.getElementById("workingDays").value) || 0;
   const meal = Number(document.getElementById("mealAllowance").value) || 0;
