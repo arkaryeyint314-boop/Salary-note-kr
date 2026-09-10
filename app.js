@@ -38,13 +38,12 @@ themeBtn.addEventListener("click", () => {
 });
 
 // ---------- Calculator ----------
+
 function formatWon(num) {
   return "₩" + Math.round(num).toLocaleString();
 }
 
 function calculateSalary() {
-  alert("Calculator works!");   // 👈 ဒီလိုင်းကို ဒီမှာထည့်
-
   const wage = Number(document.getElementById("hourlyWage").value) || 0;
   const days = Number(document.getElementById("workingDays").value) || 0;
   const meal = Number(document.getElementById("mealAllowance").value) || 0;
@@ -53,6 +52,7 @@ function calculateSalary() {
   const night = Number(document.getElementById("nightHours").value) || 0;
   const holiday = Number(document.getElementById("holidayHours").value) || 0;
 
+  // Salary calculation
   const basicPay = wage * basic * days;
   const otPay = wage * 1.5 * ot;
   const nightPay = wage * 1.5 * night;
@@ -62,12 +62,14 @@ function calculateSalary() {
   const insurance = gross * 0.09;
   const net = gross - insurance;
 
+  // Calculator page results
   document.getElementById("grossSalary").textContent = formatWon(gross);
   document.getElementById("insurance").textContent = formatWon(insurance);
   document.getElementById("otPay").textContent = formatWon(otPay);
   document.getElementById("nightPay").textContent = formatWon(nightPay);
   document.getElementById("netSalary").textContent = formatWon(net);
 
+  // Home page summary
   document.getElementById("homeSalary").textContent = formatWon(net);
   document.getElementById("homeWage").textContent = formatWon(wage);
   document.getElementById("homeDays").textContent = days;
