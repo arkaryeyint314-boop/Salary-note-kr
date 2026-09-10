@@ -43,6 +43,8 @@ function formatWon(num) {
 }
 
 function calculateSalary() {
+  alert("Calculator works!");   // 👈 ဒီလိုင်းကို ဒီမှာထည့်
+
   const wage = Number(document.getElementById("hourlyWage").value) || 0;
   const days = Number(document.getElementById("workingDays").value) || 0;
   const meal = Number(document.getElementById("mealAllowance").value) || 0;
