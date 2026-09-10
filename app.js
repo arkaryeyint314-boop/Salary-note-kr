@@ -1,0 +1,1 @@
+console.log("Salary Note KR V1 🚀");
