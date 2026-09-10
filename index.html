@@ -1,15 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Salary Note KR</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>WorkPay KR</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <script src="app.js"></script>
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+
+    <div>
+      <h1>🇰🇷 WorkPay KR</h1>
+      <p>Korea Salary Calculator</p>
+    </div>
+
+    <button id="themeBtn">🌙</button>
+
+  </header>
+
+  <!-- Language -->
+  <section class="card">
+
+    <div class="sectionTitle">🌐 Language</div>
+
+    <div class="langButtons">
+      <button class="lang active">English</button>
+      <button class="lang">한국어</button>
+      <button class="lang">မြန်မာ</button>
+    </div>
+
+  </section>
+
+  <!-- Account -->
+  <section class="card">
+
+    <div class="sectionTitle">💰 Account</div>
+
+    <label>Hourly Wage (₩)</label>
+    <input type="number" id="hourlyWage" placeholder="10320">
+
+    <label>Meal Allowance (₩)</label>
+    <input type="number" id="mealAllowance" placeholder="100000">
+
+    <label>Working Days</label>
+    <input type="number" id="workingDays" placeholder="22">
+
+  </section>
+
+  <!-- Work Setup -->
+  <section class="card">
+
+    <div class="sectionTitle">🕒 Work Setup</div>
+
+    <label>Basic Hours / Day</label>
+    <input type="number" id="basicHours" value="8">
+
+    <label>Overtime Hours</label>
+    <input type="number" id="otHours" value="0">
+
+    <label>Night Hours</label>
+    <input type="number" id="nightHours" value="0">
+
+    <label>Holiday Hours</label>
+    <input type="number" id="holidayHours" value="0">
+
+  </section>
+
+  <!-- Buttons -->
+  <section class="card buttonsCard">
+
+    <button class="calculateBtn" onclick="calculateSalary()">
+      Calculate Salary
+    </button>
+
+    <button class="clearBtn" onclick="clearAll()">
+      Clear
+    </button>
+
+  </section>
+
+  <!-- Result -->
+  <section class="card">
+
+    <div class="sectionTitle">📊 Salary Result</div>
+
+    <div class="resultGrid">
+
+      <div class="resultBox">
+        <span>Basic Pay</span>
+        <h3 id="basicPay">₩0</h3>
+      </div>
+
+      <div class="resultBox green">
+        <span>Overtime Pay</span>
+        <h3 id="otPay">₩0</h3>
+      </div>
+
+      <div class="resultBox purple">
+        <span>Night Pay</span>
+        <h3 id="nightPay">₩0</h3>
+      </div>
+
+      <div class="resultBox orange">
+        <span>Holiday Pay</span>
+        <h3 id="holidayPay">₩0</h3>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="summaryRow">
+      <span>Meal Allowance</span>
+      <strong id="mealPay">₩0</strong>
+    </div>
+
+    <div class="summaryRow">
+      <span>Gross Salary</span>
+      <strong id="grossSalary">₩0</strong>
+    </div>
+
+    <div class="summaryRow red">
+      <span>Estimated Insurance</span>
+      <strong id="insurance">₩0</strong>
+    </div>
+
+    <div class="summaryRow total">
+      <span>Take Home Salary</span>
+      <strong id="netSalary">₩0</strong>
+    </div>
+
+  </section>
+
+  <!-- History -->
+  <section class="card">
+
+    <div class="sectionTitle">📅 Monthly History</div>
+
+    <div id="historyList" class="historyList">
+      No salary history yet.
+    </div>
+
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>
