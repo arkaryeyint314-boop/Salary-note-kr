@@ -76,12 +76,7 @@ if (daysInput.value.trim() === "") {
   const gross = basicPay + otPay + nightPay + holidayPay + meal;
   const insurance = gross * 0.09;
   const net = gross - insurance;
-
-  alert(
-  "Wage: " + wage +
-  "\nDays: " + days +
-  "\nGross: " + gross +
-  "\nNet: " + net
+  
 );
   
   // Calculator page results
