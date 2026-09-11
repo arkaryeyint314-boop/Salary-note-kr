@@ -331,23 +331,37 @@ function renderCalendar() {
 
   monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
+  // Jump box value update
+  document.getElementById("jumpMonth").value = currentMonth;
+  document.getElementById("jumpYear").value = currentYear;
+
+  const today = new Date();
+
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Empty cells before first day
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
+  for(let i=0;i<firstDay;i++){
+    const empty=document.createElement("div");
     calendarGrid.appendChild(empty);
   }
 
-  // Days
-  for (let day = 1; day <= daysInMonth; day++) {
+  for(let day=1;day<=daysInMonth;day++){
 
-    const cell = document.createElement("div");
-    cell.className = "dayCell";
-    cell.textContent = day;
+    const cell=document.createElement("div");
+    cell.className="dayCell";
+    cell.textContent=day;
+
+    // Today Highlight
+    if(
+      day===today.getDate() &&
+      currentMonth===today.getMonth() &&
+      currentYear===today.getFullYear()
+    ){
+      cell.classList.add("today");
+    }
 
     calendarGrid.appendChild(cell);
+
   }
 
 }
@@ -376,3 +390,25 @@ document.getElementById("nextMonth")?.addEventListener("click", () => {
 });
 
 renderCalendar();
+
+// Today Button
+document.getElementById("todayBtn")?.addEventListener("click",()=>{
+
+  const today=new Date();
+
+  currentMonth=today.getMonth();
+  currentYear=today.getFullYear();
+
+  renderCalendar();
+
+});
+
+// Jump Button
+document.getElementById("jumpBtn")?.addEventListener("click",()=>{
+
+  currentMonth=Number(document.getElementById("jumpMonth").value);
+  currentYear=Number(document.getElementById("jumpYear").value);
+
+  renderCalendar();
+
+});
