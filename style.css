@@ -786,3 +786,50 @@ body.dark .tab.active{
 .holidayWorkColor{background:#f59e0b;}
 .offColor{background:#64748b;}
 .publicHolidayColor{background:#ef4444;}
+
+/* ===== Month Jump ===== */
+
+.monthCenter{
+  text-align:center;
+}
+
+.todayBtn{
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  padding:6px 12px;
+  background:#16a34a;
+  color:white;
+  font-size:12px;
+  font-weight:600;
+}
+
+.jumpCalendar{
+  display:flex;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.jumpCalendar select,
+.jumpCalendar input{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#1d2740;
+  color:white;
+}
+
+.jumpCalendar button{
+  padding:12px 16px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  font-weight:600;
+}
+
+.dayCell.today{
+  border:2px solid #22c55e;
+  box-shadow:0 0 10px rgba(34,197,94,.35);
+}
