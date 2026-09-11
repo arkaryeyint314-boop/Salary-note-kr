@@ -345,24 +345,31 @@ function renderCalendar() {
     calendarGrid.appendChild(empty);
   }
 
-  for(let day=1;day<=daysInMonth;day++){
+ for (let day = 1; day <= daysInMonth; day++) {
 
-    const cell=document.createElement("div");
-    cell.className="dayCell";
-    cell.textContent=day;
+  const cell = document.createElement("div");
+  cell.className = "dayCell";
+  cell.textContent = day;
 
-    // Today Highlight
-    if(
-      day===today.getDate() &&
-      currentMonth===today.getMonth() &&
-      currentYear===today.getFullYear()
-    ){
-      cell.classList.add("today");
-    }
+  const date = new Date(currentYear, currentMonth, day);
+  const weekDay = date.getDay();
 
-    calendarGrid.appendChild(cell);
-
+  // 🔴 Sunday
+  if (weekDay === 0) {
+    cell.classList.add("sunday");
   }
+
+  // 🟢 Today
+  if (
+    day === today.getDate() &&
+    currentMonth === today.getMonth() &&
+    currentYear === today.getFullYear()
+  ) {
+    cell.classList.add("today");
+  }
+
+  calendarGrid.appendChild(cell);
+} 
 
 }
 
