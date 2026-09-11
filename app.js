@@ -43,6 +43,7 @@ const languageSelect = document.getElementById("languageSelect");
 
 const translations = {
   en: {
+    // Home
     language_title: "🌐 Language",
     home_takehome: "This Month Take Home",
     home_expected: "Expected salary after insurance",
@@ -51,10 +52,25 @@ const translations = {
     today_shift: "Today's Shift",
     shift_day: "☀️ Day",
     shift_night: "🌙 Night",
-    shift_holiday: "🎌 Holiday"
+    shift_holiday: "🎌 Holiday",
+
+    // Profile
+    profile_title: "My Profile",
+    profile_subtitle: "Myanmar Worker in Korea",
+    appearance_title: "🎨 Appearance",
+    theme_auto: "Auto",
+    theme_light: "Light",
+    theme_dark: "Dark",
+    work_profile_title: "🏭 Work Profile",
+
+    // Placeholders
+    company_name: "Company Name",
+    hourly_wage_placeholder: "Hourly Wage",
+    visa_type: "Visa Type (E9 / F2 / D2)"
   },
 
   ko: {
+    // Home
     language_title: "🌐 언어",
     home_takehome: "이번 달 실수령 예상 급여",
     home_expected: "4대 보험 공제 후 예상 급여",
@@ -63,10 +79,25 @@ const translations = {
     today_shift: "오늘 근무",
     shift_day: "☀️ 주간",
     shift_night: "🌙 야간",
-    shift_holiday: "🎌 휴일"
+    shift_holiday: "🎌 휴일",
+
+    // Profile
+    profile_title: "내 프로필",
+    profile_subtitle: "한국에서 일하는 미얀마 근로자",
+    appearance_title: "🎨 화면 설정",
+    theme_auto: "자동",
+    theme_light: "라이트",
+    theme_dark: "다크",
+    work_profile_title: "🏭 근무 정보",
+
+    // Placeholders
+    company_name: "회사 이름",
+    hourly_wage_placeholder: "시급",
+    visa_type: "비자 종류 (E9 / F2 / D2)"
   },
 
   my: {
+    // Home
     language_title: "🌐 ဘာသာစကား",
     home_takehome: "ဒီလ လက်ခံရမယ့်လစာ",
     home_expected: "အာမခံဖြတ်ပြီး ရရှိမယ့်လစာ",
@@ -75,13 +106,28 @@ const translations = {
     today_shift: "ဒီနေ့ အလုပ်ဆိုင်း",
     shift_day: "☀️ နေ့ဆိုင်း",
     shift_night: "🌙 ညဆိုင်း",
-    shift_holiday: "🎌 ပိတ်ရက်"
+    shift_holiday: "🎌 ပိတ်ရက်",
+
+    // Profile
+    profile_title: "ကျွန်ုပ်၏ ပရိုဖိုင်",
+    profile_subtitle: "ကိုရီးယားရှိ မြန်မာအလုပ်သမား",
+    appearance_title: "🎨 အပြင်အဆင်",
+    theme_auto: "အလိုအလျောက်",
+    theme_light: "အလင်း",
+    theme_dark: "အမှောင်",
+    work_profile_title: "🏭 အလုပ်အချက်အလက်",
+
+    // Placeholders
+    company_name: "ကုမ္ပဏီအမည်",
+    hourly_wage_placeholder: "တစ်နာရီလုပ်ခ",
+    visa_type: "ဗီဇာအမျိုးအစား (E9 / F2 / D2)"
   }
 };
 
 function setLanguage(lang) {
   const dict = translations[lang];
 
+  // Text ပြောင်းမယ်
   document.querySelectorAll("[data-lang]").forEach(el => {
     const key = el.dataset.lang;
     if (dict[key]) {
@@ -89,6 +135,15 @@ function setLanguage(lang) {
     }
   });
 
+  // Placeholder ပြောင်းမယ်
+  document.querySelectorAll("[data-lang-placeholder]").forEach(el => {
+    const key = el.dataset.langPlaceholder;
+    if (dict[key]) {
+      el.placeholder = dict[key];
+    }
+  });
+
+  // Language သိမ်းထားမယ်
   localStorage.setItem("language", lang);
 
   if (languageSelect) {
@@ -96,16 +151,17 @@ function setLanguage(lang) {
   }
 }
 
-// Load saved language
+// App ဖွင့်တဲ့အချိန် Language ပြန်တင်မယ်
 const savedLang = localStorage.getItem("language") || "en";
 setLanguage(savedLang);
 
-// Change language
+// Language ပြောင်းတဲ့အချိန်
 if (languageSelect) {
   languageSelect.addEventListener("change", (e) => {
     setLanguage(e.target.value);
   });
 }
+
 // ---------- Calculator ----------
 
 function formatWon(num) {
