@@ -59,6 +59,36 @@
 
 </main>
 
+<!-- CALENDAR -->
+<main id="calendar" class="page">
+
+  <section class="card">
+    <h2 data-lang="calendar_title">Work Calendar</h2>
+
+    <div class="monthHeader">
+      <button id="prevMonth">◀</button>
+
+      <h3 id="monthTitle">September 2026</h3>
+
+      <button id="nextMonth">▶</button>
+    </div>
+
+    <div class="weekDays">
+      <span>Sun</span>
+      <span>Mon</span>
+      <span>Tue</span>
+      <span>Wed</span>
+      <span>Thu</span>
+      <span>Fri</span>
+      <span>Sat</span>
+    </div>
+
+    <div id="calendarGrid" class="calendarGrid"></div>
+
+  </section>
+
+</main>
+  
  <!-- CALCULATOR -->
 <main id="calculator" class="page">
 
@@ -223,16 +253,35 @@
 
 </main>
   
-  <!-- Bottom Navigation -->
-  <nav class="bottomNav">
+<!-- Bottom Navigation -->
+<nav class="bottomNav">
 
-    <button class="tab active" data-page="home">🏠<span>Home</span></button>
-    <button class="tab" data-page="calculator">🧮<span>Calc</span></button>
-    <button class="tab" data-page="history">📅<span>History</span></button>
-    <button class="tab" data-page="payslip">📄<span>Payslip</span></button>
-    <button class="tab" data-page="profile">👤<span>Profile</span></button>
+  <button class="tab active" data-page="home" data-lang="tab_home">
+    🏠
+    <span>Home</span>
+  </button>
 
-  </nav>
+  <button class="tab" data-page="calendar" data-lang="tab_calendar">
+    📅
+    <span>Calendar</span>
+  </button>
+
+  <button class="tab" data-page="calculator" data-lang="tab_calculator">
+    🧮
+    <span>Calc</span>
+  </button>
+
+  <button class="tab" data-page="history" data-lang="tab_history">
+    📜
+    <span>History</span>
+  </button>
+
+  <button class="tab" data-page="profile" data-lang="tab_profile">
+    👤
+    <span>Profile</span>
+  </button>
+
+</nav>
 
 </div>
 
