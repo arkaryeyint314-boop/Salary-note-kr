@@ -309,3 +309,70 @@ if (daysInput.value.trim() === "") {
 }
 
 console.log("WorkPay KR JS Loaded");
+
+// ===== CALENDAR ENGINE =====
+
+const calendarGrid = document.getElementById("calendarGrid");
+const monthTitle = document.getElementById("monthTitle");
+
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+
+const monthNames = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+
+function renderCalendar() {
+
+  if (!calendarGrid) return;
+
+  calendarGrid.innerHTML = "";
+
+  monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement("div");
+    calendarGrid.appendChild(empty);
+  }
+
+  // Days
+  for (let day = 1; day <= daysInMonth; day++) {
+
+    const cell = document.createElement("div");
+    cell.className = "dayCell";
+    cell.textContent = day;
+
+    calendarGrid.appendChild(cell);
+  }
+
+}
+
+// Month buttons
+document.getElementById("prevMonth")?.addEventListener("click", () => {
+  currentMonth--;
+
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+
+  renderCalendar();
+});
+
+document.getElementById("nextMonth")?.addEventListener("click", () => {
+  currentMonth++;
+
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+
+  renderCalendar();
+});
+
+renderCalendar();
