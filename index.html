@@ -63,27 +63,64 @@
 <main id="calendar" class="page">
 
   <section class="card">
-    <h2 data-lang="calendar_title">Work Calendar</h2>
 
     <div class="monthHeader">
       <button id="prevMonth">◀</button>
 
-      <h3 id="monthTitle">September 2026</h3>
+      <div>
+        <h2 id="monthTitle">September 2026</h2>
+        <p id="monthSubtitle">대한민국 Work Calendar</p>
+      </div>
 
       <button id="nextMonth">▶</button>
     </div>
 
     <div class="weekDays">
-      <span>Sun</span>
-      <span>Mon</span>
-      <span>Tue</span>
-      <span>Wed</span>
-      <span>Thu</span>
-      <span>Fri</span>
-      <span>Sat</span>
+      <span class="sun">SUN</span>
+      <span>MON</span>
+      <span>TUE</span>
+      <span>WED</span>
+      <span>THU</span>
+      <span>FRI</span>
+      <span class="sat">SAT</span>
     </div>
 
     <div id="calendarGrid" class="calendarGrid"></div>
+
+  </section>
+
+  <!-- Legend -->
+  <section class="card">
+    <h3>Calendar Legend</h3>
+
+    <div class="legendGrid">
+
+      <div class="legendItem">
+        <div class="legendColor dayColor"></div>
+        <span>Day Shift</span>
+      </div>
+
+      <div class="legendItem">
+        <div class="legendColor nightColor"></div>
+        <span>Night Shift</span>
+      </div>
+
+      <div class="legendItem">
+        <div class="legendColor holidayWorkColor"></div>
+        <span>Holiday Work</span>
+      </div>
+
+      <div class="legendItem">
+        <div class="legendColor offColor"></div>
+        <span>Off Day</span>
+      </div>
+
+      <div class="legendItem">
+        <div class="legendColor publicHolidayColor"></div>
+        <span>공휴일 / Sunday</span>
+      </div>
+
+    </div>
 
   </section>
 
