@@ -37,6 +37,75 @@ themeBtn.addEventListener("click", () => {
   localStorage.setItem("theme", dark ? "dark" : "light");
 });
 
+// ---------- Language ----------
+
+const languageSelect = document.getElementById("languageSelect");
+
+const translations = {
+  en: {
+    language_title: "🌐 Language",
+    home_takehome: "This Month Take Home",
+    home_expected: "Expected salary after insurance",
+    hourly_wage: "Hourly Wage",
+    working_days: "Working Days",
+    today_shift: "Today's Shift",
+    shift_day: "☀️ Day",
+    shift_night: "🌙 Night",
+    shift_holiday: "🎌 Holiday"
+  },
+
+  ko: {
+    language_title: "🌐 언어",
+    home_takehome: "이번 달 실수령 예상 급여",
+    home_expected: "4대 보험 공제 후 예상 급여",
+    hourly_wage: "시급",
+    working_days: "근무일수",
+    today_shift: "오늘 근무",
+    shift_day: "☀️ 주간",
+    shift_night: "🌙 야간",
+    shift_holiday: "🎌 휴일"
+  },
+
+  my: {
+    language_title: "🌐 ဘာသာစကား",
+    home_takehome: "ဒီလ လက်ခံရမယ့်လစာ",
+    home_expected: "အာမခံဖြတ်ပြီး ရရှိမယ့်လစာ",
+    hourly_wage: "တစ်နာရီလုပ်ခ",
+    working_days: "အလုပ်လုပ်ရက်",
+    today_shift: "ဒီနေ့ အလုပ်ဆိုင်း",
+    shift_day: "☀️ နေ့ဆိုင်း",
+    shift_night: "🌙 ညဆိုင်း",
+    shift_holiday: "🎌 ပိတ်ရက်"
+  }
+};
+
+function setLanguage(lang) {
+  const dict = translations[lang];
+
+  document.querySelectorAll("[data-lang]").forEach(el => {
+    const key = el.dataset.lang;
+    if (dict[key]) {
+      el.textContent = dict[key];
+    }
+  });
+
+  localStorage.setItem("language", lang);
+
+  if (languageSelect) {
+    languageSelect.value = lang;
+  }
+}
+
+// Load saved language
+const savedLang = localStorage.getItem("language") || "en";
+setLanguage(savedLang);
+
+// Change language
+if (languageSelect) {
+  languageSelect.addEventListener("change", (e) => {
+    setLanguage(e.target.value);
+  });
+}
 // ---------- Calculator ----------
 
 function formatWon(num) {
