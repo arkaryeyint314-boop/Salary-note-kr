@@ -65,15 +65,55 @@
   <section class="card">
 
     <div class="monthHeader">
-      <button id="prevMonth">◀</button>
 
-      <div>
-        <h2 id="monthTitle">September 2026</h2>
-        <p id="monthSubtitle">대한민국 Work Calendar</p>
-      </div>
+  <button id="prevMonth">◀</button>
 
-      <button id="nextMonth">▶</button>
-    </div>
+  <div class="monthCenter">
+    <h2 id="monthTitle">September 2026</h2>
+    <p id="monthSubtitle">대한민국 Work Calendar</p>
+
+    <button id="todayBtn" class="todayBtn">
+      📍 Today
+    </button>
+  </div>
+
+  <button id="nextMonth">▶</button>
+
+</div>
+
+<!-- Jump Month / Year -->
+
+<div class="jumpCalendar">
+
+  <select id="jumpMonth">
+    <option value="0">January</option>
+    <option value="1">February</option>
+    <option value="2">March</option>
+    <option value="3">April</option>
+    <option value="4">May</option>
+    <option value="5">June</option>
+    <option value="6">July</option>
+    <option value="7">August</option>
+    <option value="8">September</option>
+    <option value="9">October</option>
+    <option value="10">November</option>
+    <option value="11">December</option>
+  </select>
+
+  <input
+    id="jumpYear"
+    type="number"
+    min="2020"
+    max="2050"
+    value="2026"
+    placeholder="Year"
+  >
+
+  <button id="jumpBtn">
+    Go
+  </button>
+
+</div>
 
     <div class="weekDays">
       <span class="sun">SUN</span>
