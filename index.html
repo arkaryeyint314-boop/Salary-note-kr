@@ -59,90 +59,104 @@
 
 </main>
 
-  <!-- CALCULATOR -->
-  <main id="calculator" class="page">
+ <!-- CALCULATOR -->
+<main id="calculator" class="page">
 
-    <section class="card">
-      <h2>Salary Calculator</h2>
+  <section class="card">
+    <h2 data-lang="calculator_title">Salary Calculator</h2>
 
-      <label>Hourly Wage (₩)</label>
-      <input id="hourlyWage" type="number" placeholder="10320">
+    <label data-lang="hourly_wage">Hourly Wage (₩)</label>
+    <input id="hourlyWage" type="number"
+           data-lang-placeholder="hourly_wage_placeholder"
+           placeholder="10320">
 
-      <label>Working Days</label>
-      <input id="workingDays" type="number" placeholder="22">
+    <label data-lang="working_days">Working Days</label>
+    <input id="workingDays" type="number"
+           data-lang-placeholder="working_days_placeholder"
+           placeholder="22">
 
-      <label>Meal Allowance</label>
-      <input id="mealAllowance" type="number" placeholder="100000">
-    </section>
+    <label data-lang="meal_allowance">Meal Allowance</label>
+    <input id="mealAllowance" type="number"
+           data-lang-placeholder="meal_allowance_placeholder"
+           placeholder="100000">
+  </section>
 
-    <section class="card">
-      <h3>Working Hours</h3>
+  <section class="card">
+    <h3 data-lang="working_hours">Working Hours</h3>
 
-     <div class="grid2Inputs">
+    <div class="grid2Inputs">
 
-  <div>
-    <label>Basic Hours</label>
-    <input id="basicHours" type="number" placeholder="8">
-  </div>
-
-  <div>
-    <label>OT Hours</label>
-    <input id="otHours" type="number" placeholder="2">
-  </div>
-
-  <div>
-    <label>Night Hours</label>
-    <input id="nightHours" type="number" placeholder="4">
-  </div>
-
-  <div>
-    <label>Holiday Hours</label>
-    <input id="holidayHours" type="number" placeholder="8">
-  </div>
-
-  </div>
-      
-    </section>
-
-    <button class="primaryBtn" onclick="calculateSalary()">
-      Calculate Salary
-    </button>
-
-    <section class="resultSection">
-
-      <div class="resultCard">
-        <span>Take Home Salary</span>
-        <h2 id="netSalary">₩0</h2>
+      <div>
+        <label data-lang="basic_hours">Basic Hours</label>
+        <input id="basicHours" type="number"
+               data-lang-placeholder="basic_hours_placeholder"
+               placeholder="8">
       </div>
 
-      <div class="grid2">
-
-        <div class="miniResult blue">
-          <p>Gross Salary</p>
-          <h4 id="grossSalary">₩0</h4>
-        </div>
-
-        <div class="miniResult red">
-          <p>Insurance</p>
-          <h4 id="insurance">₩0</h4>
-        </div>
-
-        <div class="miniResult green">
-          <p>OT Pay</p>
-          <h4 id="otPay">₩0</h4>
-        </div>
-
-        <div class="miniResult purple">
-          <p>Night Pay</p>
-          <h4 id="nightPay">₩0</h4>
-        </div>
-
+      <div>
+        <label data-lang="ot_hours">OT Hours</label>
+        <input id="otHours" type="number"
+               data-lang-placeholder="ot_hours_placeholder"
+               placeholder="2">
       </div>
 
-    </section>
+      <div>
+        <label data-lang="night_hours">Night Hours</label>
+        <input id="nightHours" type="number"
+               data-lang-placeholder="night_hours_placeholder"
+               placeholder="4">
+      </div>
 
-  </main>
+      <div>
+        <label data-lang="holiday_hours">Holiday Hours</label>
+        <input id="holidayHours" type="number"
+               data-lang-placeholder="holiday_hours_placeholder"
+               placeholder="8">
+      </div>
 
+    </div>
+
+  </section>
+
+  <button class="primaryBtn" onclick="calculateSalary()" data-lang="calculate_salary">
+    Calculate Salary
+  </button>
+
+  <section class="resultSection">
+
+    <div class="resultCard">
+      <span data-lang="take_home_salary">Take Home Salary</span>
+      <h2 id="netSalary">₩0</h2>
+    </div>
+
+    <div class="grid2">
+
+      <div class="miniResult blue">
+        <p data-lang="gross_salary">Gross Salary</p>
+        <h4 id="grossSalary">₩0</h4>
+      </div>
+
+      <div class="miniResult red">
+        <p data-lang="insurance">Insurance</p>
+        <h4 id="insurance">₩0</h4>
+      </div>
+
+      <div class="miniResult green">
+        <p data-lang="ot_pay">OT Pay</p>
+        <h4 id="otPay">₩0</h4>
+      </div>
+
+      <div class="miniResult purple">
+        <p data-lang="night_pay">Night Pay</p>
+        <h4 id="nightPay">₩0</h4>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+  
   <!-- HISTORY -->
   <main id="history" class="page">
 
