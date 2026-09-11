@@ -171,44 +171,44 @@
   </main>
 
   <!-- PROFILE -->
-  <main id="profile" class="page">
+<main id="profile" class="page">
 
-    <section class="profileCard">
-      <div class="avatar">👤</div>
-      <h2>My Profile</h2>
-      <p>Myanmar Worker in Korea</p>
-    </section>
+  <section class="profileCard">
+    <div class="avatar">👤</div>
+    <h2 data-lang="profile_title">My Profile</h2>
+    <p data-lang="profile_subtitle">Myanmar Worker in Korea</p>
+  </section>
 
-    <div class="setting-card">
-  <label for="languageSelect">🌐 Language</label>
+  <section class="card">
+    <h3 data-lang="language_title">🌐 Language</h3>
 
-  <select id="languageSelect">
-    <option value="en">🇺🇸 English</option>
-    <option value="ko">🇰🇷 한국어</option>
-    <option value="my">🇲🇲 မြန်မာ</option>
-  </select>
-</div>
+    <select id="languageSelect" class="languageSelect">
+      <option value="en">🇺🇸 English</option>
+      <option value="ko">🇰🇷 한국어</option>
+      <option value="my">🇲🇲 မြန်မာ</option>
+    </select>
+  </section>
 
-    <section class="card">
-      <h3>🎨 Appearance</h3>
+  <section class="card">
+    <h3 data-lang="appearance_title">🎨 Appearance</h3>
 
-      <div class="languageList">
-        <button class="language active">Auto</button>
-        <button class="language">Light</button>
-        <button class="language">Dark</button>
-      </div>
-    </section>
+    <div class="languageList">
+      <button class="language active" data-lang="theme_auto">Auto</button>
+      <button class="language" data-lang="theme_light">Light</button>
+      <button class="language" data-lang="theme_dark">Dark</button>
+    </div>
+  </section>
 
-    <section class="card">
-      <h3>🏭 Work Profile</h3>
+  <section class="card">
+    <h3 data-lang="work_profile_title">🏭 Work Profile</h3>
 
-      <input placeholder="Company Name">
-      <input placeholder="Hourly Wage">
-      <input placeholder="Visa Type (E9 / F2 / D2)">
-    </section>
+    <input data-lang-placeholder="company_name" placeholder="Company Name">
+    <input data-lang-placeholder="hourly_wage_placeholder" placeholder="Hourly Wage">
+    <input data-lang-placeholder="visa_type" placeholder="Visa Type (E9 / F2 / D2)">
+  </section>
 
-  </main>
-
+</main>
+  
   <!-- Bottom Navigation -->
   <nav class="bottomNav">
 
