@@ -863,3 +863,50 @@ body.dark .tab.active{
   color: #ff6b6b;
   line-height: 1.1;
 }
+
+/* =========================
+   WorkPay KR Holiday UI
+========================= */
+
+.dayCell{
+  background:#1b1b1f;
+  border-radius:18px;
+  aspect-ratio:1/1;
+  padding:6px 4px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  box-sizing:border-box;
+  overflow:hidden;
+  transition:.2s;
+}
+
+.dayNumber{
+  font-size:18px;
+  font-weight:700;
+  color:#fff;
+}
+
+.sunday .dayNumber{
+  color:#ff5555;
+}
+
+.today{
+  border:2px solid #19f37a;
+  box-shadow:0 0 12px rgba(25,243,122,.35);
+}
+
+.holiday{
+  border:2px solid #ff4b4b;
+}
+
+.holidayName{
+  margin-top:4px;
+  font-size:8px;
+  font-weight:600;
+  color:#ff6a6a;
+  line-height:1.05;
+  text-align:center;
+  width:100%;
+}
