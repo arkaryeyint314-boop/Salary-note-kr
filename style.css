@@ -839,3 +839,27 @@ body.dark .tab.active{
   color:#ef4444;
   font-weight:700;
 }
+
+/* ===== Korea Holiday ===== */
+
+.dayCell {
+  position: relative;
+  min-height: 70px;
+}
+
+.dayNumber {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.holiday {
+  border: 1px solid #ff5a5a;
+}
+
+.holidayName {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  color: #ff6b6b;
+  line-height: 1.1;
+}
