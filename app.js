@@ -782,10 +782,10 @@ document.getElementById("todayBtn")?.addEventListener("click",()=>{
 });
 
 // Jump Button
-document.getElementById("jumpBtn")?.addEventListener("click",()=>{
+document.getElementById("jumpBtn")?.addEventListener("click", () => {
 
-  currentMonth=Number(document.getElementById("jumpMonth").value);
-  currentYear=Number(document.getElementById("jumpYear").value);
+  currentMonth = parseInt(document.getElementById("jumpMonth").value, 10);
+  currentYear = parseInt(document.getElementById("jumpYear").value, 10);
 
   renderCalendar();
 
