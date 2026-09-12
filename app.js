@@ -364,7 +364,7 @@ function renderCalendar() {
 
   monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-  // Jump box value update
+  // Jump Box
   document.getElementById("jumpMonth").value = currentMonth;
   document.getElementById("jumpYear").value = currentYear;
 
@@ -373,53 +373,60 @@ function renderCalendar() {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  for(let i=0;i<firstDay;i++){
-    const empty=document.createElement("div");
+  // Empty cells
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement("div");
     calendarGrid.appendChild(empty);
   }
 
- for (let day = 1; day <= daysInMonth; day++) {
+  // Calendar Days
+  for (let day = 1; day <= daysInMonth; day++) {
 
-  const cell = document.createElement("div");
-  cell.className = "dayCell";
+    const cell = document.createElement("div");
+    cell.className = "dayCell";
 
-  const date = new Date(currentYear, currentMonth, day);
-  const weekDay = date.getDay();
-  const dateKey = getDateKey(currentYear, currentMonth, day);
+    const date = new Date(currentYear, currentMonth, day);
+    const weekDay = date.getDay();
+    const dateKey = getDateKey(currentYear, currentMonth, day);
 
-  // ရက်နံပါတ်
-  const dayNumber = document.createElement("div");
-  dayNumber.className = "dayNumber";
-  dayNumber.textContent = day;
-  cell.appendChild(dayNumber);
+    // Day Number
+    const dayNumber = document.createElement("div");
+    dayNumber.className = "dayNumber";
+    dayNumber.textContent = day;
+    cell.appendChild(dayNumber);
 
-  // 🔴 Sunday
-  if (weekDay === 0) {
-    cell.classList.add("sunday");
+    // Sunday
+    if (weekDay === 0) {
+      cell.classList.add("sunday");
+    }
+
+    // Today
+    if (
+      day === today.getDate() &&
+      currentMonth === today.getMonth() &&
+      currentYear === today.getFullYear()
+    ) {
+      cell.classList.add("today");
+    }
+
+    // Korea Public Holiday
+    if (koreaHolidays2026[dateKey]) {
+      cell.classList.add("holiday");
+
+      const holidayName = document.createElement("div");
+      holidayName.className = "holidayName";
+
+      // 연휴 ကို နှစ်ကြောင်းပြမယ်
+      holidayName.innerHTML = koreaHolidays2026[dateKey].replace(
+        " 연휴",
+        "<br>연휴"
+      );
+
+      cell.appendChild(holidayName);
+    }
+
+    calendarGrid.appendChild(cell);
   }
-
-  // 🟢 Today
-  if (
-    day === today.getDate() &&
-    currentMonth === today.getMonth() &&
-    currentYear === today.getFullYear()
-  ) {
-    cell.classList.add("today");
-  }
-
-  // 🎌 Korea Holiday
-  if (koreaHolidays2026[dateKey]) {
-    cell.classList.add("holiday");
-
-    const holidayText = document.createElement("small");
-    holidayText.className = "holidayName";
-    holidayText.textContent = koreaHolidays2026[dateKey];
-
-    cell.appendChild(holidayText);
-  }
-
-  calendarGrid.appendChild(cell);
-}
 
 }
 
