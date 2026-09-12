@@ -682,7 +682,6 @@ function renderCalendar() {
 
   monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-  // Jump Box
   document.getElementById("jumpMonth").value = currentMonth;
   document.getElementById("jumpYear").value = currentYear;
 
@@ -691,13 +690,16 @@ function renderCalendar() {
   const firstDay = new Date(currentYear, currentMonth, 1).getDay();
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Empty cells
+  // ✅ ဒီနှစ် Holiday Data ကိုယူ
+  const holidayData = koreaHolidays[currentYear] || {};
+
+  // Empty Cells
   for (let i = 0; i < firstDay; i++) {
     const empty = document.createElement("div");
     calendarGrid.appendChild(empty);
   }
 
-  // Calendar Days
+  // Days
   for (let day = 1; day <= daysInMonth; day++) {
 
     const cell = document.createElement("div");
@@ -707,7 +709,6 @@ function renderCalendar() {
     const weekDay = date.getDay();
     const dateKey = getDateKey(currentYear, currentMonth, day);
 
-    // Day Number
     const dayNumber = document.createElement("div");
     dayNumber.className = "dayNumber";
     dayNumber.textContent = day;
@@ -727,18 +728,13 @@ function renderCalendar() {
       cell.classList.add("today");
     }
 
-    // Korea Public Holiday
-    if (koreaHolidays2026[dateKey]) {
+    // Holiday (နှစ်အလိုက်)
+    if (holidayData[dateKey]) {
       cell.classList.add("holiday");
 
       const holidayName = document.createElement("div");
       holidayName.className = "holidayName";
-
-      // 연휴 ကို နှစ်ကြောင်းပြမယ်
-      holidayName.innerHTML = koreaHolidays2026[dateKey].replace(
-        " 연휴",
-        "<br>연휴"
-      );
+      holidayName.innerHTML = holidayData[dateKey].replace(" 연휴", "<br>연휴");
 
       cell.appendChild(holidayName);
     }
