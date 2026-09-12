@@ -880,12 +880,14 @@ body.dark .tab.active{
   box-sizing:border-box;
   overflow:hidden;
   transition:.2s;
+  width:100%;          /* Grid အရွယ်အစားအတိုင်းပဲ */
 }
 
 .dayNumber{
   font-size:18px;
   font-weight:700;
   color:#fff;
+  line-height:1;
 }
 
 .sunday .dayNumber{
@@ -902,11 +904,14 @@ body.dark .tab.active{
 }
 
 .holidayName{
-  margin-top:4px;
-  font-size:8px;
+  margin-top:3px;
+  font-size:7px;       /* သေးသွားမယ် */
   font-weight:600;
   color:#ff6a6a;
-  line-height:1.05;
+  line-height:1;
   text-align:center;
-  width:100%;
+
+  max-width:42px;      /* အရေးကြီးဆုံး Fix */
+  white-space:normal;
+  word-break:keep-all;
 }
