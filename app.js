@@ -347,7 +347,7 @@ const koreaHolidays2026 = {
   "2026-10-03": "개천절",
   "2026-10-09": "한글날",
 
-  "2026-12-25": "성탄절"
+  "2026-12-25": "크리스마스"
 };
 
 function getDateKey(year, month, day) {
