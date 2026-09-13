@@ -728,6 +728,11 @@ function renderCalendar() {
       cell.classList.add("today");
     }
 
+    // Click Day → Open Popup
+cell.addEventListener("click", () => {
+  openDayPopup(dateKey);
+});
+    
     // Holiday (နှစ်အလိုက်)
     if (holidayData[dateKey]) {
       cell.classList.add("holiday");
