@@ -816,8 +816,8 @@ dayPopup.addEventListener("click", (e) => {
 });
 
 // Calendar ရဲ့ day ကိုနှိပ်ရင် Popup တက်
-document.querySelectorAll(".calendar-day").forEach(day => {
+document.querySelectorAll(".dayCell").forEach(day => {
   day.addEventListener("click", () => {
-    openDayPopup(day.dataset.date);
+    openDayPopup(day.textContent.trim());
   });
 });
