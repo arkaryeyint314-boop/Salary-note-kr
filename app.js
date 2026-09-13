@@ -800,7 +800,8 @@ const closePopup = document.getElementById("closePopup");
 // Popup ဖွင့်တဲ့ function
 function openDayPopup(dateText) {
   popupDate.textContent = dateText;
-  dayPopup.classList.remove("hidden");
+ resetPopupShift();    
+ dayPopup.classList.remove("hidden");
 }
 
 // Popup ပိတ်
@@ -821,3 +822,36 @@ document.querySelectorAll(".dayCell").forEach(day => {
     openDayPopup(day.textContent.trim());
   });
 });
+
+// ===== Shift Selection =====
+
+let selectedShift = "day";
+
+document.querySelectorAll(".shift-btn").forEach(btn => {
+
+  btn.addEventListener("click", () => {
+
+    // အရင် active ကိုဖြုတ်
+    document.querySelectorAll(".shift-btn")
+      .forEach(b => b.classList.remove("active"));
+
+    // အသစ်ရွေး
+    btn.classList.add("active");
+
+    selectedShift = btn.dataset.shift;
+
+  });
+
+});
+
+// Popup ဖွင့်တိုင်း Day ကို default ရွေးထား
+function resetPopupShift() {
+  document.querySelectorAll(".shift-btn")
+    .forEach(b => b.classList.remove("active"));
+
+  const first = document.querySelector('.shift-btn[data-shift="day"]');
+
+  if (first) first.classList.add("active");
+
+  selectedShift = "day";
+}
