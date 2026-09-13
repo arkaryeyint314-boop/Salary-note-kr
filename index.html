@@ -362,6 +362,58 @@
 
 </div>
 
+  <!-- ===== Calendar Day Popup ===== -->
+<div id="dayPopup" class="day-popup hidden">
+
+  <div class="popup-card">
+
+    <div class="popup-header">
+      <h3 id="popupDate">2026-09-13</h3>
+
+      <button id="closePopup">✕</button>
+    </div>
+
+    <div class="popup-body">
+
+      <label>Shift Type</label>
+
+      <div class="shift-buttons">
+
+        <button class="shift-btn" data-shift="day">☀️ Day</button>
+
+        <button class="shift-btn" data-shift="night">🌙 Night</button>
+
+        <button class="shift-btn" data-shift="holiday">🎌 Holiday</button>
+
+        <button class="shift-btn" data-shift="off">😴 Off</button>
+
+      </div>
+
+      <label>OT Hours</label>
+      <input
+        type="number"
+        id="popupOT"
+        placeholder="0"
+        min="0"
+      >
+
+      <label>Note</label>
+      <textarea
+        id="popupNote"
+        placeholder="Write your note..."
+      ></textarea>
+
+      <button id="saveDayBtn" class="save-btn">
+        💾 Save
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- ===== End Popup ===== -->
+
 <script src="app.js"></script>
 
 </body>
