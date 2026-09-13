@@ -790,3 +790,34 @@ document.getElementById("jumpBtn")?.addEventListener("click", () => {
   renderCalendar();
 
 });
+
+// ===== Calendar Popup System (Part 14.1) =====
+
+const dayPopup = document.getElementById("dayPopup");
+const popupDate = document.getElementById("popupDate");
+const closePopup = document.getElementById("closePopup");
+
+// Popup ဖွင့်တဲ့ function
+function openDayPopup(dateText) {
+  popupDate.textContent = dateText;
+  dayPopup.classList.remove("hidden");
+}
+
+// Popup ပိတ်
+closePopup.addEventListener("click", () => {
+  dayPopup.classList.add("hidden");
+});
+
+// အပြင်ဘက်နှိပ်ရင်လည်း ပိတ်
+dayPopup.addEventListener("click", (e) => {
+  if (e.target === dayPopup) {
+    dayPopup.classList.add("hidden");
+  }
+});
+
+// Calendar ရဲ့ day ကိုနှိပ်ရင် Popup တက်
+document.querySelectorAll(".calendar-day").forEach(day => {
+  day.addEventListener("click", () => {
+    openDayPopup(day.dataset.date);
+  });
+});
