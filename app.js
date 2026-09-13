@@ -823,26 +823,28 @@ document.querySelectorAll(".dayCell").forEach(day => {
   });
 });
 
-// ===== Shift Selection =====
+// ===== Shift Buttons Fix =====
 
 let selectedShift = "day";
 
-document.querySelectorAll(".shift-btn").forEach(btn => {
+const shiftButtons = document.querySelectorAll(".shift-btn");
 
-  btn.addEventListener("click", () => {
-
-    // အရင် active ကိုဖြုတ်
-    document.querySelectorAll(".shift-btn")
-      .forEach(b => b.classList.remove("active"));
-
-    // အသစ်ရွေး
+shiftButtons.forEach((btn) => {
+  btn.onclick = () => {
+    shiftButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
-
     selectedShift = btn.dataset.shift;
-
-  });
-
+  };
 });
+
+function resetPopupShift() {
+  shiftButtons.forEach((b) => b.classList.remove("active"));
+
+  const dayBtn = document.querySelector('[data-shift="day"]');
+  if (dayBtn) dayBtn.classList.add("active");
+
+  selectedShift = "day";
+}
 
 // Popup ဖွင့်တိုင်း Day ကို default ရွေးထား
 function resetPopupShift() {
