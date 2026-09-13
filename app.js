@@ -803,10 +803,15 @@ const popupDate = document.getElementById("popupDate");
 const closePopup = document.getElementById("closePopup");
 
 // Popup ဖွင့်တဲ့ function
-function openDayPopup(dateText) {
-  popupDate.textContent = dateText;
- resetPopupShift();    
- dayPopup.classList.remove("hidden");
+function openDayPopup(dateKey) {
+  popupDate.textContent = dateKey;
+
+  resetPopupShift();
+
+  document.getElementById("popupOT").value = "";
+  document.getElementById("popupNote").value = "";
+
+  dayPopup.classList.remove("hidden");
 }
 
 // Popup ပိတ်
@@ -819,13 +824,6 @@ dayPopup.addEventListener("click", (e) => {
   if (e.target === dayPopup) {
     dayPopup.classList.add("hidden");
   }
-});
-
-// Calendar ရဲ့ day ကိုနှိပ်ရင် Popup တက်
-document.querySelectorAll(".dayCell").forEach(day => {
-  day.addEventListener("click", () => {
-    openDayPopup(day.textContent.trim());
-  });
 });
 
 // ===== Shift Buttons Fix =====
