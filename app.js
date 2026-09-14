@@ -715,53 +715,55 @@ function renderCalendar() {
     calendarGrid.appendChild(empty);
   }
 
-// Days
-for (let day = 1; day <= daysInMonth; day++) {
+  // Days
+  for (let day = 1; day <= daysInMonth; day++) {
 
-  const cell = document.createElement("div");
-  cell.className = "dayCell";
+    const cell = document.createElement("div");
+    cell.className = "dayCell";
 
-  const date = new Date(currentYear, currentMonth, day);
-  const weekDay = date.getDay();
-  const dateKey = getDateKey(currentYear, currentMonth, day);
+    const date = new Date(currentYear, currentMonth, day);
+    const weekDay = date.getDay();
+    const dateKey = getDateKey(currentYear, currentMonth, day);
 
-  const dayNumber = document.createElement("div");
-  dayNumber.className = "dayNumber";
-  dayNumber.textContent = day;
-  cell.appendChild(dayNumber);
+    const dayNumber = document.createElement("div");
+    dayNumber.className = "dayNumber";
+    dayNumber.textContent = day;
+    cell.appendChild(dayNumber);
 
-  // Sunday
-  if (weekDay === 0) {
-    cell.classList.add("sunday");
+    // Sunday
+    if (weekDay === 0) {
+      cell.classList.add("sunday");
+    }
+
+    // Today
+    if (
+      day === today.getDate() &&
+      currentMonth === today.getMonth() &&
+      currentYear === today.getFullYear()
+    ) {
+      cell.classList.add("today");
+    }
+
+    // Click Day → Open Popup
+    cell.addEventListener("click", () => {
+      openDayPopup(dateKey);
+    });
+
+    // Holiday (နှစ်အလိုက်)
+    if (holidayData[dateKey]) {
+      cell.classList.add("holiday");
+
+      const holidayName = document.createElement("div");
+      holidayName.className = "holidayName";
+      holidayName.innerHTML = holidayData[dateKey].replace(" 연휴", "<br>연휴");
+
+      cell.appendChild(holidayName);
+    }
+
+    calendarGrid.appendChild(cell);
   }
 
-  // Today
-  if (
-    day === today.getDate() &&
-    currentMonth === today.getMonth() &&
-    currentYear === today.getFullYear()
-  ) {
-    cell.classList.add("today");
-  }
-
-  // Click Day → Open Popup
-  cell.addEventListener("click", () => {
-    openDayPopup(dateKey);
-  });
-
-  // Holiday (နှစ်အလိုက်)
-  if (holidayData[dateKey]) {
-    cell.classList.add("holiday");
-
-    const holidayName = document.createElement("div");
-    holidayName.className = "holidayName";
-    holidayName.innerHTML = holidayData[dateKey].replace(" 연휴", "<br>연휴");
-
-    cell.appendChild(holidayName);
-  }
-
-  calendarGrid.appendChild(cell);
-}
+} // ✅ renderCalendar ပိတ်တဲ့ } မပျောက်ရ
 
 // Month buttons
 document.getElementById("prevMonth")?.addEventListener("click", () => {
@@ -816,56 +818,74 @@ const dayPopup = document.getElementById("dayPopup");
 const popupDate = document.getElementById("popupDate");
 const closePopup = document.getElementById("closePopup");
 
-  // Popup ဖွင့်တဲ့ function
+// Popup ဖွင့်တဲ့ function
 function openDayPopup(dateKey) {
 
-  // ဘယ်နေ့ကို edit နေတာလဲ သိမ်းထားမယ်
+  // လက်ရှိရွေးထားတဲ့နေ့
   selectedDate = dateKey;
 
   popupDate.textContent = dateKey;
 
+  // Shift ကို Day default ပြန်ထား
   resetPopupShift();
 
-  document.getElementById("popupOT").value = "";
-  document.getElementById("popupNote").value = "";
+  // LocalStorage ထဲမှာ data ရှိရင် ပြန်ဖြည့်
+  const saved = shiftData[selectedDate];
+
+  if (saved) {
+    selectedShift = saved.shift || "day";
+
+    document.querySelectorAll(".shift-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.shift === selectedShift);
+    });
+
+    document.getElementById("popupOT").value = saved.ot || "";
+    document.getElementById("popupNote").value = saved.note || "";
+  } else {
+    document.getElementById("popupOT").value = "";
+    document.getElementById("popupNote").value = "";
+  }
 
   dayPopup.classList.remove("hidden");
 }
 
 // Popup ပိတ်
-closePopup.addEventListener("click", () => {
-  dayPopup.classList.add("hidden");
-});
-
-// အပြင်ဘက်နှိပ်ရင်လည်း ပိတ်
-dayPopup.addEventListener("click", (e) => {
-  if (e.target === dayPopup) {
+if (closePopup) {
+  closePopup.addEventListener("click", () => {
     dayPopup.classList.add("hidden");
-  }
-});
+  });
+}
 
-// ===== Shift Buttons Fix =====
+// Popup အပြင်နှိပ်ရင် ပိတ်
+if (dayPopup) {
+  dayPopup.addEventListener("click", (e) => {
+    if (e.target === dayPopup) {
+      dayPopup.classList.add("hidden");
+    }
+  });
+}
+
+// ===== Shift Buttons =====
 
 let selectedShift = "day";
 
 const shiftButtons = document.querySelectorAll(".shift-btn");
 
 shiftButtons.forEach((btn) => {
-  btn.onclick = () => {
+  btn.addEventListener("click", () => {
     shiftButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     selectedShift = btn.dataset.shift;
-  };
+  });
 });
 
-// Popup ဖွင့်တိုင်း Day ကို default ရွေးထား
+// Day ကို default active ပြန်ထား
 function resetPopupShift() {
-  document.querySelectorAll(".shift-btn")
-    .forEach(b => b.classList.remove("active"));
+  shiftButtons.forEach((b) => b.classList.remove("active"));
 
-  const first = document.querySelector('.shift-btn[data-shift="day"]');
+  const dayBtn = document.querySelector('.shift-btn[data-shift="day"]');
 
-  if (first) first.classList.add("active");
+  if (dayBtn) dayBtn.classList.add("active");
 
   selectedShift = "day";
 }
