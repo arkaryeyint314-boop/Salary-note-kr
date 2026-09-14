@@ -1098,16 +1098,20 @@ function openDayPopup(dateKey) {
       );
     });
 
+    // Saved Values
     document.getElementById("popupStart").value = saved.start || "08:30";
     document.getElementById("popupEnd").value = saved.end || "17:30";
-    document.getElementById("popupBreak").value = 60;
+    document.getElementById("popupBreakStart").value = saved.breakStart || "00:00";
+    document.getElementById("popupBreak").value = saved.break || 60;
     document.getElementById("popupOT").value = saved.ot || "";
     document.getElementById("popupNote").value = saved.note || "";
 
   } else {
 
+    // Default Values
     document.getElementById("popupStart").value = "08:30";
     document.getElementById("popupEnd").value = "17:30";
+    document.getElementById("popupBreakStart").value = "00:00";
     document.getElementById("popupBreak").value = 60;
     document.getElementById("popupOT").value = "";
     document.getElementById("popupNote").value = "";
@@ -1115,13 +1119,12 @@ function openDayPopup(dateKey) {
   }
 
   calculateOTHours();
-
   dayPopup.classList.remove("hidden");
 }
 
 // ---------------- Auto Update OT ----------------
 
-["popupStart","popupEnd","popupBreak"].forEach((id) => {
+["popupStart", "popupEnd", "popupBreak", "popupBreakStart"].forEach((id) => {
 
   const el = document.getElementById(id);
 
@@ -1135,21 +1138,17 @@ function openDayPopup(dateKey) {
 // ---------------- Close Popup ----------------
 
 if (closePopup) {
-
   closePopup.addEventListener("click", () => {
     dayPopup.classList.add("hidden");
   });
-
 }
 
 if (dayPopup) {
-
   dayPopup.addEventListener("click", (e) => {
     if (e.target === dayPopup) {
       dayPopup.classList.add("hidden");
     }
   });
-
 }
 
 // ---------------- Save Shift ----------------
@@ -1168,18 +1167,20 @@ if (saveDayBtn) {
 
       start: document.getElementById("popupStart").value,
       end: document.getElementById("popupEnd").value,
-    break: Number(document.getElementById("popupBreak").value) || 60,
+
+      // NEW (Part 16.4)
+      breakStart: document.getElementById("popupBreakStart").value,
+      break: Number(document.getElementById("popupBreak").value) || 60,
 
       ot: Number(document.getElementById("popupOT").value) || 0,
-
       note: document.getElementById("popupNote").value.trim()
 
     };
-    
-saveShiftData();
-renderCalendar();
-syncCalendarToCalculator();
-    
+
+    saveShiftData();
+    renderCalendar();
+    syncCalendarToCalculator();
+
     dayPopup.classList.add("hidden");
 
   });
@@ -1195,12 +1196,12 @@ if (deleteDayBtn) {
     if (!selectedDate) return;
 
     delete shiftData[selectedDate];
-    
-saveShiftData();
-renderCalendar();
-syncCalendarToCalculator();
-    
-  dayPopup.classList.add("hidden");
+
+    saveShiftData();
+    renderCalendar();
+    syncCalendarToCalculator();
+
+    dayPopup.classList.add("hidden");
 
   });
 
