@@ -887,9 +887,9 @@ function calculateDaySalary(data, wage) {
 
 }
 
-/* ===== PART 16.2 Time Calculation Engine ===== */
+/* ===== Time Calculation Engine ===== */
 
-function calculateWorkTime(start, end, breakMinutes = 60) {
+function calculateWorkTime(start, end, breakStart = "00:30", breakMinutes = 60) {
 
   const toMinutes = (time) => {
     const [h, m] = time.split(":").map(Number);
@@ -899,23 +899,24 @@ function calculateWorkTime(start, end, breakMinutes = 60) {
   let startMin = toMinutes(start);
   let endMin = toMinutes(end);
 
-  // Overnight Shift (20:00 → 08:00)
+  // Overnight Shift (20:30 → 08:30)
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
 
-  // Total Worked Hours
+  // Worked Hours
   const workedHours = (endMin - startMin - breakMinutes) / 60;
 
-  // OT Hours (8 hours over)
+  // OT Hours
   const otHours = Math.max(0, workedHours - 8);
 
-  // Night Hours (22:00 ~ 06:00)
+  // Night Period = 22:00 ~ 06:00
+  const nightStart = 22 * 60;
+  const nightEnd = 30 * 60; // 06:00 next day
+
   let nightMinutes = 0;
 
-  const nightStart = 22 * 60;
-  const nightEnd = 30 * 60; // 06:00 next day = 1800
-
+  // Count night working minutes
   for (let t = startMin; t < endMin; t++) {
     const current = t < 24 * 60 ? t : t + 24 * 60;
 
@@ -924,29 +925,28 @@ function calculateWorkTime(start, end, breakMinutes = 60) {
     }
   }
 
-  // Break ထဲက Night Minutes ကိုနောက် Stepမှာဖြတ်မယ်။
-  // ===== Korea Night Break Rule =====
+  // Break time
+  let breakStartMin = toMinutes(breakStart);
+  if (breakStartMin < startMin) {
+    breakStartMin += 24 * 60;
+  }
 
-// Break Time ကို Night Hours ထဲက ဖြတ်မယ်
-let adjustedNightMinutes = nightMinutes;
+  const breakEndMin = breakStartMin + breakMinutes;
 
-// Default Rule:
-// Night Shift Break (22:00~06:00 ထဲကျရင်) 60min ဖြတ်
-if (breakMinutes > 0 && adjustedNightMinutes > 0) {
-  adjustedNightMinutes = Math.max(
-    0,
-    adjustedNightMinutes - breakMinutes
-  );
-}
+  // Remove break minutes only if they are inside night period
+  for (let t = breakStartMin; t < breakEndMin; t++) {
+    const current = t < 24 * 60 ? t : t + 24 * 60;
 
-const nightHours = adjustedNightMinutes / 60;
+    if (current >= nightStart && current < nightEnd && nightMinutes > 0) {
+      nightMinutes--;
+    }
+  }
 
-return {
-  workedHours: Number(workedHours.toFixed(1)),
-  otHours: Number(otHours.toFixed(1)),
-  nightHours: Number(nightHours.toFixed(1))
-};
-
+  return {
+    workedHours: Number(workedHours.toFixed(1)),
+    otHours: Number(otHours.toFixed(1)),
+    nightHours: Number((nightMinutes / 60).toFixed(1))
+  };
 }
 
 // ===== Month Buttons =====
