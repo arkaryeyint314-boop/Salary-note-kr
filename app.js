@@ -948,9 +948,13 @@ function calculateOTHours() {
 }
 
 // ===== Auto Update OT =====
-
 ["popupStart","popupEnd","popupBreak"].forEach((id) => {
-  document.getElementById(id).addEventListener("change", calculateOTHours);
+  const el = document.getElementById(id);
+
+  if (el) {
+    el.addEventListener("input", calculateOTHours);
+    el.addEventListener("change", calculateOTHours);
+  }
 });
 
 // ===== Save Shift =====
