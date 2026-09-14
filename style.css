@@ -964,13 +964,17 @@ body.dark .tab.active{
 }
 
 .popup-card {
-  width: 100%;
+  width: 92%;
   max-width: 380px;
   background: #171c2b;
   border-radius: 24px;
   padding: 20px;
   color: #fff;
   box-shadow: 0 20px 40px rgba(0,0,0,.45);
+
+  /* iPhone Safari Fix */
+  max-height: 85vh;
+  overflow-y: auto;
 }
 
 .popup-header {
@@ -1110,4 +1114,12 @@ body.dark .tab.active{
 
 .red{
   background:linear-gradient(135deg,#dc2626,#ef4444);
+}
+
+.popup-actions{
+  position: sticky;
+  bottom: 0;
+  background: #171c2b;
+  padding-top: 16px;
+  padding-bottom: 8px;
 }
