@@ -744,22 +744,6 @@ for (let day = 1; day <= daysInMonth; day++) {
     cell.classList.add("today");
   }
 
-  // =========================
-  // Saved Shift Color + OT Badge
-  // =========================
-  const savedShift = shiftData[dateKey];
-
-  if (savedShift) {
-    cell.classList.add(savedShift.shift);
-
-    if (savedShift.ot > 0) {
-      const otBadge = document.createElement("div");
-      otBadge.className = "otBadge";
-      otBadge.textContent = `OT ${savedShift.ot}h`;
-      cell.appendChild(otBadge);
-    }
-  }
-
   // Click Day → Open Popup
   cell.addEventListener("click", () => {
     openDayPopup(dateKey);
