@@ -915,7 +915,7 @@ function calculateDaySalary(data, wage) {
 
 }
 
-/* ===== Time Calculation Engine ===== */
+/* ===== Time Calculation Engine (WorkPay KR Official) ===== */
 
 function calculateWorkTime(start, end, breakStart = "00:30", breakMinutes = 60) {
 
@@ -932,41 +932,45 @@ function calculateWorkTime(start, end, breakStart = "00:30", breakMinutes = 60) 
     endMin += 24 * 60;
   }
 
-  // Worked Hours
+  // ===== Worked Hours =====
   const workedHours = (endMin - startMin - breakMinutes) / 60;
 
-  // OT Hours
+  // ===== OT Hours (Korea = over 8h) =====
   const otHours = Math.max(0, workedHours - 8);
 
-  // Night Period = 22:00 ~ 06:00
-  const nightStart = 22 * 60;
-  const nightEnd = 30 * 60; // 06:00 next day
-
+  // ===== Night Hours (22:00 ~ 06:00) =====
   let nightMinutes = 0;
 
-  // Count night working minutes
   for (let t = startMin; t < endMin; t++) {
-    const current = t < 24 * 60 ? t : t + 24 * 60;
+    const minuteOfDay = t % (24 * 60);
 
-    if (current >= nightStart && current < nightEnd) {
+    if (
+      minuteOfDay >= 22 * 60 ||   // 22:00 - 24:00
+      minuteOfDay < 6 * 60        // 00:00 - 06:00
+    ) {
       nightMinutes++;
     }
   }
 
-  // Break time
+  // ===== Break Minutes =====
   let breakStartMin = toMinutes(breakStart);
+
+  // Break after midnight belongs to next day
   if (breakStartMin < startMin) {
     breakStartMin += 24 * 60;
   }
 
   const breakEndMin = breakStartMin + breakMinutes;
 
-  // Remove break minutes only if they are inside night period
+  // Remove only break minutes inside night period
   for (let t = breakStartMin; t < breakEndMin; t++) {
-    const current = t < 24 * 60 ? t : t + 24 * 60;
+    const minuteOfDay = t % (24 * 60);
 
-    if (current >= nightStart && current < nightEnd && nightMinutes > 0) {
-      nightMinutes--;
+    if (
+      minuteOfDay >= 22 * 60 ||
+      minuteOfDay < 6 * 60
+    ) {
+      nightMinutes = Math.max(0, nightMinutes - 1);
     }
   }
 
@@ -975,6 +979,7 @@ function calculateWorkTime(start, end, breakStart = "00:30", breakMinutes = 60) 
     otHours: Number(otHours.toFixed(1)),
     nightHours: Number((nightMinutes / 60).toFixed(1))
   };
+
 }
 
 // ===== Month Buttons =====
