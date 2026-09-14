@@ -905,6 +905,29 @@ document.getElementById("saveDayBtn").addEventListener("click", () => {
   renderCalendar();
 });
 
+// ===== Delete Shift =====
+
+const deleteDayBtn = document.getElementById("deleteDayBtn");
+
+if (deleteDayBtn) {
+  deleteDayBtn.addEventListener("click", () => {
+
+    if (!selectedDate) return;
+
+    // ဒီနေ့ Shift Data ဖျက်
+    delete shiftData[selectedDate];
+
+    // LocalStorage Update
+    saveShiftData();
+
+    // Popup ပိတ်
+    dayPopup.classList.add("hidden");
+
+    // Calendar Refresh
+    renderCalendar();
+  });
+}
+
 // ===== Shift Buttons =====
 
 let selectedShift = "day";
