@@ -27,26 +27,52 @@
 <!-- HOME -->
 <main id="home" class="page activePage">
 
+  <!-- Hero Salary Card -->
   <section class="heroCard">
     <p data-lang="home_takehome">This Month Take Home</p>
     <h2 id="homeSalary">₩0</h2>
+
     <span data-lang="home_expected">
       Expected salary after insurance
     </span>
   </section>
 
+  <!-- Monthly Summary Dashboard -->
   <section class="grid2">
+
     <div class="miniCard blue">
-      <p data-lang="hourly_wage">Hourly Wage</p>
-      <h3 id="homeWage">₩10,320</h3>
+      <p>📅 Work Days</p>
+      <h3 id="homeDays">0</h3>
     </div>
 
-    <div class="miniCard green">
-      <p data-lang="working_days">Working Days</p>
-      <h3 id="homeDays">22</h3>
+    <div class="miniCard orange">
+      <p>⏰ OT Hours</p>
+      <h3 id="homeOT">0</h3>
     </div>
+
+    <div class="miniCard purple">
+      <p>🌙 Night Hours</p>
+      <h3 id="homeNight">0</h3>
+    </div>
+
+    <div class="miniCard red">
+      <p>🎌 Holiday Hours</p>
+      <h3 id="homeHoliday">0</h3>
+    </div>
+
   </section>
 
+  <!-- Hourly Wage -->
+  <section class="grid2">
+
+    <div class="miniCard blue">
+      <p data-lang="hourly_wage">Hourly Wage</p>
+      <h3 id="homeWage">₩0</h3>
+    </div>
+
+  </section>
+
+  <!-- Today's Shift -->
   <section class="card">
     <h3 data-lang="today_shift">Today's Shift</h3>
 
@@ -58,7 +84,7 @@
   </section>
 
 </main>
-
+  
 <!-- CALENDAR -->
 <main id="calendar" class="page">
 
