@@ -826,15 +826,18 @@ document.getElementById("jumpBtn")?.addEventListener("click", () => {
 
 });
 
-// ===== Calendar Popup System (Part 14.4 Official) =====
+// ===== Calendar Popup System (Part 14.5 Official Fix) =====
 
 const dayPopup = document.getElementById("dayPopup");
 const popupDate = document.getElementById("popupDate");
 const closePopup = document.getElementById("closePopup");
 
+const saveDayBtn = document.getElementById("saveDayBtn");
+const deleteDayBtn = document.getElementById("deleteDayBtn");
+
 let selectedShift = "day";
 
-// ===== Shift Buttons =====
+// ---------------- Shift Buttons ----------------
 
 const shiftButtons = document.querySelectorAll(".shift-btn");
 
@@ -855,7 +858,44 @@ function resetPopupShift() {
   selectedShift = "day";
 }
 
-// ===== Popup Open =====
+// ---------------- Auto OT Calculator ----------------
+
+function calculateOTHours() {
+
+  const start = document.getElementById("popupStart").value;
+  const end = document.getElementById("popupEnd").value;
+  const breakTime = document.getElementById("popupBreak").value;
+
+  if (!start || !end) return;
+
+  const toMinutes = (time) => {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  let startMinutes = toMinutes(start);
+  let endMinutes = toMinutes(end);
+
+  // Night Shift (20:00 → 08:00)
+  if (endMinutes <= startMinutes) {
+    endMinutes += 24 * 60;
+  }
+
+  let breakMinutes = 0;
+  if (breakTime) breakMinutes = toMinutes(breakTime);
+
+  const workedHours = (endMinutes - startMinutes - breakMinutes) / 60;
+
+  // Korea Standard = 8 Hours
+  const otHours = Math.max(0, workedHours - 8);
+
+  document.getElementById("popupOT").value =
+    Number.isInteger(otHours)
+      ? otHours
+      : otHours.toFixed(1);
+}
+
+// ---------------- Popup Open ----------------
 
 function openDayPopup(dateKey) {
 
@@ -871,169 +911,100 @@ function openDayPopup(dateKey) {
     selectedShift = saved.shift || "day";
 
     shiftButtons.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.shift === selectedShift);
+      btn.classList.toggle(
+        "active",
+        btn.dataset.shift === selectedShift
+      );
     });
 
-    // Time
     document.getElementById("popupStart").value = saved.start || "08:30";
     document.getElementById("popupEnd").value = saved.end || "17:30";
     document.getElementById("popupBreak").value = saved.break || "01:00";
-
-    // OT + Note
     document.getElementById("popupOT").value = saved.ot || "";
     document.getElementById("popupNote").value = saved.note || "";
 
   } else {
 
-    // Default Values
     document.getElementById("popupStart").value = "08:30";
     document.getElementById("popupEnd").value = "17:30";
     document.getElementById("popupBreak").value = "01:00";
-
     document.getElementById("popupOT").value = "";
     document.getElementById("popupNote").value = "";
 
   }
-// ===== Auto Calculate OT =====
-function calculateOTHours() {
 
-  const start = document.getElementById("popupStart").value;
-  const end = document.getElementById("popupEnd").value;
-  const breakValue = document.getElementById("popupBreak").value;
-
-  if (!start || !end) return;
-
-  const toMinutes = (time) => {
-    const [h, m] = time.split(":").map(Number);
-    return h * 60 + m;
-  };
-
-  let startMin = toMinutes(start);
-  let endMin = toMinutes(end);
-
-  // Overnight (20:00 → 08:00)
-  if (endMin <= startMin) {
-    endMin += 24 * 60;
-  }
-
-  let breakMin = 0;
-  if (breakValue) breakMin = toMinutes(breakValue);
-
-  const workedHours = (endMin - startMin - breakMin) / 60;
-  const otHours = Math.max(0, workedHours - 8);
-
-  document.getElementById("popupOT").value = otHours % 1 === 0
-    ? otHours
-    : otHours.toFixed(1);
-
-}
   calculateOTHours();
-dayPopup.classList.remove("hidden");
+
   dayPopup.classList.remove("hidden");
 }
 
-// ===== Auto Update OT =====
+// ---------------- Auto Update OT ----------------
 
-const popupStart = document.getElementById("popupStart");
-const popupEnd = document.getElementById("popupEnd");
-const popupBreak = document.getElementById("popupBreak");
+["popupStart","popupEnd","popupBreak"].forEach((id) => {
 
-[popupStart, popupEnd, popupBreak].forEach((el) => {
+  const el = document.getElementById(id);
+
   if (!el) return;
 
   el.addEventListener("input", calculateOTHours);
   el.addEventListener("change", calculateOTHours);
+
 });
 
-// ===== Popup Close =====
+// ---------------- Close Popup ----------------
 
 if (closePopup) {
+
   closePopup.addEventListener("click", () => {
     dayPopup.classList.add("hidden");
   });
+
 }
 
 if (dayPopup) {
+
   dayPopup.addEventListener("click", (e) => {
     if (e.target === dayPopup) {
       dayPopup.classList.add("hidden");
     }
   });
-}
-
-// ===== Auto Calculate OT =====
-
-function calculateOTHours() {
-
-  const start = document.getElementById("popupStart").value;
-  const end = document.getElementById("popupEnd").value;
-  const breakTime = document.getElementById("popupBreak").value;
-
-  if (!start || !end || !breakTime) return;
-
-  const [sh, sm] = start.split(":").map(Number);
-  const [eh, em] = end.split(":").map(Number);
-  const [bh, bm] = breakTime.split(":").map(Number);
-
-  let startMinutes = sh * 60 + sm;
-  let endMinutes = eh * 60 + em;
-
-  // Night Shift (20:00 → 08:00)
-  if (endMinutes <= startMinutes) {
-    endMinutes += 24 * 60;
-  }
-
-  const breakMinutes = bh * 60 + bm;
-
-  const workedHours = (endMinutes - startMinutes - breakMinutes) / 60;
-
-  // Korea Basic = 8 Hours
-  const otHours = Math.max(0, workedHours - 8);
-
-  document.getElementById("popupOT").value = otHours.toFixed(1);
 
 }
 
-// ===== Auto Update OT =====
-["popupStart","popupEnd","popupBreak"].forEach((id) => {
-  const el = document.getElementById(id);
+// ---------------- Save Shift ----------------
 
-  if (el) {
-    el.addEventListener("input", calculateOTHours);
-    el.addEventListener("change", calculateOTHours);
-  }
-});
+if (saveDayBtn) {
 
-// ===== Save Shift =====
-saveDayBtn.addEventListener("click", () => {
+  saveDayBtn.addEventListener("click", () => {
 
-  if (!selectedDate) return;
+    if (!selectedDate) return;
 
-  // OT ကို အရင်တွက်
-  calculateOTHours();
+    calculateOTHours();
 
-  shiftData[selectedDate] = {
-    shift: selectedShift,
+    shiftData[selectedDate] = {
 
-    start: document.getElementById("popupStart").value,
-    end: document.getElementById("popupEnd").value,
-    break: document.getElementById("popupBreak").value,
+      shift: selectedShift,
 
-    // တွက်ပြီးသား OT ကို သိမ်း
-    ot: Number(document.getElementById("popupOT").value),
-    note: document.getElementById("popupNote").value.trim()
-  };
+      start: document.getElementById("popupStart").value,
+      end: document.getElementById("popupEnd").value,
+      break: document.getElementById("popupBreak").value,
 
-  saveShiftData();
-  dayPopup.classList.add("hidden");
-  renderCalendar();
-});
+      ot: Number(document.getElementById("popupOT").value) || 0,
+
+      note: document.getElementById("popupNote").value.trim()
+
+    };
+
+    saveShiftData();
+    renderCalendar();
+
+    dayPopup.classList.add("hidden");
+
+  });
 
 }
 
-// ===== Delete / Neutral Shift =====
-
-const deleteDayBtn = document.getElementById("deleteDayBtn");
+// ---------------- Delete Shift ----------------
 
 if (deleteDayBtn) {
 
@@ -1044,10 +1015,9 @@ if (deleteDayBtn) {
     delete shiftData[selectedDate];
 
     saveShiftData();
+    renderCalendar();
 
     dayPopup.classList.add("hidden");
-
-    renderCalendar();
 
   });
 
