@@ -881,8 +881,8 @@ function calculateOTHours() {
     endMinutes += 24 * 60;
   }
 
-  let breakMinutes = 0;
-  if (breakTime) breakMinutes = toMinutes(breakTime);
+const breakMinutes =
+  Number(document.getElementById("popupBreak").value) || 0;  
 
   const workedHours = (endMinutes - startMinutes - breakMinutes) / 60;
 
@@ -919,7 +919,7 @@ function openDayPopup(dateKey) {
 
     document.getElementById("popupStart").value = saved.start || "08:30";
     document.getElementById("popupEnd").value = saved.end || "17:30";
-    document.getElementById("popupBreak").value = saved.break || "01:00";
+    document.getElementById("popupBreak").value = 60;
     document.getElementById("popupOT").value = saved.ot || "";
     document.getElementById("popupNote").value = saved.note || "";
 
@@ -927,7 +927,7 @@ function openDayPopup(dateKey) {
 
     document.getElementById("popupStart").value = "08:30";
     document.getElementById("popupEnd").value = "17:30";
-    document.getElementById("popupBreak").value = "01:00";
+    document.getElementById("popupBreak").value = 60;
     document.getElementById("popupOT").value = "";
     document.getElementById("popupNote").value = "";
 
@@ -987,7 +987,7 @@ if (saveDayBtn) {
 
       start: document.getElementById("popupStart").value,
       end: document.getElementById("popupEnd").value,
-      break: document.getElementById("popupBreak").value,
+    break: Number(document.getElementById("popupBreak").value) || 60,
 
       ot: Number(document.getElementById("popupOT").value) || 0,
 
