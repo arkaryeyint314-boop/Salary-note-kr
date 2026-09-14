@@ -890,8 +890,6 @@ document.getElementById("saveDayBtn").addEventListener("click", () => {
   renderCalendar();
 });
 
-}
-
 // ===== Shift Buttons =====
 
 let selectedShift = "day";
