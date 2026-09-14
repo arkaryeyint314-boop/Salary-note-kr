@@ -827,8 +827,32 @@ function getMonthlySummary(year = currentYear, month = currentMonth) {
   return summary;
 
 }
+// ===== PART 15.2 Calendar → Calculator Sync =====
 
-// Month buttons
+function syncCalendarToCalculator() {
+
+  const summary = getMonthlySummary();
+
+  // Calculator Inputs
+  document.getElementById("workingDays").value = summary.workingDays;
+  document.getElementById("otHours").value = summary.otHours;
+  document.getElementById("nightHours").value = summary.nightHours;
+  document.getElementById("holidayHours").value = summary.holidayHours;
+
+  // Home Summary
+  document.getElementById("homeDays").textContent = summary.workingDays;
+
+  // Wage ရှိရင် Auto Salary Calculate
+  const wage = Number(document.getElementById("hourlyWage").value);
+
+  if (wage > 0) {
+    calculateSalary();
+  }
+
+}
+
+// ===== Month Buttons =====
+
 document.getElementById("prevMonth")?.addEventListener("click", () => {
   currentMonth--;
 
@@ -838,6 +862,7 @@ document.getElementById("prevMonth")?.addEventListener("click", () => {
   }
 
   renderCalendar();
+  syncCalendarToCalculator();
 });
 
 document.getElementById("nextMonth")?.addEventListener("click", () => {
@@ -849,29 +874,38 @@ document.getElementById("nextMonth")?.addEventListener("click", () => {
   }
 
   renderCalendar();
+  syncCalendarToCalculator();
 });
 
+// App Start
 renderCalendar();
+syncCalendarToCalculator();
 
-// Today Button
-document.getElementById("todayBtn")?.addEventListener("click",()=>{
 
-  const today=new Date();
+// ===== Today Button =====
 
-  currentMonth=today.getMonth();
-  currentYear=today.getFullYear();
+document.getElementById("todayBtn")?.addEventListener("click", () => {
+
+  const today = new Date();
+
+  currentMonth = today.getMonth();
+  currentYear = today.getFullYear();
 
   renderCalendar();
+  syncCalendarToCalculator();
 
 });
 
-// Jump Button
+
+// ===== Jump Button =====
+
 document.getElementById("jumpBtn")?.addEventListener("click", () => {
 
   currentMonth = parseInt(document.getElementById("jumpMonth").value, 10);
   currentYear = parseInt(document.getElementById("jumpYear").value, 10);
 
   renderCalendar();
+  syncCalendarToCalculator();
 
 });
 
@@ -1043,10 +1077,11 @@ if (saveDayBtn) {
       note: document.getElementById("popupNote").value.trim()
 
     };
-
-    saveShiftData();
-    renderCalendar();
-
+    
+saveShiftData();
+renderCalendar();
+syncCalendarToCalculator();
+    
     dayPopup.classList.add("hidden");
 
   });
@@ -1062,11 +1097,12 @@ if (deleteDayBtn) {
     if (!selectedDate) return;
 
     delete shiftData[selectedDate];
-
-    saveShiftData();
-    renderCalendar();
-
-    dayPopup.classList.add("hidden");
+    
+saveShiftData();
+renderCalendar();
+syncCalendarToCalculator();
+    
+  dayPopup.classList.add("hidden");
 
   });
 
