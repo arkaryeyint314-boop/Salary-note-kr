@@ -826,111 +826,15 @@ document.getElementById("jumpBtn")?.addEventListener("click", () => {
 
 });
 
-// ===== Calendar Popup System (Part 14.1) =====
+// ===== Calendar Popup System (Part 14.4 Official) =====
 
 const dayPopup = document.getElementById("dayPopup");
 const popupDate = document.getElementById("popupDate");
 const closePopup = document.getElementById("closePopup");
 
-// Popup ဖွင့်တဲ့ function
-function openDayPopup(dateKey) {
-
-  // လက်ရှိရွေးထားတဲ့နေ့
-  selectedDate = dateKey;
-
-  popupDate.textContent = dateKey;
-
-  // Shift ကို Day default ပြန်ထား
-  resetPopupShift();
-
-  // LocalStorage ထဲမှာ data ရှိရင် ပြန်ဖြည့်
-  const saved = shiftData[selectedDate];
-
-  if (saved) {
-    selectedShift = saved.shift || "day";
-
-    document.querySelectorAll(".shift-btn").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.shift === selectedShift);
-    });
-
-    document.getElementById("popupOT").value = saved.ot || "";
-    document.getElementById("popupNote").value = saved.note || "";
-  }
-  else {
-    document.getElementById("popupOT").value = "";
-    document.getElementById("popupNote").value = "";
-  }
-
-  dayPopup.classList.remove("hidden");
-}
-
-// Popup ပိတ်
-if (closePopup) {
-  closePopup.addEventListener("click", () => {
-    dayPopup.classList.add("hidden");
-  });
-}
-
-// Popup အပြင်နှိပ်ရင် ပိတ်
-if (dayPopup) {
-  dayPopup.addEventListener("click", (e) => {
-    if (e.target === dayPopup) {
-      dayPopup.classList.add("hidden");
-    }
-  });
-}
-
-// ===== Save Shift =====
-
-document.getElementById("saveDayBtn").addEventListener("click", () => {
-
-  if (!selectedDate) {
-    alert("No date selected.");
-    return;
-  }
-
-  shiftData[selectedDate] = {
-    shift: selectedShift,
-    ot: Number(document.getElementById("popupOT").value) || 0,
-    note: document.getElementById("popupNote").value.trim()
-  };
-
-  // LocalStorage သိမ်း
-  localStorage.setItem("workpay_shift_data", JSON.stringify(shiftData));
-
-  // Popup ပိတ်
-  dayPopup.classList.add("hidden");
-
-  // Calendar ပြန်ဆွဲ
-  renderCalendar();
-});
-
-// ===== Delete Shift =====
-
-const deleteDayBtn = document.getElementById("deleteDayBtn");
-
-if (deleteDayBtn) {
-  deleteDayBtn.addEventListener("click", () => {
-
-    if (!selectedDate) return;
-
-    // ဒီနေ့ Shift Data ဖျက်
-    delete shiftData[selectedDate];
-
-    // LocalStorage Update
-    saveShiftData();
-
-    // Popup ပိတ်
-    dayPopup.classList.add("hidden");
-
-    // Calendar Refresh
-    renderCalendar();
-  });
-}
+let selectedShift = "day";
 
 // ===== Shift Buttons =====
-
-let selectedShift = "day";
 
 const shiftButtons = document.querySelectorAll(".shift-btn");
 
@@ -942,13 +846,125 @@ shiftButtons.forEach((btn) => {
   });
 });
 
-// Day ကို default active ပြန်ထား
 function resetPopupShift() {
   shiftButtons.forEach((b) => b.classList.remove("active"));
 
   const dayBtn = document.querySelector('.shift-btn[data-shift="day"]');
-
   if (dayBtn) dayBtn.classList.add("active");
 
   selectedShift = "day";
+}
+
+// ===== Popup Open =====
+
+function openDayPopup(dateKey) {
+
+  selectedDate = dateKey;
+  popupDate.textContent = dateKey;
+
+  resetPopupShift();
+
+  const saved = shiftData[selectedDate];
+
+  if (saved) {
+
+    selectedShift = saved.shift || "day";
+
+    shiftButtons.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.shift === selectedShift);
+    });
+
+    // Time
+    document.getElementById("popupStart").value = saved.start || "08:30";
+    document.getElementById("popupEnd").value = saved.end || "17:30";
+    document.getElementById("popupBreak").value = saved.break || "01:00";
+
+    // OT + Note
+    document.getElementById("popupOT").value = saved.ot || "";
+    document.getElementById("popupNote").value = saved.note || "";
+
+  } else {
+
+    // Default Values
+    document.getElementById("popupStart").value = "08:30";
+    document.getElementById("popupEnd").value = "17:30";
+    document.getElementById("popupBreak").value = "01:00";
+
+    document.getElementById("popupOT").value = "";
+    document.getElementById("popupNote").value = "";
+
+  }
+
+  dayPopup.classList.remove("hidden");
+}
+
+// ===== Popup Close =====
+
+if (closePopup) {
+  closePopup.addEventListener("click", () => {
+    dayPopup.classList.add("hidden");
+  });
+}
+
+if (dayPopup) {
+  dayPopup.addEventListener("click", (e) => {
+    if (e.target === dayPopup) {
+      dayPopup.classList.add("hidden");
+    }
+  });
+}
+
+// ===== Save Shift =====
+
+const saveDayBtn = document.getElementById("saveDayBtn");
+
+if (saveDayBtn) {
+
+  saveDayBtn.addEventListener("click", () => {
+
+    if (!selectedDate) return;
+
+    shiftData[selectedDate] = {
+
+      shift: selectedShift,
+
+      start: document.getElementById("popupStart").value,
+      end: document.getElementById("popupEnd").value,
+      break: document.getElementById("popupBreak").value,
+
+      ot: Number(document.getElementById("popupOT").value) || 0,
+      note: document.getElementById("popupNote").value.trim()
+
+    };
+
+    saveShiftData();
+
+    dayPopup.classList.add("hidden");
+
+    renderCalendar();
+
+  });
+
+}
+
+// ===== Delete / Neutral Shift =====
+
+const deleteDayBtn = document.getElementById("deleteDayBtn");
+
+if (deleteDayBtn) {
+
+  deleteDayBtn.addEventListener("click", () => {
+
+    if (!selectedDate) return;
+
+    delete shiftData[selectedDate];
+
+    saveShiftData();
+
+    dayPopup.classList.add("hidden");
+
+    renderCalendar();
+
+  });
+
 }
