@@ -277,13 +277,16 @@ if (daysInput.value.trim() === "") {
   daysInput.focus();
   return;
 }
-  const wage = Number(document.getElementById("hourlyWage").value) || 0;
-  const days = Number(document.getElementById("workingDays").value) || 0;
-  const meal = Number(document.getElementById("mealAllowance").value) || 0;
-  const basic = Number(document.getElementById("basicHours").value) || 8;
-  const ot = Number(document.getElementById("otHours").value) || 0;
-  const night = Number(document.getElementById("nightHours").value) || 0;
-  const holiday = Number(document.getElementById("holidayHours").value) || 0;
+  // ===== Calendar Mode Data =====
+const summary = getMonthlySummary();
+
+const wage = Number(document.getElementById("hourlyWage").value) || 0;
+const days = Number(document.getElementById("workingDays").value) || summary.workingDays;
+const meal = Number(document.getElementById("mealAllowance").value) || 0;
+const basic = Number(document.getElementById("basicHours").value) || 8;
+const ot = Number(document.getElementById("otHours").value) || summary.otHours;
+const night = Number(document.getElementById("nightHours").value) || summary.nightHours;
+const holiday = Number(document.getElementById("holidayHours").value) || summary.holidayHours;
 
   // Salary calculation
   const basicPay = wage * basic * days;
@@ -302,10 +305,12 @@ if (daysInput.value.trim() === "") {
   document.getElementById("nightPay").textContent = formatWon(nightPay);
   document.getElementById("netSalary").textContent = formatWon(net);
 
-  // Home page summary
-  document.getElementById("homeSalary").textContent = formatWon(net);
-  document.getElementById("homeWage").textContent = formatWon(wage);
-  document.getElementById("homeDays").textContent = days;
+  // ===== Home Dashboard Update =====
+document.getElementById("homeSalary").textContent = formatWon(net);
+document.getElementById("homeWage").textContent = formatWon(wage);
+
+// Calendar Summary က Working Days ကိုပြ
+document.getElementById("homeDays").textContent = summary.workingDays;
 }
 
 console.log("WorkPay KR JS Loaded");
