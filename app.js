@@ -867,27 +867,29 @@ if (dayPopup) {
 
 // ===== Save Shift =====
 
-const savePopup = document.getElementById("savePopup");
+document.getElementById("saveDayBtn").addEventListener("click", () => {
 
-if (savePopup) {
-  savePopup.addEventListener("click", () => {
+  if (!selectedDate) {
+    alert("No date selected.");
+    return;
+  }
 
-    // Shift Data သိမ်းမယ်
-    shiftData[selectedDate] = {
-      shift: selectedShift,
-      ot: Number(document.getElementById("popupOT").value) || 0,
-      note: document.getElementById("popupNote").value.trim()
-    };
+  shiftData[selectedDate] = {
+    shift: selectedShift,
+    ot: Number(document.getElementById("popupOT").value) || 0,
+    note: document.getElementById("popupNote").value.trim()
+  };
 
-    // LocalStorage ထဲသိမ်း
-    saveShiftData();
+  // LocalStorage သိမ်း
+  localStorage.setItem("workpay_shift_data", JSON.stringify(shiftData));
 
-    // Popup ပိတ်
-    dayPopup.classList.add("hidden");
+  // Popup ပိတ်
+  dayPopup.classList.add("hidden");
 
-    // Calendar ပြန်ဆွဲ
-    renderCalendar();
-  });
+  // Calendar ပြန်ဆွဲ
+  renderCalendar();
+});
+
 }
 
 // ===== Shift Buttons =====
