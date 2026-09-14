@@ -1039,41 +1039,30 @@ function resetPopupShift() {
   selectedShift = "day";
 }
 
-// ---------------- Auto OT Calculator ----------------
-
 function calculateOTHours() {
 
   const start = document.getElementById("popupStart").value;
   const end = document.getElementById("popupEnd").value;
-  const breakTime = document.getElementById("popupBreak").value;
+
+  const breakMinutes =
+    Number(document.getElementById("popupBreak").value) || 0;
+
+  const breakStart =
+    document.getElementById("popupBreakStart").value || "00:30";
 
   if (!start || !end) return;
 
-  const toMinutes = (time) => {
-    const [h, m] = time.split(":").map(Number);
-    return h * 60 + m;
-  };
+  // WorkPay KR Time Engine
+  const result = calculateWorkTime(
+    start,
+    end,
+    breakStart,
+    breakMinutes
+  );
 
-  let startMinutes = toMinutes(start);
-  let endMinutes = toMinutes(end);
+  // OT Hours Auto Fill
+  document.getElementById("popupOT").value = result.otHours;
 
-  // Night Shift (20:00 → 08:00)
-  if (endMinutes <= startMinutes) {
-    endMinutes += 24 * 60;
-  }
-
-const breakMinutes =
-  Number(document.getElementById("popupBreak").value) || 0;  
-
-  const workedHours = (endMinutes - startMinutes - breakMinutes) / 60;
-
-  // Korea Standard = 8 Hours
-  const otHours = Math.max(0, workedHours - 8);
-
-  document.getElementById("popupOT").value =
-    Number.isInteger(otHours)
-      ? otHours
-      : otHours.toFixed(1);
 }
 
 // ---------------- Popup Open ----------------
