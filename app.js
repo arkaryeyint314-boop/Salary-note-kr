@@ -846,7 +846,10 @@ function syncCalendarToCalculator() {
 
   // Home Summary
   document.getElementById("homeDays").textContent = summary.workingDays;
-
+document.getElementById("homeOT").textContent = summary.otHours;
+document.getElementById("homeNight").textContent = summary.nightHours;
+document.getElementById("homeHoliday").textContent = summary.holidayHours;
+  
   // Wage ရှိရင် Auto Salary Calculate
   const wage = Number(document.getElementById("hourlyWage").value);
 
