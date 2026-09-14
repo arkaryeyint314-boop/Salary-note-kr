@@ -894,9 +894,56 @@ function openDayPopup(dateKey) {
     document.getElementById("popupNote").value = "";
 
   }
-calculateOTHours();
+// ===== Auto Calculate OT =====
+function calculateOTHours() {
+
+  const start = document.getElementById("popupStart").value;
+  const end = document.getElementById("popupEnd").value;
+  const breakValue = document.getElementById("popupBreak").value;
+
+  if (!start || !end) return;
+
+  const toMinutes = (time) => {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  let startMin = toMinutes(start);
+  let endMin = toMinutes(end);
+
+  // Overnight (20:00 → 08:00)
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
+  }
+
+  let breakMin = 0;
+  if (breakValue) breakMin = toMinutes(breakValue);
+
+  const workedHours = (endMin - startMin - breakMin) / 60;
+  const otHours = Math.max(0, workedHours - 8);
+
+  document.getElementById("popupOT").value = otHours % 1 === 0
+    ? otHours
+    : otHours.toFixed(1);
+
+}
+  calculateOTHours();
+dayPopup.classList.remove("hidden");
   dayPopup.classList.remove("hidden");
 }
+
+// ===== Auto Update OT =====
+
+const popupStart = document.getElementById("popupStart");
+const popupEnd = document.getElementById("popupEnd");
+const popupBreak = document.getElementById("popupBreak");
+
+[popupStart, popupEnd, popupBreak].forEach((el) => {
+  if (!el) return;
+
+  el.addEventListener("input", calculateOTHours);
+  el.addEventListener("change", calculateOTHours);
+});
 
 // ===== Popup Close =====
 
