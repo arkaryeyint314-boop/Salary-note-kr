@@ -887,6 +887,54 @@ function calculateDaySalary(data, wage) {
 
 }
 
+/* ===== PART 16.2 Time Calculation Engine ===== */
+
+function calculateWorkTime(start, end, breakMinutes = 60) {
+
+  const toMinutes = (time) => {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  };
+
+  let startMin = toMinutes(start);
+  let endMin = toMinutes(end);
+
+  // Overnight Shift (20:00 → 08:00)
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
+  }
+
+  // Total Worked Hours
+  const workedHours = (endMin - startMin - breakMinutes) / 60;
+
+  // OT Hours (8 hours over)
+  const otHours = Math.max(0, workedHours - 8);
+
+  // Night Hours (22:00 ~ 06:00)
+  let nightMinutes = 0;
+
+  const nightStart = 22 * 60;
+  const nightEnd = 30 * 60; // 06:00 next day = 1800
+
+  for (let t = startMin; t < endMin; t++) {
+    const current = t < 24 * 60 ? t : t + 24 * 60;
+
+    if (current >= nightStart && current < nightEnd) {
+      nightMinutes++;
+    }
+  }
+
+  // Break ထဲက Night Minutes ကိုနောက် Stepမှာဖြတ်မယ်။
+  const nightHours = Math.max(0, nightMinutes / 60);
+
+  return {
+    workedHours: Number(workedHours.toFixed(1)),
+    otHours: Number(otHours.toFixed(1)),
+    nightHours: Number(nightHours.toFixed(1))
+  };
+
+}
+
 // ===== Month Buttons =====
 
 document.getElementById("prevMonth")?.addEventListener("click", () => {
