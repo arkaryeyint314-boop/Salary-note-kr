@@ -887,30 +887,49 @@ document.getElementById("homeHoliday").textContent = summary.holidayHours;
 
 }
 
-/* ===== PART 16.1 Daily Salary Engine ===== */
+/* ===== PART 17.1 Korea Daily Salary Formula ===== */
 
 function calculateDaySalary(data, wage) {
 
-  const workedHours = 11; // အခု Temporary (နောက် Step မှာ Auto တွက်မယ်)
+  const time = calculateWorkTime(
+    data.start || "08:30",
+    data.end || "17:30",
+    data.breakStart || "12:30",
+    data.break || 60
+  );
 
-  const basicPay = workedHours * wage;
+  // Basic Pay (Worked Hours × Wage)
+  const basicPay = time.workedHours * wage;
 
-  const otPremium = (data.ot || 0) * wage * 0.5;
+  // OT Premium (50% Extra)
+  const otPremium = time.otHours * wage * 0.5;
 
-  const nightPremium = (data.nightHours || 0) * wage * 0.5;
+  // Night Premium (50% Extra)
+  const nightPremium = time.nightHours * wage * 0.5;
 
-  const holidayPremium = (data.holidayHours || 0) * wage * 0.5;
+  // Holiday Premium (နောက် Part မှာ 1.5x / 2x Logic ထည့်မယ်)
+  const holidayPremium =
+    data.shift === "holiday"
+      ? time.workedHours * wage * 0.5
+      : 0;
+
+  const total =
+    basicPay +
+    otPremium +
+    nightPremium +
+    holidayPremium;
 
   return {
+    workedHours: time.workedHours,
+    otHours: time.otHours,
+    nightHours: time.nightHours,
+
     basicPay,
     otPremium,
     nightPremium,
     holidayPremium,
-    total:
-      basicPay +
-      otPremium +
-      nightPremium +
-      holidayPremium
+
+    total
   };
 
 }
