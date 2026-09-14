@@ -894,7 +894,7 @@ function openDayPopup(dateKey) {
     document.getElementById("popupNote").value = "";
 
   }
-
+calculateOTHours();
   dayPopup.classList.remove("hidden");
 }
 
@@ -913,6 +913,45 @@ if (dayPopup) {
     }
   });
 }
+
+// ===== Auto Calculate OT =====
+
+function calculateOTHours() {
+
+  const start = document.getElementById("popupStart").value;
+  const end = document.getElementById("popupEnd").value;
+  const breakTime = document.getElementById("popupBreak").value;
+
+  if (!start || !end || !breakTime) return;
+
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  const [bh, bm] = breakTime.split(":").map(Number);
+
+  let startMinutes = sh * 60 + sm;
+  let endMinutes = eh * 60 + em;
+
+  // Night Shift (20:00 → 08:00)
+  if (endMinutes <= startMinutes) {
+    endMinutes += 24 * 60;
+  }
+
+  const breakMinutes = bh * 60 + bm;
+
+  const workedHours = (endMinutes - startMinutes - breakMinutes) / 60;
+
+  // Korea Basic = 8 Hours
+  const otHours = Math.max(0, workedHours - 8);
+
+  document.getElementById("popupOT").value = otHours.toFixed(1);
+
+}
+
+// ===== Auto Update OT =====
+
+["popupStart","popupEnd","popupBreak"].forEach((id) => {
+  document.getElementById(id).addEventListener("change", calculateOTHours);
+});
 
 // ===== Save Shift =====
 
