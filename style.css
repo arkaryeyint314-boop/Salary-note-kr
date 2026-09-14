@@ -895,8 +895,16 @@ body.dark .tab.active{
 }
 
 .today{
-  border:2px solid #19f37a;
-  box-shadow:0 0 12px rgba(25,243,122,.35);
+  border:none;
+  box-shadow:0 0 0 2px #19f37a;
+}
+
+/* Today + Shift မထပ်အောင် */
+.dayCell.today.shift-day,
+.dayCell.today.shift-night,
+.dayCell.today.shift-holiday,
+.dayCell.today.shift-off{
+  box-shadow:none;
 }
 
 .holiday{
