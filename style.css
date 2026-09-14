@@ -1040,3 +1040,19 @@ body.dark .tab.active{
   font-weight: bold;
   cursor: pointer;
 }
+
+.delete-btn{
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#ef4444;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.delete-btn:hover{
+  background:#dc2626;
+}
