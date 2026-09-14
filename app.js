@@ -323,6 +323,22 @@ const monthNames = [
   "July","August","September","October","November","December"
 ];
 
+// ===== SHIFT STORAGE ENGINE =====
+
+// LocalStorage မှ Shift Data ဖတ်မယ်
+let shiftData = JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
+
+// Modal မှာ လက်ရှိရွေးထားတဲ့ Date
+let selectedDate = "";
+
+// Shift Data သိမ်းတဲ့ Function
+function saveShiftData() {
+  localStorage.setItem(
+    "workpay_shift_data",
+    JSON.stringify(shiftData)
+  );
+}
+
 // ===== Korea Public Holidays Database =====
 
 const koreaHolidays = {
@@ -699,54 +715,68 @@ function renderCalendar() {
     calendarGrid.appendChild(empty);
   }
 
-  // Days
-  for (let day = 1; day <= daysInMonth; day++) {
+// Days
+for (let day = 1; day <= daysInMonth; day++) {
 
-    const cell = document.createElement("div");
-    cell.className = "dayCell";
+  const cell = document.createElement("div");
+  cell.className = "dayCell";
 
-    const date = new Date(currentYear, currentMonth, day);
-    const weekDay = date.getDay();
-    const dateKey = getDateKey(currentYear, currentMonth, day);
+  const date = new Date(currentYear, currentMonth, day);
+  const weekDay = date.getDay();
+  const dateKey = getDateKey(currentYear, currentMonth, day);
 
-    const dayNumber = document.createElement("div");
-    dayNumber.className = "dayNumber";
-    dayNumber.textContent = day;
-    cell.appendChild(dayNumber);
+  const dayNumber = document.createElement("div");
+  dayNumber.className = "dayNumber";
+  dayNumber.textContent = day;
+  cell.appendChild(dayNumber);
 
-    // Sunday
-    if (weekDay === 0) {
-      cell.classList.add("sunday");
-    }
-
-    // Today
-    if (
-      day === today.getDate() &&
-      currentMonth === today.getMonth() &&
-      currentYear === today.getFullYear()
-    ) {
-      cell.classList.add("today");
-    }
-
-    // Click Day → Open Popup
-cell.addEventListener("click", () => {
-  openDayPopup(dateKey);
-});
-    
-    // Holiday (နှစ်အလိုက်)
-    if (holidayData[dateKey]) {
-      cell.classList.add("holiday");
-
-      const holidayName = document.createElement("div");
-      holidayName.className = "holidayName";
-      holidayName.innerHTML = holidayData[dateKey].replace(" 연휴", "<br>연휴");
-
-      cell.appendChild(holidayName);
-    }
-
-    calendarGrid.appendChild(cell);
+  // Sunday
+  if (weekDay === 0) {
+    cell.classList.add("sunday");
   }
 
+  // Today
+  if (
+    day === today.getDate() &&
+    currentMonth === today.getMonth() &&
+    currentYear === today.getFullYear()
+  ) {
+    cell.classList.add("today");
+  }
+
+  // =========================
+  // Saved Shift Color + OT Badge
+  // =========================
+  const savedShift = shiftData[dateKey];
+
+  if (savedShift) {
+    cell.classList.add(savedShift.shift);
+
+    if (savedShift.ot > 0) {
+      const otBadge = document.createElement("div");
+      otBadge.className = "otBadge";
+      otBadge.textContent = `OT ${savedShift.ot}h`;
+      cell.appendChild(otBadge);
+    }
+  }
+
+  // Click Day → Open Popup
+  cell.addEventListener("click", () => {
+    openDayPopup(dateKey);
+  });
+
+  // Holiday (နှစ်အလိုက်)
+  if (holidayData[dateKey]) {
+    cell.classList.add("holiday");
+
+    const holidayName = document.createElement("div");
+    holidayName.className = "holidayName";
+    holidayName.innerHTML = holidayData[dateKey].replace(" 연휴", "<br>연휴");
+
+    cell.appendChild(holidayName);
+  }
+
+  calendarGrid.appendChild(cell);
 }
 
 // Month buttons
