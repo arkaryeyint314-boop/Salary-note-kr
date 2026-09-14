@@ -915,6 +915,28 @@ body.dark .tab.active{
   white-space:normal;
   word-break:keep-all;
 }
+/* ===== WorkPay KR Shift Colors ===== */
+
+.dayCell.shift-day {
+  background: rgba(34,197,94,.18) !important;
+  border: 2px solid #22c55e !important;
+}
+
+.dayCell.shift-night {
+  background: rgba(139,92,246,.20) !important;
+  border: 2px solid #8b5cf6 !important;
+}
+
+.dayCell.shift-holiday {
+  background: rgba(245,158,11,.18) !important;
+  border: 2px solid #f59e0b !important;
+}
+
+.dayCell.shift-off {
+  background: rgba(100,116,139,.20) !important;
+  border: 2px solid #64748b !important;
+}
+
 
 /* ===== Calendar Popup ===== */
 
