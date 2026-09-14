@@ -865,6 +865,31 @@ if (dayPopup) {
   });
 }
 
+// ===== Save Shift =====
+
+const savePopup = document.getElementById("savePopup");
+
+if (savePopup) {
+  savePopup.addEventListener("click", () => {
+
+    // Shift Data သိမ်းမယ်
+    shiftData[selectedDate] = {
+      shift: selectedShift,
+      ot: Number(document.getElementById("popupOT").value) || 0,
+      note: document.getElementById("popupNote").value.trim()
+    };
+
+    // LocalStorage ထဲသိမ်း
+    saveShiftData();
+
+    // Popup ပိတ်
+    dayPopup.classList.add("hidden");
+
+    // Calendar ပြန်ဆွဲ
+    renderCalendar();
+  });
+}
+
 // ===== Shift Buttons =====
 
 let selectedShift = "day";
