@@ -1039,20 +1039,16 @@ function resetPopupShift() {
   selectedShift = "day";
 }
 
+// OT တွက်
 function calculateOTHours() {
 
   const start = document.getElementById("popupStart").value;
   const end = document.getElementById("popupEnd").value;
-
-  const breakMinutes =
-    Number(document.getElementById("popupBreak").value) || 0;
-
-  const breakStart =
-    document.getElementById("popupBreakStart").value || "00:30";
+  const breakStart = document.getElementById("popupBreakStart").value || "00:30";
+  const breakMinutes = Number(document.getElementById("popupBreak").value) || 0;
 
   if (!start || !end) return;
 
-  // WorkPay KR Time Engine
   const result = calculateWorkTime(
     start,
     end,
@@ -1060,8 +1056,11 @@ function calculateOTHours() {
     breakMinutes
   );
 
-  // OT Hours Auto Fill
-  document.getElementById("popupOT").value = result.otHours;
+  // OT Auto Fill
+  document.getElementById("popupOT").value =
+    result.otHours % 1 === 0
+      ? result.otHours
+      : result.otHours.toFixed(1);
 
 }
 
@@ -1111,16 +1110,15 @@ function openDayPopup(dateKey) {
   dayPopup.classList.remove("hidden");
 }
 
-// ---------------- Auto Update OT ----------------
-
+// Auto Update OT
 ["popupStart", "popupEnd", "popupBreak", "popupBreakStart"].forEach((id) => {
 
-  const el = document.getElementById(id);
+  const input = document.getElementById(id);
 
-  if (!el) return;
+  if (!input) return;
 
-  el.addEventListener("input", calculateOTHours);
-  el.addEventListener("change", calculateOTHours);
+  input.addEventListener("input", calculateOTHours);
+  input.addEventListener("change", calculateOTHours);
 
 });
 
