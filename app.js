@@ -1005,35 +1005,29 @@ function calculateOTHours() {
 });
 
 // ===== Save Shift =====
+saveDayBtn.addEventListener("click", () => {
 
-const saveDayBtn = document.getElementById("saveDayBtn");
+  if (!selectedDate) return;
 
-if (saveDayBtn) {
+  // OT ကို အရင်တွက်
+  calculateOTHours();
 
-  saveDayBtn.addEventListener("click", () => {
+  shiftData[selectedDate] = {
+    shift: selectedShift,
 
-    if (!selectedDate) return;
+    start: document.getElementById("popupStart").value,
+    end: document.getElementById("popupEnd").value,
+    break: document.getElementById("popupBreak").value,
 
-    shiftData[selectedDate] = {
+    // တွက်ပြီးသား OT ကို သိမ်း
+    ot: Number(document.getElementById("popupOT").value),
+    note: document.getElementById("popupNote").value.trim()
+  };
 
-      shift: selectedShift,
-
-      start: document.getElementById("popupStart").value,
-      end: document.getElementById("popupEnd").value,
-      break: document.getElementById("popupBreak").value,
-
-      ot: Number(document.getElementById("popupOT").value) || 0,
-      note: document.getElementById("popupNote").value.trim()
-
-    };
-
-    saveShiftData();
-
-    dayPopup.classList.add("hidden");
-
-    renderCalendar();
-
-  });
+  saveShiftData();
+  dayPopup.classList.add("hidden");
+  renderCalendar();
+});
 
 }
 
