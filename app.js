@@ -779,6 +779,55 @@ if (saved) {
 
 } // ✅ renderCalendar ပိတ်တဲ့ } မပျောက်ရ
 
+// ===== PART 15.1 Monthly Calendar Summary =====
+
+function getMonthlySummary(year = currentYear, month = currentMonth) {
+
+  let summary = {
+    workingDays: 0,
+    nightDays: 0,
+    holidayDays: 0,
+    otHours: 0,
+    nightHours: 0,
+    holidayHours: 0
+  };
+
+  Object.entries(shiftData).forEach(([dateKey, data]) => {
+
+    const date = new Date(dateKey);
+
+    if (
+      date.getFullYear() !== year ||
+      date.getMonth() !== month
+    ) return;
+
+    switch (data.shift) {
+
+      case "day":
+        summary.workingDays++;
+        break;
+
+      case "night":
+        summary.workingDays++;
+        summary.nightDays++;
+        summary.nightHours += 8;
+        break;
+
+      case "holiday":
+        summary.holidayDays++;
+        summary.holidayHours += 8;
+        break;
+
+    }
+
+    summary.otHours += Number(data.ot || 0);
+
+  });
+
+  return summary;
+
+}
+
 // Month buttons
 document.getElementById("prevMonth")?.addEventListener("click", () => {
   currentMonth--;
