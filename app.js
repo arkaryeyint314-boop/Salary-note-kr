@@ -925,13 +925,27 @@ function calculateWorkTime(start, end, breakMinutes = 60) {
   }
 
   // Break ထဲက Night Minutes ကိုနောက် Stepမှာဖြတ်မယ်။
-  const nightHours = Math.max(0, nightMinutes / 60);
+  // ===== Korea Night Break Rule =====
 
-  return {
-    workedHours: Number(workedHours.toFixed(1)),
-    otHours: Number(otHours.toFixed(1)),
-    nightHours: Number(nightHours.toFixed(1))
-  };
+// Break Time ကို Night Hours ထဲက ဖြတ်မယ်
+let adjustedNightMinutes = nightMinutes;
+
+// Default Rule:
+// Night Shift Break (22:00~06:00 ထဲကျရင်) 60min ဖြတ်
+if (breakMinutes > 0 && adjustedNightMinutes > 0) {
+  adjustedNightMinutes = Math.max(
+    0,
+    adjustedNightMinutes - breakMinutes
+  );
+}
+
+const nightHours = adjustedNightMinutes / 60;
+
+return {
+  workedHours: Number(workedHours.toFixed(1)),
+  otHours: Number(otHours.toFixed(1)),
+  nightHours: Number(nightHours.toFixed(1))
+};
 
 }
 
