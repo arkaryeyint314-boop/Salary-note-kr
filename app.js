@@ -859,6 +859,34 @@ document.getElementById("homeHoliday").textContent = summary.holidayHours;
 
 }
 
+/* ===== PART 16.1 Daily Salary Engine ===== */
+
+function calculateDaySalary(data, wage) {
+
+  const workedHours = 11; // အခု Temporary (နောက် Step မှာ Auto တွက်မယ်)
+
+  const basicPay = workedHours * wage;
+
+  const otPremium = (data.ot || 0) * wage * 0.5;
+
+  const nightPremium = (data.nightHours || 0) * wage * 0.5;
+
+  const holidayPremium = (data.holidayHours || 0) * wage * 0.5;
+
+  return {
+    basicPay,
+    otPremium,
+    nightPremium,
+    holidayPremium,
+    total:
+      basicPay +
+      otPremium +
+      nightPremium +
+      holidayPremium
+  };
+
+}
+
 // ===== Month Buttons =====
 
 document.getElementById("prevMonth")?.addEventListener("click", () => {
