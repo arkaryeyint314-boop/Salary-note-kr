@@ -784,7 +784,7 @@ if (saved) {
 
 } // ✅ renderCalendar ပိတ်တဲ့ } မပျောက်ရ
 
-// ===== PART 15.1 Monthly Calendar Summary =====
+/* ===== PART 15.1 Monthly Calendar Summary ===== */
 
 function getMonthlySummary(year = currentYear, month = currentMonth) {
 
@@ -813,25 +813,53 @@ function getMonthlySummary(year = currentYear, month = currentMonth) {
         break;
 
       case "night":
+
         summary.workingDays++;
         summary.nightDays++;
-        summary.nightHours += 8;
+
+        // Korea Night Rule (22:00~06:00 - Break)
+        const nightResult = calculateWorkTime(
+          data.start || "20:30",
+          data.end || "08:30",
+          data.breakStart || "00:30",
+          data.break || 60
+        );
+
+        summary.nightHours += nightResult.nightHours;
+        summary.otHours += nightResult.otHours;
+
         break;
 
       case "holiday":
+
         summary.holidayDays++;
-        summary.holidayHours += 8;
+
+        const holidayResult = calculateWorkTime(
+          data.start || "08:30",
+          data.end || "17:30",
+          data.breakStart || "12:30",
+          data.break || 60
+        );
+
+        summary.holidayHours += holidayResult.workedHours;
+        summary.otHours += holidayResult.otHours;
+
         break;
 
     }
 
-    summary.otHours += Number(data.ot || 0);
+    // Day Shift OT
+    if (data.shift === "day") {
+      summary.otHours += Number(data.ot || 0);
+    }
 
   });
 
   return summary;
 
 }
+
+
 // ===== PART 15.2 Calendar → Calculator Sync =====
 
 function syncCalendarToCalculator() {
