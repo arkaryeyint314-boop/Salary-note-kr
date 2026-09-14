@@ -760,6 +760,20 @@ function renderCalendar() {
       cell.appendChild(holidayName);
     }
 
+ // Saved Shift Display
+const saved = shiftData[dateKey];
+
+if (saved) {
+  cell.classList.add("shift-" + saved.shift);
+
+  if (saved.ot > 0) {
+    const badge = document.createElement("div");
+    badge.className = "otBadge";
+    badge.textContent = `OT ${saved.ot}h`;
+    cell.appendChild(badge);
+  }
+}   
+
     calendarGrid.appendChild(cell);
   }
 
@@ -841,7 +855,8 @@ function openDayPopup(dateKey) {
 
     document.getElementById("popupOT").value = saved.ot || "";
     document.getElementById("popupNote").value = saved.note || "";
-  } else {
+  }
+  else {
     document.getElementById("popupOT").value = "";
     document.getElementById("popupNote").value = "";
   }
