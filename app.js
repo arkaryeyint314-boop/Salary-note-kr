@@ -816,8 +816,12 @@ const dayPopup = document.getElementById("dayPopup");
 const popupDate = document.getElementById("popupDate");
 const closePopup = document.getElementById("closePopup");
 
-// Popup ဖွင့်တဲ့ function
+  // Popup ဖွင့်တဲ့ function
 function openDayPopup(dateKey) {
+
+  // ဘယ်နေ့ကို edit နေတာလဲ သိမ်းထားမယ်
+  selectedDate = dateKey;
+
   popupDate.textContent = dateKey;
 
   resetPopupShift();
@@ -853,15 +857,6 @@ shiftButtons.forEach((btn) => {
     selectedShift = btn.dataset.shift;
   };
 });
-
-function resetPopupShift() {
-  shiftButtons.forEach((b) => b.classList.remove("active"));
-
-  const dayBtn = document.querySelector('[data-shift="day"]');
-  if (dayBtn) dayBtn.classList.add("active");
-
-  selectedShift = "day";
-}
 
 // Popup ဖွင့်တိုင်း Day ကို default ရွေးထား
 function resetPopupShift() {
