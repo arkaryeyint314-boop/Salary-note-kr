@@ -987,41 +987,31 @@ function calculateInsurance(grossSalary) {
 /* ==========================================================
    PART 7.3 — Calculate Salary
 ========================================================== */
+/* ==========================================================
+   PART 9.2 — Calculate Salary (Official)
+========================================================== */
 
 function calculateSalary() {
 
-  // ===== Input Values =====
-  const wage =
-    Number(hourlyWageInput.value) || 0;
+  // ===== User Input =====
+  const wage = Number(hourlyWageInput.value) || 0;
+  const meal = Number(mealAllowanceInput.value) || 0;
 
-  const meal =
-    Number(mealAllowanceInput.value) || 0;
+  const basicHours = Number(basicHoursInput.value) || 0;
+  const otHours = Number(otHoursInput.value) || 0;
+  const nightHours = Number(nightHoursInput.value) || 0;
+  const holidayHours = Number(holidayHoursInput.value) || 0;
 
-  const basicHours =
-    Number(basicHoursInput.value) || 0;
-
-  const otHours =
-    Number(otHoursInput.value) || 0;
-
-  const nightHours =
-    Number(nightHoursInput.value) || 0;
-
-  const holidayHours =
-    Number(holidayHoursInput.value) || 0;
-
-  // ===== Salary Parts =====
+  // ===== Salary Formula =====
   const basicPay = wage * basicHours;
 
-  const otPay =
-    wage * 1.5 * otHours;
+  const otPay = wage * 1.5 * otHours;
 
-  const nightPay =
-    wage * 0.5 * nightHours;
+  const nightPay = wage * 0.5 * nightHours;
 
-  const holidayPay =
-    wage * 1.5 * holidayHours;
+  const holidayPay = wage * 1.5 * holidayHours;
 
-  // ===== Gross Salary =====
+  // Meal Allowance
   let grossSalary =
     basicPay +
     otPay +
@@ -1029,20 +1019,23 @@ function calculateSalary() {
     holidayPay +
     meal;
 
-  // ===== Insurance =====
-  const insurance =
-    calculateInsurance(grossSalary);
+  // ===== Factory Rules (+ / -) =====
+  const extraTotal = getExtraPayTotal();
 
-  // ===== Take Home Salary =====
-  const netSalary =
-    grossSalary - insurance;
+  grossSalary += extraTotal;
+
+  // ===== Insurance =====
+  const insurance = calculateInsurance(grossSalary);
+
+  // ===== Take Home =====
+  const netSalary = grossSalary - insurance;
 
   // ===== Result Cards =====
   grossSalaryText.textContent =
     `₩${Math.round(grossSalary).toLocaleString()}`;
 
   insuranceText.textContent =
-    `- ₩${insurance.toLocaleString()}`;
+    `- ₩${Math.round(insurance).toLocaleString()}`;
 
   otPayText.textContent =
     `₩${Math.round(otPay).toLocaleString()}`;
@@ -1053,10 +1046,15 @@ function calculateSalary() {
   netSalaryText.textContent =
     `₩${Math.round(netSalary).toLocaleString()}`;
 
-  // ===== Refresh Home =====
+  // ===== Extra Total Card =====
+  document.getElementById("extraTotal").textContent =
+    `₩${extraTotal.toLocaleString()}`;
+
+  // ===== Home Dashboard =====
   updateHomeDashboard();
 
-} // ===== End calculateSalary()
+}
+// ===== End calculateSalary()
 
 /* ==========================================================
    PART 8 — FACTORY PAY RULES
@@ -1115,7 +1113,11 @@ function saveFactoryRules() {
   );
 
 }
+saveFactoryRules();
+renderFactoryRules();
+refreshCalculatorRules();
 
+rulePopup.classList.add("hidden");
 /* ==========================================================
    PART 8.3 — Render Factory Rule List
 ========================================================== */
@@ -1322,6 +1324,112 @@ function updateExtraTotal() {
   return total;
 
 }
+
+/* ==========================================================
+   PART 9 — EXTRA PAY / DEDUCTION ENGINE
+   Factory Rules + Manual Pay Items → Salary Calculator
+========================================================== */
+
+/* ==========================================================
+   PART 9.1 — Calculate Extra Total
+========================================================== */
+
+function getExtraPayTotal() {
+
+  let total = 0;
+
+  factoryRules.forEach(rule => {
+
+    const amount = Number(rule.amount) || 0;
+
+    if (rule.type === "plus") {
+      total += amount;
+    } else {
+      total -= amount;
+    }
+
+  });
+
+  return total;
+
+}
+
+/* ==========================================================
+   PART 9.3 — Auto Refresh Salary
+========================================================== */
+
+function refreshCalculatorRules() {
+
+  renderCalculatorRules();
+
+  if (typeof calculateSalary === "function") {
+    calculateSalary();
+  }
+
+}
+
+/* ==========================================================
+   PART 10 — APP INITIALIZE
+   Load Everything When App Starts
+========================================================== */
+
+/* ==========================================================
+   PART 10.1 — Restore Local Data
+========================================================== */
+
+window.addEventListener("load", () => {
+
+  // ===== Calendar =====
+  renderCalendar();
+
+  // ===== Calendar → Calculator =====
+  syncCalendarToCalculator();
+
+  // ===== Factory Rules =====
+  renderFactoryRules();
+  renderCalculatorRules();
+
+  // ===== Home Dashboard =====
+  updateHomeDashboard();
+
+  // ===== Language =====
+  const savedLang =
+    localStorage.getItem("language") || "en";
+
+  setLanguage(savedLang);
+
+  // ===== Theme =====
+  const savedTheme =
+    localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+
+    document.body.classList.add("light");
+
+    if (themeBtn) {
+      themeBtn.textContent = "☀️";
+    }
+
+  }
+
+});
+
+/* ==========================================================
+   PART 10.2 — Auto Refresh Dashboard
+========================================================== */
+
+function refreshDashboard() {
+
+  syncCalendarToCalculator();
+  updateHomeDashboard();
+
+}
+
+/* ==========================================================
+   END OF WORKPAY KR PRO v1.0
+========================================================== */
+
+
 
 
 
