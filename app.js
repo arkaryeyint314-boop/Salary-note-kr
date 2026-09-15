@@ -838,10 +838,490 @@ deleteDayBtn?.addEventListener("click", () => {
 
 });
 
+/* ==========================================================
+   PART 6 — CALENDAR → CALCULATOR SYNC
+   Calendar Data → Salary Calculator
+========================================================== */
 
+/* ==========================================================
+   PART 6.1 — Calculator Elements
+========================================================== */
 
+const workingDaysInput = document.getElementById("workingDays");
+const basicHoursInput = document.getElementById("basicHours");
+const otHoursInput = document.getElementById("otHours");
+const nightHoursInput = document.getElementById("nightHours");
+const holidayHoursInput = document.getElementById("holidayHours");
 
+/* ==========================================================
+   PART 6.2 — Sync Calendar To Calculator
+========================================================== */
 
+function syncCalendarToCalculator() {
+
+  let workingDays = 0;
+
+  let basicHours = 0;
+  let otHours = 0;
+  let nightHours = 0;
+  let holidayHours = 0;
+
+  Object.values(shiftData).forEach(day => {
+
+    // ===== Working Days =====
+    if (
+      day.shift === "day" ||
+      day.shift === "night" ||
+      day.shift === "holiday"
+    ) {
+
+      workingDays++;
+
+      // Basic Hours (8h/day)
+      basicHours += 8;
+
+    }
+
+    // ===== OT =====
+    otHours += Number(day.otHours || 0);
+
+    // ===== Night Shift =====
+    if (day.shift === "night") {
+
+      let start = timeToMinutes(day.start || "20:30");
+      let end = timeToMinutes(day.end || "08:30");
+
+      if (end <= start) end += 1440;
+
+      const worked =
+        (end - start - Number(day.breakMinutes || 60)) / 60;
+
+      nightHours += Math.max(0, worked);
+
+    }
+
+    // ===== Holiday Shift =====
+    if (day.shift === "holiday") {
+
+      let start = timeToMinutes(day.start || "08:30");
+      let end = timeToMinutes(day.end || "17:30");
+
+      if (end <= start) end += 1440;
+
+      const worked =
+        (end - start - Number(day.breakMinutes || 60)) / 60;
+
+      holidayHours += Math.max(0, worked);
+
+    }
+
+  });
+
+  // ===== Fill Calculator =====
+  workingDaysInput.value = workingDays;
+
+  basicHoursInput.value = basicHours;
+  otHoursInput.value = otHours.toFixed(1);
+  nightHoursInput.value = nightHours.toFixed(1);
+  holidayHoursInput.value = holidayHours.toFixed(1);
+
+  // ===== Refresh Home Dashboard =====
+  updateHomeDashboard();
+
+}
+
+// Refresh Calendar
+renderCalendar();
+
+// Calendar → Calculator
+syncCalendarToCalculator();
+
+// Home Dashboard
+updateHomeDashboard();
+
+renderCalendar();
+syncCalendarToCalculator();
+updateHomeDashboard();
+
+/* ==========================================================
+   PART 7 — SALARY CALCULATOR ENGINE
+   Gross Salary + Insurance + Take Home
+========================================================== */
+
+/* ==========================================================
+   PART 7.1 — Salary Result Elements
+========================================================== */
+
+// ===== Salary Inputs =====
+const hourlyWageInput = document.getElementById("hourlyWage");
+const mealAllowanceInput = document.getElementById("mealAllowance");
+
+// ===== Result Cards =====
+const grossSalaryText = document.getElementById("grossSalary");
+const insuranceText = document.getElementById("insurance");
+const otPayText = document.getElementById("otPay");
+const nightPayText = document.getElementById("nightPay");
+const netSalaryText = document.getElementById("netSalary");
+
+/* ==========================================================
+   PART 7.2 — Korea Insurance Calculator
+========================================================== */
+
+// Korea 4 Insurance (Approximation)
+function calculateInsurance(grossSalary) {
+
+  const 국민연금 = grossSalary * 0.045;
+  const 건강보험 = grossSalary * 0.03545;
+  const 장기요양 = 건강보험 * 0.1295;
+  const 고용보험 = grossSalary * 0.009;
+
+  return Math.round(
+    국민연금 +
+    건강보험 +
+    장기요양 +
+    고용보험
+  );
+
+}
+
+/* ==========================================================
+   PART 7.3 — Calculate Salary
+========================================================== */
+
+function calculateSalary() {
+
+  // ===== Input Values =====
+  const wage =
+    Number(hourlyWageInput.value) || 0;
+
+  const meal =
+    Number(mealAllowanceInput.value) || 0;
+
+  const basicHours =
+    Number(basicHoursInput.value) || 0;
+
+  const otHours =
+    Number(otHoursInput.value) || 0;
+
+  const nightHours =
+    Number(nightHoursInput.value) || 0;
+
+  const holidayHours =
+    Number(holidayHoursInput.value) || 0;
+
+  // ===== Salary Parts =====
+  const basicPay = wage * basicHours;
+
+  const otPay =
+    wage * 1.5 * otHours;
+
+  const nightPay =
+    wage * 0.5 * nightHours;
+
+  const holidayPay =
+    wage * 1.5 * holidayHours;
+
+  // ===== Gross Salary =====
+  let grossSalary =
+    basicPay +
+    otPay +
+    nightPay +
+    holidayPay +
+    meal;
+
+  // ===== Insurance =====
+  const insurance =
+    calculateInsurance(grossSalary);
+
+  // ===== Take Home Salary =====
+  const netSalary =
+    grossSalary - insurance;
+
+  // ===== Result Cards =====
+  grossSalaryText.textContent =
+    `₩${Math.round(grossSalary).toLocaleString()}`;
+
+  insuranceText.textContent =
+    `- ₩${insurance.toLocaleString()}`;
+
+  otPayText.textContent =
+    `₩${Math.round(otPay).toLocaleString()}`;
+
+  nightPayText.textContent =
+    `₩${Math.round(nightPay).toLocaleString()}`;
+
+  netSalaryText.textContent =
+    `₩${Math.round(netSalary).toLocaleString()}`;
+
+  // ===== Refresh Home =====
+  updateHomeDashboard();
+
+} // ===== End calculateSalary()
+
+/* ==========================================================
+   PART 8 — FACTORY PAY RULES
+   Profile → Calculator Auto Sync
+========================================================== */
+
+/* ==========================================================
+   PART 8.1 — Popup Elements
+========================================================== */
+
+// ===== Factory Rule Popup =====
+const rulePopup = document.getElementById("rulePopup");
+const addRuleBtn = document.getElementById("addRuleBtn");
+const closeRulePopup = document.getElementById("closeRulePopup");
+
+// ===== Popup Open =====
+addRuleBtn?.addEventListener("click", () => {
+
+  document.getElementById("ruleType").value = "plus";
+  document.getElementById("ruleName").value = "";
+  document.getElementById("ruleAmount").value = "";
+
+  rulePopup.classList.remove("hidden");
+
+});
+
+// ===== Popup Close =====
+closeRulePopup?.addEventListener("click", () => {
+
+  rulePopup.classList.add("hidden");
+
+});
+
+// ===== Click Outside =====
+rulePopup?.addEventListener("click", (e) => {
+
+  if (e.target === rulePopup) {
+    rulePopup.classList.add("hidden");
+  }
+
+});
+
+/* ==========================================================
+   PART 8.2 — LocalStorage
+========================================================== */
+
+let factoryRules =
+  JSON.parse(localStorage.getItem("factoryRules")) || [];
+
+// Save Rules
+function saveFactoryRules() {
+
+  localStorage.setItem(
+    "factoryRules",
+    JSON.stringify(factoryRules)
+  );
+
+}
+
+/* ==========================================================
+   PART 8.3 — Render Factory Rule List
+========================================================== */
+
+function renderFactoryRules() {
+
+  const list = document.getElementById("factoryRuleList");
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  // No Rules
+  if (factoryRules.length === 0) {
+
+    list.innerHTML = `
+      <p style="color:#94A3B8;text-align:center;padding:18px 0;">
+        No factory rules yet.
+      </p>
+    `;
+
+    renderCalculatorRules();
+    return;
+
+  }
+
+  // Rule List
+  factoryRules.forEach((rule, index) => {
+
+    const item = document.createElement("div");
+
+    item.className = "ruleItem";
+
+    item.innerHTML = `
+      <div>
+        <div class="${rule.type}">
+          ${rule.type === "plus" ? "🟢 +" : "🔴 -"} ${rule.name}
+        </div>
+
+        <strong>₩${Number(rule.amount).toLocaleString()}</strong>
+      </div>
+
+      <button class="removeBtn" data-index="${index}">
+        Delete
+      </button>
+    `;
+
+    list.appendChild(item);
+
+  });
+
+  // Delete Button
+  list.querySelectorAll(".removeBtn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+      const index = Number(btn.dataset.index);
+
+      factoryRules.splice(index, 1);
+
+      saveFactoryRules();
+      renderFactoryRules();
+
+    });
+
+  });
+
+  // Refresh Calculator Card
+  renderCalculatorRules();
+
+}
+
+/* ==========================================================
+   PART 8.4 — Save Factory Rule
+========================================================== */
+
+document.getElementById("saveRuleBtn")
+?.addEventListener("click", () => {
+
+  const type =
+    document.getElementById("ruleType").value;
+
+  const name =
+    document.getElementById("ruleName").value.trim();
+
+  const amount =
+    Number(document.getElementById("ruleAmount").value);
+
+  if (!name || amount <= 0) {
+
+    alert("Please enter rule name and amount.");
+
+    return;
+
+  }
+
+  factoryRules.push({
+
+    type,
+    name,
+    amount
+
+  });
+
+  saveFactoryRules();
+
+  renderFactoryRules();
+
+  rulePopup.classList.add("hidden");
+
+});
+
+/* ==========================================================
+   PART 8.5 — Calculator Rule Card
+========================================================== */
+
+function renderCalculatorRules() {
+
+  const container =
+    document.getElementById("payItemList");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  let total = 0;
+
+  factoryRules.forEach((rule, index) => {
+
+    const row = document.createElement("div");
+
+    row.className = "payItemRow";
+
+    row.innerHTML = `
+      <div class="payInfo">
+
+        <span>
+          ${rule.type === "plus" ? "🟢 +" : "🔴 -"}
+          ${rule.name}
+        </span>
+
+      </div>
+
+      <input
+        type="number"
+        class="payAmount"
+        data-index="${index}"
+        value="${rule.amount}"
+      >
+    `;
+
+    container.appendChild(row);
+
+  });
+
+  // User Edit Amount
+  container.querySelectorAll(".payAmount")
+  .forEach(input => {
+
+    input.addEventListener("input", () => {
+
+      const index = Number(input.dataset.index);
+
+      factoryRules[index].amount =
+        Number(input.value) || 0;
+
+      saveFactoryRules();
+
+      updateExtraTotal();
+
+    });
+
+  });
+
+  updateExtraTotal();
+
+}
+
+/* ==========================================================
+   PART 8.6 — Extra Total
+========================================================== */
+
+function updateExtraTotal() {
+
+  let total = 0;
+
+  factoryRules.forEach(rule => {
+
+    if (rule.type === "plus") {
+
+      total += Number(rule.amount);
+
+    } else {
+
+      total -= Number(rule.amount);
+
+    }
+
+  });
+
+  document.getElementById("extraTotal").textContent =
+    `₩${total.toLocaleString()}`;
+
+  return total;
+
+}
 
 
 
