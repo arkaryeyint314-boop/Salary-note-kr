@@ -838,10 +838,26 @@ function renderCalendar() {
       cell.classList.add("publicHoliday");
     }
 
-    // Shift Color
-    if (saved.shift) {
-      cell.classList.add(saved.shift);
-    }
+ // ===== Shift Color (Official FIX) =====
+switch (saved.shift) {
+
+  case "day":
+    cell.classList.add("dayColor");
+    break;
+
+  case "night":
+    cell.classList.add("nightColor");
+    break;
+
+  case "holiday":
+    cell.classList.add("holidayWorkColor");
+    break;
+
+  case "off":
+    cell.classList.add("offColor");
+    break;
+
+}
 
     // Calendar Cell
     cell.innerHTML = `
