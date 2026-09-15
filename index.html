@@ -394,6 +394,45 @@
   <div id="factoryRuleList"></div>
 
 </section>
+
+<!-- ===== PART 18.2 Add Factory Rule Popup ===== -->
+
+<div id="rulePopup" class="day-popup hidden">
+
+  <div class="popup-card">
+
+    <div class="popup-header">
+      <h3>Factory Pay Rule</h3>
+      <button id="closeRulePopup">✕</button>
+    </div>
+
+    <label>Rule Type</label>
+    <select id="ruleType">
+      <option value="plus">🟢 + Allowance / Bonus</option>
+      <option value="minus">🔴 - Deduction</option>
+    </select>
+
+    <label>Rule Name</label>
+    <input
+      id="ruleName"
+      type="text"
+      placeholder="Dormitory Fee / Meal Allowance">
+
+    <label>Amount (₩)</label>
+    <input
+      id="ruleAmount"
+      type="number"
+      placeholder="150000">
+
+    <div class="popup-actions">
+      <button id="saveRuleBtn" class="save-btn">
+        💾 Save Rule
+      </button>
+    </div>
+
+  </div>
+
+</div>
   
   <section class="card">
     <h3 data-lang="work_profile_title">🏭 Work Profile</h3>
