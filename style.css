@@ -1584,6 +1584,1088 @@ input[readonly]{
 
 }
 
+/* ==========================================================
+   PART 10 — ANIMATION + UTILITY CLASSES
+========================================================== */
 
+/* ===== Fade In Animation ===== */
 
+@keyframes fadeIn {
 
+  from{
+    opacity:0;
+    transform:translateY(12px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+.page.activePage{
+  animation:fadeIn .25s ease;
+}
+
+/* ===== Card Hover ===== */
+
+.card,
+.miniCard,
+.miniResult,
+.heroCard{
+
+  transition:all .25s ease;
+
+}
+
+.card:hover,
+.miniCard:hover,
+.miniResult:hover{
+
+  transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(0,0,0,.08);
+
+}
+
+/* ===== Button Hover ===== */
+
+.primaryBtn:hover,
+.smallBtn:hover,
+.save-btn:hover,
+.delete-btn:hover,
+.todayBtn:hover{
+
+  transform:translateY(-1px);
+  opacity:.95;
+
+}
+
+/* ===== Active Press ===== */
+
+.primaryBtn:active,
+.smallBtn:active,
+.save-btn:active,
+.delete-btn:active,
+.iconBtn:active,
+.tab:active{
+
+  transform:scale(.97);
+
+}
+
+/* ==========================================================
+   PART 10.1 — Utility Classes
+========================================================== */
+
+.hidden{
+  display:none !important;
+}
+
+.show{
+  display:block !important;
+}
+
+.center{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.textCenter{
+  text-align:center;
+}
+
+.mt8{ margin-top:8px; }
+.mt12{ margin-top:12px; }
+.mt16{ margin-top:16px; }
+.mt20{ margin-top:20px; }
+
+.mb8{ margin-bottom:8px; }
+.mb12{ margin-bottom:12px; }
+.mb16{ margin-bottom:16px; }
+.mb20{ margin-bottom:20px; }
+
+/* ==========================================================
+   PART 10.2 — Status Colors
+========================================================== */
+
+.textBlue{ color:var(--blue); }
+.textGreen{ color:var(--green); }
+.textPurple{ color:var(--purple); }
+.textOrange{ color:var(--orange); }
+.textRed{ color:var(--red); }
+.textSub{ color:var(--sub); }
+
+/* ==========================================================
+   PART 10.3 — DARK / LIGHT THEME FIX
+========================================================== */
+
+/* ===== Background ===== */
+
+body.light .card,
+body.light .miniCard,
+body.light .miniResult,
+body.light .summaryBox,
+body.light .popup-card,
+body.light .ruleItem{
+
+  background:var(--card);
+
+}
+
+body.light .jumpCalendar select,
+body.light .jumpCalendar input,
+body.light .popup-body input,
+body.light .popup-body textarea,
+body.light .popup-body select{
+
+  background:#FFFFFF;
+
+}
+
+/* ===== Dark Mode ===== */
+
+body:not(.light) .card,
+body:not(.light) .miniCard,
+body:not(.light) .miniResult,
+body:not(.light) .summaryBox,
+body:not(.light) .popup-card,
+body:not(.light) .ruleItem{
+
+  background:var(--card);
+
+}
+
+body:not(.light) .jumpCalendar select,
+body:not(.light) .jumpCalendar input,
+body:not(.light) .popup-body input,
+body:not(.light) .popup-body textarea,
+body:not(.light) .popup-body select{
+
+  background:#0F172A;
+
+}
+
+/* ===== Theme Button ===== */
+
+body.light .iconBtn{
+
+  background:#FFFFFF;
+  color:#111827;
+
+}
+
+body:not(.light) .iconBtn{
+
+  background:#1E293B;
+  color:#F8FAFC;
+
+}
+
+/* ==========================================================
+   PART 11 — RESPONSIVE + SCROLLBAR + SAFE AREA
+========================================================== */
+
+/* ===== iPhone Safe Area ===== */
+
+.phone{
+  padding-bottom:calc(95px + env(safe-area-inset-bottom));
+}
+
+/* ==========================================================
+   PART 11.1 — Responsive (480px)
+========================================================== */
+
+@media (max-width:480px){
+
+  .phone{
+    padding:16px 16px calc(95px + env(safe-area-inset-bottom));
+  }
+
+  .heroCard{
+    padding:20px;
+    border-radius:24px;
+  }
+
+  .heroCard h2{
+    font-size:30px;
+  }
+
+  .topHeader h1{
+    font-size:26px;
+  }
+
+  .monthCenter h2{
+    font-size:20px;
+  }
+
+  .jumpCalendar{
+    grid-template-columns:1fr 82px 60px;
+  }
+
+}
+
+/* ==========================================================
+   PART 11.2 — Small Phones (390px)
+========================================================== */
+
+@media (max-width:390px){
+
+  .grid2,
+  .grid2Inputs{
+    gap:10px;
+  }
+
+  .miniCard,
+  .miniResult{
+    padding:14px;
+  }
+
+  .miniCard h3{
+    font-size:20px;
+  }
+
+  .miniResult h4{
+    font-size:18px;
+  }
+
+  .popup-card{
+    padding:20px 16px 26px;
+  }
+
+  .shift-buttons{
+    grid-template-columns:1fr;
+  }
+
+  .popup-actions{
+    grid-template-columns:1fr;
+  }
+
+  .bottomNav{
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom));
+  }
+
+}
+
+/* ==========================================================
+   PART 11.3 — Scrollbar
+========================================================== */
+
+::-webkit-scrollbar{
+  width:6px;
+}
+
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgba(148,163,184,.5);
+  border-radius:999px;
+}
+
+body.light ::-webkit-scrollbar-thumb{
+  background:rgba(100,116,139,.45);
+}
+
+/* ==========================================================
+   PART 11.4 — Smooth Scroll
+========================================================== */
+
+html{
+  scroll-behavior:smooth;
+}
+
+/* ==========================================================
+   PART 12 — CALENDAR BADGE SYSTEM
+   Holiday / OT / Note / Today Badge
+========================================================== */
+
+/* ===== Day Cell Layout ===== */
+
+.dayCell{
+
+  position:relative;
+  overflow:hidden;
+
+}
+
+/* ===== Day Number ===== */
+
+.dayNumber{
+
+  position:absolute;
+  top:8px;
+  left:10px;
+
+  font-size:14px;
+  font-weight:700;
+
+}
+
+/* ===== Shift Badge ===== */
+
+.shiftBadge{
+
+  position:absolute;
+  bottom:6px;
+  left:50%;
+  transform:translateX(-50%);
+
+  font-size:10px;
+  font-weight:700;
+
+  padding:2px 6px;
+  border-radius:999px;
+
+  color:#FFFFFF;
+
+}
+
+.shiftBadge.day{
+  background:#22C55E;
+}
+
+.shiftBadge.night{
+  background:#7C3AED;
+}
+
+.shiftBadge.holiday{
+  background:#F59E0B;
+}
+
+.shiftBadge.off{
+  background:#64748B;
+}
+
+/* ===== OT Badge ===== */
+
+.otBadge{
+
+  position:absolute;
+  right:5px;
+  top:5px;
+
+  min-width:18px;
+  height:18px;
+
+  padding:0 4px;
+
+  border-radius:999px;
+
+  background:#2563EB;
+  color:#FFFFFF;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  font-size:9px;
+  font-weight:700;
+
+}
+
+/* ===== Note Badge ===== */
+
+.noteBadge{
+
+  position:absolute;
+  bottom:6px;
+  right:6px;
+
+  font-size:12px;
+
+}
+
+/* ===== Today Glow ===== */
+
+.dayCell.today{
+
+  box-shadow:
+    0 0 0 2px rgba(99,102,241,.25),
+    0 8px 18px rgba(99,102,241,.18);
+
+}
+
+/* ==========================================================
+   PART 12.2 — HOLIDAY / SUNDAY STYLE
+========================================================== */
+
+.dayCell.sunday .dayNumber{
+  color:#EF4444;
+}
+
+.dayCell.publicHoliday{
+
+  background:#FEE2E2;
+  border-color:#EF4444;
+
+}
+
+.dayCell.publicHoliday .dayNumber{
+  color:#B91C1C;
+  font-weight:800;
+}
+
+/* Korea Holiday Label */
+
+.holidayName{
+
+  position:absolute;
+  left:4px;
+  right:4px;
+  bottom:4px;
+
+  font-size:9px;
+  text-align:center;
+
+  color:#DC2626;
+  font-weight:700;
+
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+
+}
+
+/* ==========================================================
+   PART 12.3 — MONTH SUMMARY BOX
+========================================================== */
+
+.calendarSummary{
+
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+
+  gap:12px;
+  margin-top:18px;
+
+}
+
+.summaryItem{
+
+  background:var(--bg);
+  border:1px solid var(--line);
+
+  border-radius:16px;
+  padding:14px;
+
+}
+
+.summaryItem p{
+
+  color:var(--sub);
+  font-size:12px;
+
+}
+
+.summaryItem h4{
+
+  margin-top:6px;
+
+  color:var(--text);
+  font-size:20px;
+  font-weight:700;
+
+}
+
+/* ==========================================================
+   PART 13 — FACTORY RULES + EXTRA PAY + PAYSLIP
+========================================================== */
+
+/* ==========================================================
+   PART 13.1 — Factory Rules List
+========================================================== */
+
+#factoryRuleList{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.ruleItem{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  transition:.2s;
+}
+
+.ruleItem:hover{
+  border-color:var(--primary);
+}
+
+.ruleHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.ruleTitle{
+  color:var(--text);
+  font-size:16px;
+  font-weight:700;
+}
+
+.ruleAmount{
+  color:var(--green);
+  font-size:18px;
+  font-weight:700;
+}
+
+.ruleInfo{
+  color:var(--sub);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.removeBtn{
+  width:34px;
+  height:34px;
+  border:none;
+  border-radius:10px;
+  background:#FEE2E2;
+  color:#DC2626;
+  cursor:pointer;
+}
+
+/* ==========================================================
+   PART 13.2 — Factory Summary
+========================================================== */
+
+.factorySummary{
+  background:linear-gradient(
+    135deg,
+    var(--primary),
+    #7C3AED
+  );
+  color:#fff;
+  padding:20px;
+  border-radius:22px;
+}
+
+.factorySummary p{
+  opacity:.85;
+  font-size:13px;
+}
+
+.factorySummary h2{
+  margin-top:8px;
+  font-size:30px;
+  font-weight:800;
+}
+
+/* ==========================================================
+   PART 13.3 — Extra Pay / Deduction
+========================================================== */
+
+.payItemRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.payItemRow:last-child{
+  border-bottom:none;
+}
+
+.payInfo{
+  flex:1;
+}
+
+.payInfo h4{
+  color:var(--text);
+  font-size:15px;
+  margin-bottom:4px;
+}
+
+.payInfo p{
+  color:var(--sub);
+  font-size:12px;
+}
+
+.payAmount{
+  width:110px;
+}
+
+.payAmount input{
+  text-align:right;
+}
+
+/* ==========================================================
+   PART 13.4 — Total Box
+========================================================== */
+
+.totalBox{
+  margin-top:18px;
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+}
+
+.totalRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.totalRow:last-child{
+  margin-bottom:0;
+}
+
+.totalLabel{
+  color:var(--sub);
+  font-size:14px;
+}
+
+.totalValue{
+  color:var(--text);
+  font-weight:700;
+}
+
+.totalValue.green{
+  color:var(--green);
+}
+
+.totalValue.red{
+  color:var(--red);
+}
+
+/* ==========================================================
+   PART 13.5 — Payslip Compare
+========================================================== */
+
+.compareCard{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:18px;
+}
+
+.compareRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.compareRow:last-child{
+  margin-bottom:0;
+}
+
+.compareLabel{
+  color:var(--sub);
+  font-size:14px;
+}
+
+.compareNumber{
+  color:var(--text);
+  font-size:16px;
+  font-weight:700;
+}
+
+.compareNumber.up{
+  color:var(--green);
+}
+
+.compareNumber.down{
+  color:var(--red);
+}
+
+/* ==========================================================
+   PART 14 — DARK / LIGHT THEME OVERRIDE
+========================================================== */
+
+/* ==========================================================
+   PART 14.1 — Dark Theme Surface
+========================================================== */
+
+body:not(.light){
+
+  background:var(--bg);
+  color:var(--text);
+
+}
+
+body:not(.light) .heroCard{
+  color:#FFFFFF;
+}
+
+body:not(.light) .card,
+body:not(.light) .miniCard,
+body:not(.light) .miniResult,
+body:not(.light) .historyItem,
+body:not(.light) .compareCard,
+body:not(.light) .summaryBox,
+body:not(.light) .ruleItem,
+body:not(.light) .popup-card{
+
+  background:var(--card);
+  border-color:var(--line);
+
+}
+
+/* ==========================================================
+   PART 14.2 — Light Theme Surface
+========================================================== */
+
+body.light{
+
+  background:var(--bg);
+  color:var(--text);
+
+}
+
+body.light .card,
+body.light .miniCard,
+body.light .miniResult,
+body.light .historyItem,
+body.light .compareCard,
+body.light .summaryBox,
+body.light .ruleItem,
+body.light .popup-card{
+
+  background:#FFFFFF;
+  border-color:var(--line);
+
+}
+
+/* ==========================================================
+   PART 14.3 — Text Color Override
+========================================================== */
+
+body.light h1,
+body.light h2,
+body.light h3,
+body.light h4,
+body.light p,
+body.light span,
+body.light label{
+
+  color:var(--text);
+
+}
+
+body.light .smallText,
+body.light .cardSub,
+body.light .ruleInfo,
+body.light .historyItem p,
+body.light .compareLabel{
+
+  color:var(--sub);
+
+}
+
+/* ==========================================================
+   PART 14.4 — Calendar Theme
+========================================================== */
+
+body.light .dayCell{
+
+  background:#FFFFFF;
+  border-color:#E5E7EB;
+  color:#111827;
+
+}
+
+body:not(.light) .dayCell{
+
+  background:#162033;
+  border-color:#334155;
+  color:#F8FAFC;
+
+}
+
+body.light .emptyDay{
+  background:transparent;
+}
+
+/* ==========================================================
+   PART 14.5 — Popup Theme
+========================================================== */
+
+body.light .popup-header button{
+
+  background:#F3F4F6;
+  color:#111827;
+
+}
+
+body:not(.light) .popup-header button{
+
+  background:#162033;
+  color:#FFFFFF;
+
+}
+
+body.light .popup-body input,
+body.light .popup-body textarea,
+body.light .popup-body select{
+
+  background:#FFFFFF;
+  color:#111827;
+
+}
+
+body:not(.light) .popup-body input,
+body:not(.light) .popup-body textarea,
+body:not(.light) .popup-body select{
+
+  background:#162033;
+  color:#F8FAFC;
+
+}
+
+/* ==========================================================
+   PART 14.6 — Bottom Navigation Theme
+========================================================== */
+
+body.light .bottomNav{
+
+  background:#FFFFFF;
+  border-top:1px solid #E5E7EB;
+
+}
+
+body:not(.light) .bottomNav{
+
+  background:#1E293B;
+  border-top:1px solid #334155;
+
+}
+
+body.light .tab{
+  color:#64748B;
+}
+
+body:not(.light) .tab{
+  color:#94A3B8;
+}
+
+.tab.active{
+  color:var(--primary);
+}
+
+/* ==========================================================
+   PART 14.7 — Theme Button
+========================================================== */
+
+body.light .iconBtn{
+
+  background:#FFFFFF;
+  color:#111827;
+  box-shadow:0 8px 18px rgba(0,0,0,.08);
+
+}
+
+body:not(.light) .iconBtn{
+
+  background:#1E293B;
+  color:#F8FAFC;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+
+}
+
+/* ==========================================================
+   PART 15 — FINAL CLEANUP + MOBILE POLISH
+========================================================== */
+
+/* ==========================================================
+   PART 15.1 — Glass Effect Cards
+========================================================== */
+
+.glassCard{
+
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(12px);
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:22px;
+
+}
+
+body.light .glassCard{
+
+  background:rgba(255,255,255,.65);
+  border:1px solid rgba(255,255,255,.75);
+
+}
+
+/* ==========================================================
+   PART 15.2 — Section Spacing
+========================================================== */
+
+section{
+  margin-bottom:18px;
+}
+
+.card:last-child{
+  margin-bottom:0;
+}
+
+/* ==========================================================
+   PART 15.3 — Input Placeholder
+========================================================== */
+
+input::placeholder,
+textarea::placeholder{
+  color:var(--sub);
+  opacity:.7;
+}
+
+input,
+textarea,
+select{
+  transition:border-color .2s, box-shadow .2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(99,102,241,.15);
+
+}
+
+/* ==========================================================
+   PART 15.4 — Number Input
+========================================================== */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+
+input[type="number"]{
+  appearance:textfield;
+}
+
+/* ==========================================================
+   PART 15.5 — Bottom Navigation Safe Area
+========================================================== */
+
+.bottomNav{
+
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+
+}
+
+/* ==========================================================
+   PART 15.6 — Popup Scroll
+========================================================== */
+
+.popup-card{
+
+  max-height:90vh;
+  overflow-y:auto;
+
+}
+
+.popup-card::-webkit-scrollbar{
+  width:4px;
+}
+
+/* ==========================================================
+   PART 15.7 — Disabled State
+========================================================== */
+
+button:disabled,
+input:disabled,
+select:disabled{
+
+  opacity:.55;
+  cursor:not-allowed;
+
+}
+
+/* ==========================================================
+   PART 15.8 — Divider
+========================================================== */
+
+.divider{
+
+  width:100%;
+  height:1px;
+
+  background:var(--line);
+  margin:16px 0;
+
+}
+
+/* ==========================================================
+   PART 15.9 — Premium Shadow
+========================================================== */
+
+.heroCard,
+.resultCard{
+
+  box-shadow:0 18px 40px rgba(79,70,229,.25);
+
+}
+
+.card,
+.miniCard,
+.miniResult{
+
+  box-shadow:0 4px 12px rgba(15,23,42,.05);
+
+}
+
+body:not(.light) .card,
+body:not(.light) .miniCard,
+body:not(.light) .miniResult{
+
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
+
+}
+
+/* ==========================================================
+   PART 15.10 — FINAL MOBILE FIX
+========================================================== */
+
+@media (max-width:360px){
+
+  .phone{
+    padding:12px 12px calc(90px + env(safe-area-inset-bottom));
+  }
+
+  .heroCard{
+    padding:18px;
+  }
+
+  .heroCard h2{
+    font-size:26px;
+  }
+
+  .miniCard h3{
+    font-size:18px;
+  }
+
+  .monthHeader button{
+    width:38px;
+    height:38px;
+  }
+
+  .jumpCalendar{
+    grid-template-columns:1fr 74px 56px;
+    gap:8px;
+  }
+
+  .bottomNav span{
+    font-size:10px;
+  }
+
+}
+
+/* ==========================================================
+   END OF WORKPAY KR PRO v2 STYLE.CSS
+========================================================== */
