@@ -692,7 +692,68 @@ const closePopup = document.getElementById("closePopup");
 let selectedDate = "";
 let selectedShift = "day";
 
+/* ==========================================================
+   PART 5.1 — OPEN / CLOSE DAY POPUP
+========================================================== */
 
+function openDayPopup(dateKey) {
+
+  selectedDate = dateKey;
+
+  popupDate.textContent = dateKey;
+
+  const saved =
+    shiftData[dateKey] || {};
+
+  selectedShift = saved.shift || "day";
+
+  document.getElementById("popupStart").value =
+    saved.start || "08:30";
+
+  document.getElementById("popupEnd").value =
+    saved.end || "17:30";
+
+  document.getElementById("popupBreakStart").value =
+    saved.breakStart || "12:00";
+
+  document.getElementById("popupBreak").value =
+    saved.breakMinutes || 60;
+
+  document.getElementById("popupOT").value =
+    saved.otHours || 0;
+
+  document.getElementById("popupNote").value =
+    saved.note || "";
+
+  // Shift Button Active
+  document.querySelectorAll(".shift-btn").forEach(btn => {
+
+    btn.classList.remove("active");
+
+    if (btn.dataset.shift === selectedShift) {
+      btn.classList.add("active");
+    }
+
+  });
+
+  // Show Popup
+  dayPopup.classList.remove("hidden");
+
+}
+
+// Close Popup
+closePopup?.addEventListener("click", () => {
+  dayPopup.classList.add("hidden");
+});
+
+// Click Outside
+dayPopup?.addEventListener("click", (e) => {
+
+  if (e.target === dayPopup) {
+    dayPopup.classList.add("hidden");
+  }
+
+});
 
 
 
