@@ -456,7 +456,7 @@ function getDateKey(year, month, day) {
 }
 
 /* ==========================================================
-   PART 4.4 — Render Calendar
+   PART 4.4 — Render Calendar (Official FIX)
 ========================================================== */
 
 function renderCalendar() {
@@ -464,7 +464,7 @@ function renderCalendar() {
   // Calendar မရှိရင် မလုပ်ဘူး
   if (!calendarGrid) return;
 
-  // Clear Calendar Grid
+  // Clear Calendar
   calendarGrid.innerHTML = "";
 
   // Month Title
@@ -472,12 +472,12 @@ function renderCalendar() {
     `${monthNames[currentMonth]} ${currentYear}`;
 
   // Jump Selector Sync
-  jumpMonth.value = currentMonth;
-  jumpYear.value = currentYear;
+  if (jumpMonth) jumpMonth.value = currentMonth;
+  if (jumpYear) jumpYear.value = currentYear;
 
   const today = new Date();
 
-  // Month Information
+  // Month Info
   const firstDay =
     new Date(currentYear, currentMonth, 1).getDay();
 
@@ -499,17 +499,13 @@ function renderCalendar() {
 
   for (let day = 1; day <= daysInMonth; day++) {
 
-    const dateKey =
-      getDateKey(currentYear, currentMonth, day);
-
-    const saved =
-      shiftData[dateKey] || {};
+    const dateKey = getDateKey(currentYear, currentMonth, day);
+    const saved = shiftData[dateKey] || {};
 
     const cell = document.createElement("div");
     cell.className = "dayCell";
 
-    /* ===== Today Highlight ===== */
-
+    // Today Highlight
     if (
       today.getFullYear() === currentYear &&
       today.getMonth() === currentMonth &&
@@ -518,8 +514,7 @@ function renderCalendar() {
       cell.classList.add("today");
     }
 
-    /* ===== Sunday Highlight ===== */
-
+    // Sunday Highlight
     const weekDay =
       new Date(currentYear, currentMonth, day).getDay();
 
@@ -527,30 +522,17 @@ function renderCalendar() {
       cell.classList.add("sunday");
     }
 
-    /* ===== Shift Colors ===== */
-
-    if (saved.shift === "day") {
-      cell.classList.add("dayColor");
+    // Shift Color (CSS class)
+    if (saved.shift) {
+      cell.classList.add(saved.shift);
     }
 
-    if (saved.shift === "night") {
-      cell.classList.add("nightColor");
-    }
+    // Day Number
+    cell.innerHTML = `
+      <span class="dayNumber">${day}</span>
+    `;
 
-    if (saved.shift === "holiday") {
-      cell.classList.add("holidayWorkColor");
-    }
-
-    if (saved.shift === "off") {
-      cell.classList.add("offColor");
-    }
-
-    /* ===== Day Number ===== */
-
-    cell.innerHTML = `<span>${day}</span>`;
-
-    /* ===== Open Day Popup ===== */
-
+    // Open Popup
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
     });
@@ -559,10 +541,10 @@ function renderCalendar() {
 
   }
 
-} // ===== End renderCalendar() =====
+}
 
 /* ==========================================================
-   PART 4.8 — Calendar Navigation
+   PART 4.5 — Calendar Navigation
 ========================================================== */
 
 // Previous Month
@@ -593,13 +575,13 @@ nextMonth?.addEventListener("click", () => {
 
 });
 
-// Today
+// Today Button
 todayBtn?.addEventListener("click", () => {
 
-  const today = new Date();
+  const now = new Date();
 
-  currentMonth = today.getMonth();
-  currentYear = today.getFullYear();
+  currentMonth = now.getMonth();
+  currentYear = now.getFullYear();
 
   renderCalendar();
 
@@ -614,6 +596,11 @@ jumpBtn?.addEventListener("click", () => {
   renderCalendar();
 
 });
+
+// First Load
+renderCalendar();
+
+
 
 /* ==========================================================
    PART 5 — CALENDAR DAY POPUP
@@ -705,20 +692,23 @@ dayPopup?.addEventListener("click", (e) => {
 });
 
 /* ==========================================================
-   PART 5.3 — Shift Button Selection
+   PART 5.3 — Shift Button Selection (FIX)
 ========================================================== */
 
-document.querySelectorAll(".shift-btn").forEach(btn => {
+const shiftButtons = document.querySelectorAll(".shift-btn");
+
+shiftButtons.forEach(btn => {
 
   btn.addEventListener("click", () => {
 
-    selectedShift = btn.dataset.shift;
+    // Remove old active button
+    shiftButtons.forEach(item => item.classList.remove("active"));
 
-    document.querySelectorAll(".shift-btn").forEach(item => {
-      item.classList.remove("active");
-    });
-
+    // Active current button
     btn.classList.add("active");
+
+    // Save selected shift
+    selectedShift = btn.dataset.shift;
 
   });
 
