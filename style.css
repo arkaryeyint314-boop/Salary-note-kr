@@ -136,20 +136,20 @@ body{
 }
 
 /* ==========================================================
-   PART 2 STARTS BELOW (HERO SECTION)
+   PART 2 — HERO CARD + DASHBOARD CARDS
 ========================================================== */
 
-/* HERO */
+/* ===== HERO CARD ===== */
 
 .heroCard{
 
   background:linear-gradient(
-      135deg,
-      #4F46E5,
-      #7C3AED
+    135deg,
+    #4F46E5,
+    #7C3AED
   );
 
-  color:white;
+  color:#FFFFFF;
 
   padding:24px;
   border-radius:28px;
@@ -161,53 +161,29 @@ body{
 
 .heroCard p{
 
-  opacity:.85;
+  color:rgba(255,255,255,.8);
   font-size:14px;
 
 }
 
 .heroCard h2{
 
-  font-size:36px;
-  margin:10px 0;
+  margin:12px 0 8px;
+  font-size:34px;
   font-weight:800;
 
 }
 
 .heroCard span{
 
+  color:rgba(255,255,255,.9);
   font-size:13px;
-  opacity:.8;
 
 }
 
-/* CARD */
-
-.card{
-
-  background:var(--card);
-  border-radius:24px;
-  padding:18px;
-  margin-bottom:18px;
-  border:1px solid var(--line);
-
-}
-
-.card h2{
-
-  font-size:22px;
-  margin-bottom:15px;
-
-}
-
-.card h3{
-
-  font-size:18px;
-  margin-bottom:14px;
-
-}
-
-/* MINI CARD */
+/* ==========================================================
+   PART 2.1 — GRID LAYOUT
+========================================================== */
 
 .grid2{
 
@@ -218,161 +194,6 @@ body{
 
 }
 
-.miniCard{
-
-  border-radius:22px;
-  padding:18px;
-  color:white;
-
-}
-
-.miniCard p{
-
-  opacity:.8;
-  font-size:13px;
-
-}
-
-.miniCard h3{
-
-  margin-top:10px;
-  font-size:22px;
-
-}
-
-.blue{
-
-  background:linear-gradient(
-      135deg,
-      #3B82F6,
-      #2563EB
-  );
-
-}
-
-.green{
-
-  background:linear-gradient(
-      135deg,
-      #10B981,
-      #059669
-  );
-
-}
-
-.purple{
-
-  background:linear-gradient(
-      135deg,
-      #9333EA,
-      #7E22CE
-  );
-
-}
-
-.red{
-
-  background:linear-gradient(
-      135deg,
-      #EF4444,
-      #DC2626
-  );
-
-}
-
-.orange{
-
-  background:linear-gradient(
-      135deg,
-      #F59E0B,
-      #D97706
-  );
-
-}
-
-/* SHIFT CHIPS */
-
-.chips{
-
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-
-}
-
-.chip{
-
-  border:none;
-  padding:11px 16px;
-  border-radius:999px;
-  background:#EEF2FF;
-  color:#4338CA;
-  font-weight:600;
-
-}
-
-.chip.active{
-
-  background:var(--primary);
-  color:white;
-
-}
-
-/* QUICK BUTTON */
-
-.quickGrid{
-
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-
-}
-
-.quickBtn{
-
-  background:#F5F7FF;
-  border:none;
-  padding:16px;
-  border-radius:18px;
-  text-align:left;
-  font-size:15px;
-  font-weight:600;
-
-}
-
-/* INPUT */
-
-label{
-
-  display:block;
-  margin:14px 0 8px;
-  color:var(--sub);
-  font-size:14px;
-  font-weight:500;
-
-}
-
-input{
-
-  width:100%;
-  border:none;
-  border-radius:18px;
-  background:#F4F7FB;
-  padding:15px 16px;
-  font-size:16px;
-  outline:none;
-
-}
-
-input:focus{
-
-  border:2px solid var(--primary);
-  background:white;
-
-}
-
-/* GRID INPUTS */
-
 .grid2Inputs{
 
   display:grid;
@@ -381,63 +202,247 @@ input:focus{
 
 }
 
-/* BUTTON */
+/* ==========================================================
+   PART 2.2 — MINI DASHBOARD CARD
+========================================================== */
+
+.miniCard{
+
+  background:var(--card);
+  border:1px solid var(--line);
+
+  padding:16px;
+  border-radius:20px;
+
+}
+
+.miniCard p{
+
+  color:var(--sub);
+  font-size:13px;
+  margin-bottom:8px;
+
+}
+
+.miniCard h3{
+
+  color:var(--text);
+  font-size:24px;
+  font-weight:700;
+
+}
+
+/* ===== Color Border ===== */
+
+.miniCard.blue{
+  border-left:5px solid var(--blue);
+}
+
+.miniCard.orange{
+  border-left:5px solid var(--orange);
+}
+
+.miniCard.purple{
+  border-left:5px solid var(--purple);
+}
+
+.miniCard.red{
+  border-left:5px solid var(--red);
+}
+
+/* ==========================================================
+   PART 2.3 — NORMAL CARD
+========================================================== */
+
+.card{
+
+  background:var(--card);
+  border:1px solid var(--line);
+
+  border-radius:24px;
+  padding:18px;
+
+  margin-bottom:18px;
+
+}
+
+.card h2,
+.card h3{
+
+  color:var(--text);
+  margin-bottom:14px;
+
+}
+
+/* ==========================================================
+   PART 2.4 — FORM INPUTS
+========================================================== */
+
+.card label{
+
+  display:block;
+
+  color:var(--sub);
+  font-size:13px;
+
+  margin:14px 0 6px;
+
+}
+
+.card input,
+.card select,
+.card textarea{
+
+  width:100%;
+
+  padding:14px;
+  border-radius:14px;
+
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+  outline:none;
+
+}
+
+.card textarea{
+
+  resize:none;
+  min-height:90px;
+
+}
+
+.card input:focus,
+.card select:focus,
+.card textarea:focus{
+
+  border-color:var(--primary);
+
+}
+
+/* ==========================================================
+   PART 3 — BUTTONS + CHIPS + RESULT CARDS
+========================================================== */
+
+/* ===== Primary Button ===== */
 
 .primaryBtn{
 
   width:100%;
   border:none;
-  padding:18px;
-  border-radius:22px;
+  border-radius:18px;
+
+  padding:16px;
+  margin:18px 0;
+
   background:linear-gradient(
-      135deg,
-      #4F46E5,
-      #7C3AED
+    135deg,
+    var(--primary),
+    #7C3AED
   );
 
-  color:white;
-  font-size:17px;
+  color:#FFFFFF;
+  font-size:16px;
   font-weight:700;
-  margin-bottom:18px;
 
-  box-shadow:0 12px 30px rgba(79,70,229,.25);
+  cursor:pointer;
 
+}
+
+.primaryBtn:hover{
+  opacity:.92;
 }
 
 .primaryBtn.small{
+  margin-top:14px;
+}
 
-  margin-top:16px;
-  padding:15px;
+/* ===== Small Button ===== */
+
+.smallBtn{
+
+  border:none;
+  border-radius:12px;
+
+  padding:10px 14px;
+
+  background:var(--primary);
+  color:#FFFFFF;
+
+  font-size:13px;
+  font-weight:600;
+
+  cursor:pointer;
 
 }
 
-/* RESULT */
+/* ==========================================================
+   PART 3.1 — CHIPS (Today's Shift)
+========================================================== */
+
+.chips{
+
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+
+}
+
+.chip{
+
+  padding:10px 16px;
+
+  border-radius:999px;
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+  cursor:pointer;
+  transition:.2s;
+
+}
+
+.chip.active{
+
+  background:var(--primary);
+  color:#FFFFFF;
+  border-color:var(--primary);
+
+}
+
+/* ==========================================================
+   PART 3.2 — RESULT SECTION
+========================================================== */
 
 .resultSection{
 
-  margin-top:8px;
+  margin-top:20px;
 
 }
 
 .resultCard{
 
   background:linear-gradient(
-      135deg,
-      #10B981,
-      #059669
+    135deg,
+    var(--green),
+    #059669
   );
 
-  color:white;
+  color:#FFFFFF;
 
+  padding:24px;
   border-radius:24px;
-  padding:22px;
+
   margin-bottom:18px;
 
 }
 
 .resultCard span{
 
-  opacity:.8;
+  opacity:.9;
   font-size:14px;
 
 }
@@ -450,872 +455,1135 @@ input:focus{
 
 }
 
+/* ==========================================================
+   PART 3.3 — MINI RESULT CARD
+========================================================== */
+
 .miniResult{
 
-  color:white;
-  border-radius:18px;
+  background:var(--card);
+  border:1px solid var(--line);
+
+  border-radius:20px;
   padding:16px;
 
 }
 
 .miniResult p{
 
-  opacity:.8;
-  font-size:12px;
+  color:var(--sub);
+  font-size:13px;
+  margin-bottom:8px;
 
 }
 
 .miniResult h4{
 
-  margin-top:8px;
+  color:var(--text);
+  font-size:20px;
+  font-weight:700;
+
+}
+
+.miniResult.blue{
+  border-left:5px solid var(--blue);
+}
+
+.miniResult.red{
+  border-left:5px solid var(--red);
+}
+
+.miniResult.green{
+  border-left:5px solid var(--green);
+}
+
+.miniResult.purple{
+  border-left:5px solid var(--purple);
+}
+
+/* ==========================================================
+   PART 4 — CALENDAR LAYOUT
+========================================================== */
+
+/* ===== Month Header ===== */
+
+.monthHeader{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:18px;
+
+}
+
+.monthHeader button{
+
+  width:42px;
+  height:42px;
+
+  border:none;
+  border-radius:14px;
+
+  background:var(--bg);
+  color:var(--text);
+
+  cursor:pointer;
   font-size:18px;
 
 }
 
-/* PROFILE */
+.monthCenter{
+
+  text-align:center;
+  flex:1;
+
+}
+
+.monthCenter h2{
+
+  color:var(--text);
+  font-size:22px;
+  font-weight:700;
+
+}
+
+.monthCenter p{
+
+  color:var(--sub);
+  font-size:12px;
+  margin-top:4px;
+
+}
+
+/* ===== Today Button ===== */
+
+.todayBtn{
+
+  margin-top:10px;
+
+  padding:8px 14px;
+
+  border:none;
+  border-radius:999px;
+
+  background:var(--primary);
+  color:#FFFFFF;
+
+  font-size:13px;
+  cursor:pointer;
+
+}
+
+/* ==========================================================
+   PART 4.1 — Jump Calendar
+========================================================== */
+
+.jumpCalendar{
+
+  display:grid;
+  grid-template-columns:1fr 90px 70px;
+  gap:10px;
+
+  margin-bottom:20px;
+
+}
+
+.jumpCalendar select,
+.jumpCalendar input{
+
+  padding:12px;
+
+  border-radius:12px;
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+}
+
+.jumpCalendar button{
+
+  border:none;
+  border-radius:12px;
+
+  background:var(--primary);
+  color:#FFFFFF;
+
+  cursor:pointer;
+
+}
+
+/* ==========================================================
+   PART 4.2 — Week Days
+========================================================== */
+
+.weekDays{
+
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+
+  margin-bottom:10px;
+
+}
+
+.weekDays span{
+
+  text-align:center;
+
+  font-size:12px;
+  font-weight:700;
+
+  color:var(--sub);
+
+}
+
+.weekDays .sun{
+  color:var(--red);
+}
+
+.weekDays .sat{
+  color:var(--blue);
+}
+
+/* ==========================================================
+   PART 4.3 — Calendar Grid
+========================================================== */
+
+.calendarGrid{
+
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+
+  gap:8px;
+
+}
+
+.emptyDay{
+
+  height:52px;
+
+}
+
+/* ==========================================================
+   PART 4.4 — Calendar Day Cell
+========================================================== */
+
+.dayCell{
+
+  height:54px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:14px;
+
+  background:var(--bg);
+  border:1px solid var(--line);
+
+  color:var(--text);
+
+  cursor:pointer;
+
+  transition:.2s;
+
+}
+
+.dayCell:hover{
+
+  transform:translateY(-2px);
+  border-color:var(--primary);
+
+}
+
+.dayNumber{
+
+  font-weight:600;
+  font-size:15px;
+
+}
+
+/* ===== Today ===== */
+
+.dayCell.today{
+
+  border:2px solid var(--primary);
+  box-shadow:0 0 0 2px rgba(99,102,241,.15);
+
+}
+
+/* ===== Sunday ===== */
+
+.dayCell.sunday{
+
+  color:var(--red);
+
+}
+
+/* ==========================================================
+   PART 5 — CALENDAR SHIFT COLORS + LEGEND
+========================================================== */
+
+/* ===== Day Shift ===== */
+.dayCell.day{
+  background:#DCFCE7;
+  border-color:#22C55E;
+  color:#166534;
+}
+
+/* ===== Night Shift ===== */
+.dayCell.night{
+  background:#EDE9FE;
+  border-color:#7C3AED;
+  color:#5B21B6;
+}
+
+/* ===== Holiday Work ===== */
+.dayCell.holiday{
+  background:#FEF3C7;
+  border-color:#F59E0B;
+  color:#B45309;
+}
+
+/* ===== Off Day ===== */
+.dayCell.off{
+  background:#E5E7EB;
+  border-color:#9CA3AF;
+  color:#4B5563;
+}
+
+/* ===== Public Holiday / Sunday ===== */
+.dayCell.publicHoliday{
+  background:#FEE2E2;
+  border-color:#EF4444;
+  color:#B91C1C;
+}
+
+/* ==========================================================
+   PART 5.1 — Calendar Legend
+========================================================== */
+
+.legendGrid{
+
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+
+}
+
+.legendItem{
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+}
+
+.legendColor{
+
+  width:18px;
+  height:18px;
+  border-radius:6px;
+
+}
+
+.dayColor{
+  background:#22C55E;
+}
+
+.nightColor{
+  background:#7C3AED;
+}
+
+.holidayWorkColor{
+  background:#F59E0B;
+}
+
+.offColor{
+  background:#9CA3AF;
+}
+
+.publicHolidayColor{
+  background:#EF4444;
+}
+
+/* ==========================================================
+   PART 5.2 — Calendar Animation
+========================================================== */
+
+.dayCell{
+  transition:all .2s ease;
+}
+
+.dayCell:active{
+  transform:scale(.95);
+}
+
+/* ==========================================================
+   PART 6 — CALENDAR DAY POPUP
+========================================================== */
+
+/* ===== Popup Background ===== */
+
+.day-popup{
+
+  position:fixed;
+  inset:0;
+
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(6px);
+
+  z-index:999;
+
+}
+
+.day-popup.hidden{
+  display:none;
+}
+
+/* ===== Popup Card ===== */
+
+.popup-card{
+
+  width:100%;
+  max-width:480px;
+
+  background:var(--card);
+
+  border-radius:28px 28px 0 0;
+
+  padding:22px 20px 28px;
+
+  animation:popupUp .25s ease;
+
+}
+
+/* ===== Animation ===== */
+
+@keyframes popupUp{
+
+  from{
+    transform:translateY(100%);
+    opacity:0;
+  }
+
+  to{
+    transform:translateY(0);
+    opacity:1;
+  }
+
+}
+
+/* ==========================================================
+   PART 6.1 — Popup Header
+========================================================== */
+
+.popup-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin-bottom:20px;
+
+}
+
+.popup-header h3{
+
+  color:var(--text);
+  font-size:22px;
+  font-weight:700;
+
+}
+
+.popup-header button{
+
+  width:38px;
+  height:38px;
+
+  border:none;
+  border-radius:12px;
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-size:20px;
+  cursor:pointer;
+
+}
+
+/* ==========================================================
+   PART 6.2 — Popup Body
+========================================================== */
+
+.popup-body{
+
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+
+}
+
+.popup-body label{
+
+  color:var(--sub);
+  font-size:13px;
+  margin-bottom:4px;
+
+}
+
+.popup-body input,
+.popup-body textarea,
+.popup-body select{
+
+  width:100%;
+
+  padding:14px;
+
+  border-radius:14px;
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+  outline:none;
+
+}
+
+.popup-body textarea{
+
+  resize:none;
+  min-height:90px;
+
+}
+
+/* ==========================================================
+   PART 6.3 — Shift Buttons
+========================================================== */
+
+.shift-buttons{
+
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+
+}
+
+.shift-btn{
+
+  padding:14px;
+
+  border-radius:14px;
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-weight:600;
+  cursor:pointer;
+
+  transition:.2s;
+
+}
+
+.shift-btn.active{
+
+  background:var(--primary);
+  border-color:var(--primary);
+  color:#FFFFFF;
+
+}
+
+/* ==========================================================
+   PART 6.4 — Popup Action Buttons
+========================================================== */
+
+.popup-actions{
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+
+  margin-top:8px;
+
+}
+
+.save-btn{
+
+  padding:14px;
+
+  border:none;
+  border-radius:16px;
+
+  background:var(--green);
+  color:#FFFFFF;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+
+}
+
+.delete-btn{
+
+  padding:14px;
+
+  border:none;
+  border-radius:16px;
+
+  background:var(--red);
+  color:#FFFFFF;
+
+  font-size:15px;
+  font-weight:700;
+
+  cursor:pointer;
+
+}
+
+/* ==========================================================
+   PART 7 — CALCULATOR PAGE
+========================================================== */
+
+/* ===== Calculator Section ===== */
+
+.resultSection{
+  margin-top:20px;
+}
+
+/* ===== Working Hours Grid ===== */
+
+.grid2Inputs{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.grid2Inputs div{
+  display:flex;
+  flex-direction:column;
+}
+
+/* ===== Readonly Input ===== */
+
+input[readonly]{
+  opacity:.9;
+  cursor:default;
+}
+
+/* ==========================================================
+   PART 7.1 — Result Card
+========================================================== */
+
+.resultCard{
+  background:linear-gradient(
+    135deg,
+    var(--green),
+    #059669
+  );
+  color:#fff;
+  padding:22px;
+  border-radius:24px;
+  margin-bottom:18px;
+}
+
+.resultCard span{
+  opacity:.9;
+  font-size:13px;
+}
+
+.resultCard h2{
+  margin-top:8px;
+  font-size:34px;
+  font-weight:800;
+}
+
+/* ===== Mini Result Cards ===== */
+
+.miniResult{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:16px;
+}
+
+.miniResult p{
+  color:var(--sub);
+  font-size:13px;
+  margin-bottom:6px;
+}
+
+.miniResult h4{
+  color:var(--text);
+  font-size:20px;
+  font-weight:700;
+}
+
+.miniResult.blue{
+  border-left:5px solid var(--blue);
+}
+
+.miniResult.red{
+  border-left:5px solid var(--red);
+}
+
+.miniResult.green{
+  border-left:5px solid var(--green);
+}
+
+.miniResult.purple{
+  border-left:5px solid var(--purple);
+}
+
+/* ==========================================================
+   PART 7.2 — Extra Pay / Deduction Card
+========================================================== */
+
+.cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.cardSub{
+  color:var(--sub);
+  font-size:13px;
+  margin-bottom:16px;
+}
+
+.payItemRow{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+
+.payInfo{
+  flex:1;
+}
+
+.payInfo span{
+  color:var(--text);
+  font-weight:600;
+}
+
+.payAmount{
+  width:120px;
+}
+
+/* ===== Summary Box ===== */
+
+.summaryBox{
+  margin-top:18px;
+  padding:16px;
+  border-radius:18px;
+  background:var(--bg);
+  border:1px solid var(--line);
+}
+
+.summaryBox span{
+  color:var(--sub);
+  font-size:13px;
+}
+
+.summaryBox h3{
+  color:var(--text);
+  font-size:24px;
+  margin:6px 0;
+}
+
+.summaryBox small{
+  color:var(--sub);
+  font-size:12px;
+}
+
+/* ==========================================================
+   PART 8 — PROFILE PAGE + FACTORY RULES
+========================================================== */
+
+/* ===== Profile Card ===== */
 
 .profileCard{
 
-  text-align:center;
-  padding:24px;
-  border-radius:28px;
   background:linear-gradient(
-      135deg,
-      #6366F1,
-      #8B5CF6
+    135deg,
+    var(--primary),
+    #7C3AED
   );
 
-  color:white;
+  color:#FFFFFF;
+  text-align:center;
+
+  padding:26px;
+  border-radius:26px;
   margin-bottom:18px;
 
 }
 
 .avatar{
 
-  width:78px;
-  height:78px;
-  border-radius:50%;
-  background:rgba(255,255,255,.18);
+  width:74px;
+  height:74px;
+
+  margin:0 auto 14px;
 
   display:flex;
   justify-content:center;
   align-items:center;
 
-  font-size:36px;
+  border-radius:50%;
+  background:rgba(255,255,255,.15);
 
-  margin:auto auto 14px;
+  font-size:34px;
+
+}
+
+.profileCard h2{
+
+  font-size:24px;
+  margin-bottom:6px;
+
+}
+
+.profileCard p{
+
+  opacity:.9;
+  font-size:14px;
+
+}
+
+/* ==========================================================
+   PART 8.1 — Language Selector
+========================================================== */
+
+.languageSelect{
+
+  width:100%;
+
+  padding:14px;
+  border-radius:14px;
+
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
 
 }
 
 .languageList{
 
   display:flex;
-  flex-direction:column;
   gap:10px;
+  flex-wrap:wrap;
 
 }
 
 .language{
 
-  border:none;
-  padding:15px;
-  border-radius:18px;
-  background:#F4F7FB;
-  font-size:15px;
-  font-weight:600;
-  text-align:left;
+  flex:1;
+
+  padding:12px;
+
+  border-radius:14px;
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+  cursor:pointer;
+  transition:.2s;
 
 }
 
 .language.active{
 
   background:var(--primary);
-  color:white;
+  border-color:var(--primary);
+  color:#FFFFFF;
 
 }
 
-/* ===========================
-   Part 2 - Navigation + Theme
-=========================== */
+/* ==========================================================
+   PART 8.2 — Factory Rules Card
+========================================================== */
 
-/* Bottom Navigation */
+#factoryRuleList{
 
-.bottomNav{
-    position:fixed;
-    bottom:12px;
-    left:50%;
-    transform:translateX(-50%);
-
-    width:min(94%,430px);
-    padding:8px 6px;
-
-    border-radius:22px;
-
-    background:rgba(255,255,255,.92);
-    backdrop-filter:blur(16px);
-
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-}
-
-.tab{
-    border:none;
-    background:transparent;
-    flex:1;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    gap:3px;
-    padding:6px 0;
-
-    color:#94A3B8;
-}
-
-.tab span{
-    font-size:10px;
-}
-
-/* Animation */
-
-.card,
-.heroCard,
-.miniCard,
-.resultCard,
-.profileCard{
-    animation:fadeUp .35s ease;
-}
-
-@keyframes fadeUp{
-
-    from{
-        opacity:0;
-        transform:translateY(15px);
-    }
-
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-
-}
-
-/* ---------- DARK MODE ---------- */
-
-body.dark{
-
-    --bg:#090B13;
-    --card:#131826;
-    --text:#F8FAFC;
-    --sub:#94A3B8;
-    --line:#222B3D;
-
-    background:#090B13;
-
-}
-
-body.dark .iconBtn{
-    background:#1E293B;
-    color:white;
-}
-
-body.dark input{
-    background:#1E293B;
-    color:white;
-}
-
-body.dark .quickBtn,
-body.dark .language,
-body.dark .chip{
-    background:#1E293B;
-    color:#E5E7EB;
-}
-
-body.dark .bottomNav{
-    background:rgba(18,24,38,.95);
-    border:1px solid #273449;
-}
-
-body.dark .tab{
-    color:#64748B;
-}
-
-body.dark .tab.active{
-    color:#60A5FA;
-}
-
-/* ---------- RESPONSIVE ---------- */
-
-@media (max-width:420px){
-
-    .phone{
-        padding:14px 14px 90px;
-    }
-
-    .heroCard h2{
-        font-size:30px;
-    }
-
-    .miniCard h3{
-        font-size:18px;
-    }
-
-    .grid2Inputs{
-        grid-template-columns:1fr;
-    }
-
-    .quickGrid{
-        grid-template-columns:1fr 1fr;
-    }
-
-}
-
-/* ---------- Page Navigation ---------- */
-
-.page{
-  display:none;
-}
-
-.page.activePage{
-  display:block;
-}
-
-/* Active bottom tab */
-
-.tab.active{
-  color:var(--primary);
-}
-
-.tab.active span{
-  color:var(--primary);
-}
-
-/* ===== Calendar ===== */
-
-.monthHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:16px;
-}
-
-.monthHeader button{
-  background:#222;
-  color:white;
-  border:none;
-  width:36px;
-  height:36px;
-  border-radius:10px;
-}
-
-.weekDays{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  text-align:center;
-  font-size:12px;
-  opacity:.7;
-  margin-bottom:8px;
-}
-
-.calendarGrid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:8px;
-}
-
-.dayCell{
-  aspect-ratio:1;
-  border-radius:14px;
-  background:#1d1d1d;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:600;
-}
-
-.dayCell.today{
-  border:2px solid #22c55e;
-}
-
-/* ===== Calendar v2 ===== */
-
-.monthHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
-}
-
-.monthHeader h2{
-  margin:0;
-  font-size:22px;
-}
-
-.monthHeader p{
-  margin-top:4px;
-  opacity:.7;
-  font-size:13px;
-}
-
-.monthHeader button{
-  width:38px;
-  height:38px;
-  border:none;
-  border-radius:12px;
-  background:#262626;
-  color:white;
-}
-
-.weekDays{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  text-align:center;
-  margin-bottom:10px;
-  font-size:12px;
-  font-weight:600;
-}
-
-.weekDays .sun{
-  color:#ef4444;
-}
-
-.weekDays .sat{
-  color:#64748b; /* နောက်ပိုင်း user customize မယ် */
-}
-
-.calendarGrid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:8px;
-}
-
-.dayCell{
-  aspect-ratio:1;
-  background:#1d1d1d;
-  border-radius:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:600;
-  transition:.2s;
-}
-
-.dayCell.today{
-  border:2px solid #22c55e;
-}
-
-/* Legend */
-
-.legendGrid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-
-.legendItem{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:14px;
-}
-
-.legendColor{
-  width:14px;
-  height:14px;
-  border-radius:50%;
-}
-
-.dayColor{background:#22c55e;}
-.nightColor{background:#8b5cf6;}
-.holidayWorkColor{background:#f59e0b;}
-.offColor{background:#64748b;}
-.publicHolidayColor{background:#ef4444;}
-
-/* ===== Month Jump ===== */
-
-.monthCenter{
-  text-align:center;
-}
-
-.todayBtn{
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  padding:6px 12px;
-  background:#16a34a;
-  color:white;
-  font-size:12px;
-  font-weight:600;
-}
-
-.jumpCalendar{
-  display:flex;
-  gap:8px;
-  margin-bottom:18px;
-}
-
-.jumpCalendar select,
-.jumpCalendar input{
-  flex:1;
-  padding:12px;
-  border-radius:12px;
-  border:none;
-  background:#1d2740;
-  color:white;
-}
-
-.jumpCalendar button{
-  padding:12px 16px;
-  border:none;
-  border-radius:12px;
-  background:#2563eb;
-  color:white;
-  font-weight:600;
-}
-
-.dayCell.today{
-  border:2px solid #22c55e;
-  box-shadow:0 0 10px rgba(34,197,94,.35);
-}
-
-/* Sunday Lock */
-.dayCell.sunday{
-  color:#ef4444;
-  font-weight:700;
-}
-
-/* ===== Korea Holiday ===== */
-
-.dayCell {
-  position: relative;
-  min-height: 70px;
-}
-
-.dayNumber {
-  font-weight: bold;
-  font-size: 15px;
-}
-
-.holiday {
-  border: 1px solid #ff5a5a;
-}
-
-.holidayName {
-  display: block;
-  margin-top: 4px;
-  font-size: 9px;
-  color: #ff6b6b;
-  line-height: 1.1;
-}
-
-/* =========================
-   WorkPay KR Holiday UI
-========================= */
-
-.dayCell{
-  background:#1b1b1f;
-  border-radius:18px;
-  aspect-ratio:1/1;
-  padding:6px 4px;
   display:flex;
   flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  box-sizing:border-box;
-  overflow:hidden;
-  transition:.2s;
-  width:100%;          /* Grid အရွယ်အစားအတိုင်းပဲ */
-}
+  gap:12px;
 
-.dayNumber{
-  font-size:18px;
-  font-weight:700;
-  color:#fff;
-  line-height:1;
-}
-
-.sunday .dayNumber{
-  color:#ff5555;
-}
-
-.today{
-  border:none;
-  box-shadow:0 0 0 2px #19f37a;
-}
-
-/* Today + Shift မထပ်အောင် */
-.dayCell.today.shift-day,
-.dayCell.today.shift-night,
-.dayCell.today.shift-holiday,
-.dayCell.today.shift-off{
-  box-shadow:none;
-}
-
-.holiday{
-  border:2px solid #ff4b4b;
-}
-
-.holidayName{
-  margin-top:3px;
-  font-size:7px;       /* သေးသွားမယ် */
-  font-weight:600;
-  color:#ff6a6a;
-  line-height:1;
-  text-align:center;
-
-  max-width:42px;      /* အရေးကြီးဆုံး Fix */
-  white-space:normal;
-  word-break:keep-all;
-}
-/* ===== WorkPay KR Shift Colors ===== */
-
-.dayCell.shift-day {
-  background: rgba(34,197,94,.18) !important;
-  border: 2px solid #22c55e !important;
-}
-
-.dayCell.shift-night {
-  background: rgba(139,92,246,.20) !important;
-  border: 2px solid #8b5cf6 !important;
-}
-
-.dayCell.shift-holiday {
-  background: rgba(245,158,11,.18) !important;
-  border: 2px solid #f59e0b !important;
-}
-
-.dayCell.shift-off {
-  background: rgba(100,116,139,.20) !important;
-  border: 2px solid #64748b !important;
-}
-
-
-/* ===== Calendar Popup ===== */
-
-.day-popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.65);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  padding: 20px;
-}
-
-.day-popup.hidden {
-  display: none;
-}
-
-.popup-card {
-  width: 92%;
-  max-width: 380px;
-  background: #171c2b;
-  border-radius: 24px;
-  padding: 20px;
-  color: #fff;
-  box-shadow: 0 20px 40px rgba(0,0,0,.45);
-
-  /* iPhone Safari Fix */
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-.popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.popup-header h3 {
-  margin: 0;
-  font-size: 20px;
-}
-
-#closePopup {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-}
-
-.popup-body label {
-  display: block;
-  margin: 12px 0 6px;
-  font-size: 14px;
-  color: #9ca3af;
-}
-
-.shift-buttons {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 10px;
-}
-
-.shift-btn {
-  border: none;
-  border-radius: 14px;
-  padding: 12px;
-  background: #242b42;
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.shift-btn.active {
-  background: #3b82f6;
-}
-
-#popupOT,
-#popupNote {
-  width: 100%;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  background: #242b42;
-  color: white;
-  margin-top: 4px;
-}
-
-#popupNote {
-  min-height: 90px;
-  resize: vertical;
-}
-
-.save-btn {
-  width: 100%;
-  margin-top: 18px;
-  padding: 14px;
-  border: none;
-  border-radius: 14px;
-  background: #16a34a;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.delete-btn{
-  width:100%;
-  margin-top:10px;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:#ef4444;
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.delete-btn:hover{
-  background:#dc2626;
-}
-
-/* ===== PART 15.5 Home Dashboard ===== */
-
-.grid2{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-  margin-top:16px;
-}
-
-.miniCard{
-  border-radius:18px;
-  padding:16px;
-  color:#fff;
-  background:#222;
-}
-
-.miniCard p{
-  font-size:13px;
-  opacity:.9;
-  margin-bottom:8px;
-}
-
-.miniCard h3{
-  font-size:24px;
-  font-weight:700;
-}
-
-.blue{
-  background:linear-gradient(135deg,#2563eb,#3b82f6);
-}
-
-.green{
-  background:linear-gradient(135deg,#16a34a,#22c55e);
-}
-
-.orange{
-  background:linear-gradient(135deg,#ea580c,#fb923c);
-}
-
-.purple{
-  background:linear-gradient(135deg,#7c3aed,#a855f7);
-}
-
-.red{
-  background:linear-gradient(135deg,#dc2626,#ef4444);
-}
-
-.popup-actions{
-  position: sticky;
-  bottom: 0;
-  background: #171c2b;
-  padding-top: 16px;
-  padding-bottom: 8px;
-}
-
-/* ===== PART 18.1 Custom Pay / Deduction ===== */
-
-.pay-item{
-  background:#20263a;
-  border-radius:16px;
-  padding:12px;
-  margin-top:12px;
-}
-
-.pay-item input,
-.pay-item select{
-  width:100%;
-  margin-top:8px;
-}
-
-.pay-item .removeBtn{
-  background:#ef4444;
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  padding:8px 12px;
-  margin-top:10px;
-  width:100%;
-}
-
-#extraTotal{
-  font-size:22px;
-  font-weight:700;
-}
-
-/* ===== PART 18.1 Factory Rules ===== */
-
-.cardHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.cardSub{
-  font-size:13px;
-  color:#94A3B8;
-  margin-bottom:16px;
-}
-
-.smallBtn{
-  background:#2563EB;
-  color:white;
-  border:none;
-  border-radius:12px;
-  padding:8px 14px;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
 }
 
 .ruleItem{
-  background:#1E293B;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:12px;
+
   display:flex;
   justify-content:space-between;
   align-items:center;
+
+  padding:14px;
+  border-radius:16px;
+
+  background:var(--bg);
+  border:1px solid var(--line);
+
+}
+
+.ruleItem strong{
+
+  color:var(--text);
+  font-size:16px;
+
 }
 
 .ruleItem .plus{
-  color:#22C55E;
+
+  color:var(--green);
   font-weight:700;
+
 }
 
 .ruleItem .minus{
-  color:#EF4444;
+
+  color:var(--red);
   font-weight:700;
-}
 
-/* ===== PART 18.2 Factory Rule Popup ===== */
-
-#rulePopup select{
-  width:100%;
-  padding:12px;
-  margin:8px 0 16px;
-  border-radius:12px;
-  background:#20263A;
-  color:#fff;
-  border:1px solid #334155;
-}
-
-.ruleItem{
-  background:#1F2937;
-  border-radius:14px;
-  padding:14px;
-  margin-top:12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
 }
 
 .removeBtn{
-  background:#EF4444;
-  color:#fff;
+
   border:none;
   border-radius:10px;
+
   padding:8px 12px;
+
+  background:var(--red);
+  color:#FFFFFF;
+
   cursor:pointer;
+  font-size:12px;
+
 }
 
-/* ===== PART 18.4 Calculator Factory Rules ===== */
+/* ==========================================================
+   PART 8.3 — Rule Popup
+========================================================== */
 
-.calculatorRuleItem{
+#rulePopup .popup-card{
+
+  max-width:480px;
+
+}
+
+#rulePopup input,
+#rulePopup select{
+
+  margin-bottom:14px;
+
+}
+
+/* ==========================================================
+   PART 9 — HISTORY + PAYSLIP + BOTTOM NAVIGATION
+========================================================== */
+
+/* ==========================================================
+   PART 9.1 — History Page
+========================================================== */
+
+#historyList{
+
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 0;
-  border-bottom:1px solid rgba(255,255,255,.06);
+  flex-direction:column;
+  gap:14px;
+
 }
 
-.calculatorRuleItem:last-child{
-  border-bottom:none;
+.historyItem{
+
+  background:var(--bg);
+  border:1px solid var(--line);
+
+  border-radius:18px;
+  padding:16px;
+
 }
 
-.calculatorRuleItem .plus{
-  color:#22C55E;
-  font-weight:700;
+.historyItem h4{
+
+  color:var(--text);
+  margin-bottom:8px;
+  font-size:16px;
+
 }
 
-.calculatorRuleItem .minus{
-  color:#EF4444;
-  font-weight:700;
-}
+.historyItem p{
 
-.summaryBox{
-  margin-top:14px;
-  padding:14px;
-  border-radius:14px;
-  background:#1F2937;
-}
-
-.summaryBox span{
-  color:#94A3B8;
+  color:var(--sub);
   font-size:13px;
+  margin-bottom:4px;
+
 }
 
-.summaryBox h3{
-  margin-top:6px;
-  font-size:22px;
+.historySalary{
+
+  color:var(--green);
+  font-size:20px;
+  font-weight:700;
+  margin-top:8px;
+
 }
+
+/* ==========================================================
+   PART 9.2 — Payslip Compare
+========================================================== */
+
+#payslip .card{
+
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+
+}
+
+.compareResult{
+
+  margin-top:16px;
+
+  padding:16px;
+  border-radius:18px;
+
+  background:var(--bg);
+  border:1px solid var(--line);
+
+}
+
+.compareResult h3{
+
+  color:var(--text);
+  margin-bottom:10px;
+
+}
+
+.comparePositive{
+
+  color:var(--green);
+  font-weight:700;
+
+}
+
+.compareNegative{
+
+  color:var(--red);
+  font-weight:700;
+
+}
+
+/* ==========================================================
+   PART 9.3 — Bottom Navigation
+========================================================== */
+
+.bottomNav{
+
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+
+  max-width:480px;
+  margin:auto;
+
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+
+  padding:10px 12px;
+
+  background:var(--card);
+  border-top:1px solid var(--line);
+
+  z-index:100;
+
+}
+
+.tab{
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+
+  padding:8px 0;
+
+  border:none;
+  background:transparent;
+
+  color:var(--sub);
+  cursor:pointer;
+
+  transition:.2s;
+
+}
+
+.tab span{
+
+  font-size:11px;
+  font-weight:600;
+
+}
+
+.tab.active{
+
+  color:var(--primary);
+
+}
+
+.tab.active span{
+
+  color:var(--primary);
+
+}
+
+/* ==========================================================
+   PART 9.4 — RESPONSIVE MOBILE FIX
+========================================================== */
+
+@media (max-width:420px){
+
+  .phone{
+    padding:14px 14px 90px;
+  }
+
+  .grid2,
+  .grid2Inputs{
+    gap:10px;
+  }
+
+  .heroCard h2{
+    font-size:28px;
+  }
+
+  .miniCard h3,
+  .miniResult h4{
+    font-size:18px;
+  }
+
+  .monthCenter h2{
+    font-size:18px;
+  }
+
+  .jumpCalendar{
+    grid-template-columns:1fr 80px 60px;
+  }
+
+}
+
+
+
+
