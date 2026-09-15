@@ -495,24 +495,23 @@ function saveTakeHomeSalary(value) {
 }
 
 /* ==========================================================
-   PART 4 — CALENDAR ENGINE
-   Korea Calendar + Month Navigation + LocalStorage
+   PART 4.1 — CALENDAR CORE
+   Calendar Variables + LocalStorage
 ========================================================== */
 
-// ===== Calendar Elements =====
+// ===== Calendar DOM =====
 const calendarGrid = document.getElementById("calendarGrid");
 const monthTitle = document.getElementById("monthTitle");
 
 const prevMonth = document.getElementById("prevMonth");
 const nextMonth = document.getElementById("nextMonth");
-
 const todayBtn = document.getElementById("todayBtn");
 
 const jumpMonth = document.getElementById("jumpMonth");
 const jumpYear = document.getElementById("jumpYear");
 const jumpBtn = document.getElementById("jumpBtn");
 
-// ===== Calendar State =====
+// ===== Current Calendar =====
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 
@@ -522,11 +521,11 @@ const monthNames = [
   "July","August","September","October","November","December"
 ];
 
-// ===== Calendar LocalStorage =====
+// ===== Shift Data =====
 let shiftData =
   JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
 
-// Save Calendar
+// Save Shift Data
 function saveShiftData() {
   localStorage.setItem(
     "workpay_shift_data",
@@ -534,17 +533,18 @@ function saveShiftData() {
   );
 }
 
-// ===== Date Key =====
+// Date Key
 function getDateKey(year, month, day) {
 
   const mm = String(month + 1).padStart(2, "0");
   const dd = String(day).padStart(2, "0");
 
   return `${year}-${mm}-${dd}`;
+
 }
 
 /* ==========================================================
-   PART 4.2 — Render Calendar
+   PART 4.2 — RENDER CALENDAR
 ========================================================== */
 
 function renderCalendar() {
@@ -553,11 +553,13 @@ function renderCalendar() {
 
   calendarGrid.innerHTML = "";
 
+  // Month Title
   monthTitle.textContent =
     `${monthNames[currentMonth]} ${currentYear}`;
 
-  if (jumpMonth) jumpMonth.value = currentMonth;
-  if (jumpYear) jumpYear.value = currentYear;
+  // Jump Selector Sync
+  jumpMonth.value = currentMonth;
+  jumpYear.value = currentYear;
 
   const today = new Date();
 
@@ -567,19 +569,24 @@ function renderCalendar() {
   const daysInMonth =
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Empty cells
+  // Empty Cells
   for (let i = 0; i < firstDay; i++) {
+
     const empty = document.createElement("div");
-    empty.className = "empty";
+    empty.className = "emptyDay";
+
     calendarGrid.appendChild(empty);
+
   }
 
-  // Day Cells
+  // Calendar Days
   for (let day = 1; day <= daysInMonth; day++) {
 
-    const dateKey = getDateKey(currentYear, currentMonth, day);
+    const dateKey =
+      getDateKey(currentYear, currentMonth, day);
 
-    const saved = shiftData[dateKey] || {};
+    const saved =
+      shiftData[dateKey] || {};
 
     const cell = document.createElement("div");
     cell.className = "dayCell";
@@ -593,7 +600,7 @@ function renderCalendar() {
       cell.classList.add("today");
     }
 
-    // Sunday
+    // Sunday Color
     const weekDay =
       new Date(currentYear, currentMonth, day).getDay();
 
@@ -601,13 +608,15 @@ function renderCalendar() {
       cell.classList.add("sunday");
     }
 
-    // Shift Color
-    if (saved.shift) {
-      cell.classList.add(saved.shift);
-    }
+    // Shift Colors
+    if (saved.shift === "day") cell.classList.add("dayColor");
+    if (saved.shift === "night") cell.classList.add("nightColor");
+    if (saved.shift === "holiday") cell.classList.add("holidayWorkColor");
+    if (saved.shift === "off") cell.classList.add("offColor");
 
     cell.innerHTML = `<span>${day}</span>`;
 
+    // Popup
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
     });
@@ -619,7 +628,7 @@ function renderCalendar() {
 }
 
 /* ==========================================================
-   PART 4.3 — Calendar Navigation
+   PART 4.3 — CALENDAR NAVIGATION
 ========================================================== */
 
 // Previous Month
@@ -673,80 +682,15 @@ jumpBtn?.addEventListener("click", () => {
 });
 
 /* ==========================================================
-   PART 4.4 — App Initialize
+   PART 5.0 — POPUP STATE
 ========================================================== */
 
-renderCalendar();
-syncCalendarToCalculator();
-
-/* ==========================================================
-   PART 5.1 — OPEN DAY POPUP
-========================================================== */
-
-// Popup Elements
 const dayPopup = document.getElementById("dayPopup");
 const popupDate = document.getElementById("popupDate");
 const closePopup = document.getElementById("closePopup");
 
 let selectedDate = "";
 let selectedShift = "day";
-
-// ===== Open Popup =====
-function openDayPopup(dateKey) {
-
-  console.log("Popup Open:", dateKey);
-
-  selectedDate = dateKey;
-
-  dayPopup.classList.remove("hidden");
-
-  popupDate.textContent = dateKey;
-
-  const saved = shiftData[dateKey] || {};
-
-  selectedShift = saved.shift || "day";
-
-  document.getElementById("popupStart").value =
-    saved.start || "08:30";
-
-  document.getElementById("popupEnd").value =
-    saved.end || "17:30";
-
-  document.getElementById("popupBreakStart").value =
-    saved.breakStart || "12:00";
-
-  document.getElementById("popupBreak").value =
-    saved.breakMinutes || 60;
-
-  document.getElementById("popupOT").value =
-    saved.otHours || 0;
-
-  document.getElementById("popupNote").value =
-    saved.note || "";
-
-  // Active Shift Button
-  document.querySelectorAll(".shift-btn").forEach(btn => {
-    btn.classList.remove("active");
-
-    if (btn.dataset.shift === selectedShift) {
-      btn.classList.add("active");
-    }
-  });
-
-  dayPopup.classList.remove("hidden");
-}
-
-// ===== Close Popup =====
-closePopup?.addEventListener("click", () => {
-  dayPopup.classList.add("hidden");
-});
-
-dayPopup?.addEventListener("click", (e) => {
-  if (e.target === dayPopup) {
-    dayPopup.classList.add("hidden");
-  }
-});
-
 
 
 
