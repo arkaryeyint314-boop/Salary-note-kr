@@ -615,5 +615,237 @@ jumpBtn?.addEventListener("click", () => {
 
 });
 
+/* ==========================================================
+   PART 5 — CALENDAR DAY POPUP
+   Open / Close / Shift / Save / Delete
+========================================================== */
+
+/* ==========================================================
+   PART 5.1 — Popup Elements & State
+========================================================== */
+
+// ===== Popup Elements =====
+const dayPopup = document.getElementById("dayPopup");
+const popupDate = document.getElementById("popupDate");
+
+const popupStart = document.getElementById("popupStart");
+const popupEnd = document.getElementById("popupEnd");
+
+const popupBreakStart = document.getElementById("popupBreakStart");
+const popupBreak = document.getElementById("popupBreak");
+
+const popupOT = document.getElementById("popupOT");
+const popupNote = document.getElementById("popupNote");
+
+const closePopup = document.getElementById("closePopup");
+const saveDayBtn = document.getElementById("saveDayBtn");
+const deleteDayBtn = document.getElementById("deleteDayBtn");
+
+// ===== Popup State =====
+let selectedDate = "";
+let selectedShift = "day";
+
+/* ==========================================================
+   PART 5.2 — Open / Close Popup
+========================================================== */
+
+// ===== Open Popup =====
+function openDayPopup(dateKey) {
+
+  selectedDate = dateKey;
+
+  popupDate.textContent = dateKey;
+
+  const saved = shiftData[dateKey] || {};
+
+  selectedShift = saved.shift || "day";
+
+  popupStart.value = saved.start || "08:30";
+  popupEnd.value = saved.end || "17:30";
+
+  popupBreakStart.value = saved.breakStart || "00:00";
+  popupBreak.value = saved.breakMinutes || 60;
+
+  popupOT.value = saved.otHours || 0;
+  popupNote.value = saved.note || "";
+
+  // Shift Button Active
+  document.querySelectorAll(".shift-btn").forEach(btn => {
+
+    btn.classList.remove("active");
+
+    if (btn.dataset.shift === selectedShift) {
+      btn.classList.add("active");
+    }
+
+  });
+
+  // Auto OT
+  calculateOTHours();
+
+  // Show Popup
+  dayPopup.classList.remove("hidden");
+
+}
+
+// ===== Close Button =====
+closePopup?.addEventListener("click", () => {
+
+  dayPopup.classList.add("hidden");
+
+});
+
+// ===== Click Outside Popup =====
+dayPopup?.addEventListener("click", (e) => {
+
+  if (e.target === dayPopup) {
+    dayPopup.classList.add("hidden");
+  }
+
+});
+
+/* ==========================================================
+   PART 5.3 — Shift Button Selection
+========================================================== */
+
+document.querySelectorAll(".shift-btn").forEach(btn => {
+
+  btn.addEventListener("click", () => {
+
+    selectedShift = btn.dataset.shift;
+
+    document.querySelectorAll(".shift-btn").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+
+  });
+
+});
+
+/* ==========================================================
+   PART 5.4 — Auto OT Calculator
+========================================================== */
+
+// HH:MM → Minutes
+function timeToMinutes(time) {
+
+  const [hour, minute] = time.split(":").map(Number);
+
+  return (hour * 60) + minute;
+
+}
+
+// Calculate OT
+function calculateOTHours() {
+
+  if (!popupStart.value || !popupEnd.value) return;
+
+  let startMin = timeToMinutes(popupStart.value);
+  let endMin = timeToMinutes(popupEnd.value);
+
+  // Night Shift
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
+  }
+
+  const breakMinutes =
+    Number(popupBreak.value) || 0;
+
+  const totalHours =
+    (endMin - startMin - breakMinutes) / 60;
+
+  const otHours =
+    Math.max(0, totalHours - 8);
+
+  popupOT.value = otHours.toFixed(1);
+
+}
+
+// Auto Update
+[popupStart, popupEnd, popupBreak].forEach(input => {
+
+  input?.addEventListener("input", calculateOTHours);
+  input?.addEventListener("change", calculateOTHours);
+
+});
+
+/* ==========================================================
+   PART 5.5 — Save Calendar Day
+========================================================== */
+
+saveDayBtn?.addEventListener("click", () => {
+
+  shiftData[selectedDate] = {
+
+    shift: selectedShift,
+
+    start: popupStart.value,
+    end: popupEnd.value,
+
+    breakStart: popupBreakStart.value,
+    breakMinutes: Number(popupBreak.value),
+
+    otHours: Number(popupOT.value),
+
+    note: popupNote.value
+
+  };
+
+  // Save LocalStorage
+  saveShiftData();
+
+  // Refresh Calendar
+  renderCalendar();
+
+  // Refresh Calculator
+  if (typeof syncCalendarToCalculator === "function") {
+    syncCalendarToCalculator();
+  }
+
+  // Refresh Dashboard
+  if (typeof updateHomeDashboard === "function") {
+    updateHomeDashboard();
+  }
+
+  // Close Popup
+  dayPopup.classList.add("hidden");
+
+});
+
+/* ==========================================================
+   PART 5.6 — Delete Calendar Day
+========================================================== */
+
+deleteDayBtn?.addEventListener("click", () => {
+
+  delete shiftData[selectedDate];
+
+  saveShiftData();
+
+  renderCalendar();
+
+  if (typeof syncCalendarToCalculator === "function") {
+    syncCalendarToCalculator();
+  }
+
+  if (typeof updateHomeDashboard === "function") {
+    updateHomeDashboard();
+  }
+
+  dayPopup.classList.add("hidden");
+
+});
+
+
+
+
+
+
+
+
+
+
 
 
