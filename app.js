@@ -495,58 +495,43 @@ function saveTakeHomeSalary(value) {
 }
 
 /* ==========================================================
-   PART 4.1 — CALENDAR CORE ENGINE
-   Month / Year / Calendar Variables
+   PART 4 — CALENDAR ENGINE (Official v1.0)
+   Calendar Core + LocalStorage
 ========================================================== */
 
-// Calendar Elements
+// ===== Calendar DOM =====
 const calendarGrid = document.getElementById("calendarGrid");
 const monthTitle = document.getElementById("monthTitle");
 
-const prevMonthBtn = document.getElementById("prevMonth");
-const nextMonthBtn = document.getElementById("nextMonth");
+const prevMonth = document.getElementById("prevMonth");
+const nextMonth = document.getElementById("nextMonth");
 const todayBtn = document.getElementById("todayBtn");
 
 const jumpMonth = document.getElementById("jumpMonth");
 const jumpYear = document.getElementById("jumpYear");
 const jumpBtn = document.getElementById("jumpBtn");
 
-// Current Calendar State
-let currentDate = new Date();
-let currentMonth = currentDate.getMonth();
-let currentYear = currentDate.getFullYear();
+// ===== Current Date =====
+const today = new Date();
 
-// Month Names
+let currentMonth = today.getMonth();
+let currentYear = today.getFullYear();
+
+// ===== Month Names =====
 const monthNames = [
-  "January", "February", "March", "April",
-  "May", "June", "July", "August",
-  "September", "October", "November", "December"
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
 ];
 
-// Weekday Names
-const weekNames = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+// ===== Shift Data (LocalStorage) =====
+let shiftData = JSON.parse(localStorage.getItem("shiftData")) || {};
 
-/* ==========================================================
-   PART 4.2 — Calendar Storage
-========================================================== */
-
-let calendarData =
-  JSON.parse(localStorage.getItem("calendarData")) || {};
-
-// Date Key (2026-09-15)
-function getDateKey(year, month, day) {
-
-  const mm = String(month + 1).padStart(2,"0");
-  const dd = String(day).padStart(2,"0");
-
-  return `${year}-${mm}-${dd}`;
+// Save Shift Data
+function saveShiftData() {
+  localStorage.setItem("shiftData", JSON.stringify(shiftData));
 }
 
-function saveCalendarData() {
-
-  localStorage.setItem(
-    "calendarData",
-    JSON.stringify(calendarData)
-  );
-
+// Date Key (Example: 2026-09-15)
+function getDateKey(year, month, day) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
