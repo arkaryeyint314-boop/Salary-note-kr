@@ -755,7 +755,19 @@ dayPopup?.addEventListener("click", (e) => {
 
 });
 
+/* ==========================================================
+   PART 4.4 — APP START
+========================================================== */
 
+window.addEventListener("DOMContentLoaded", () => {
+
+  renderCalendar();
+
+  if (typeof syncCalendarToCalculator === "function") {
+    syncCalendarToCalculator();
+  }
+
+});
 
 
 
