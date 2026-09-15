@@ -694,7 +694,11 @@ let selectedShift = "day";
 // ===== Open Popup =====
 function openDayPopup(dateKey) {
 
+  console.log("Popup Open:", dateKey);
+
   selectedDate = dateKey;
+
+  dayPopup.classList.remove("hidden");
 
   popupDate.textContent = dateKey;
 
