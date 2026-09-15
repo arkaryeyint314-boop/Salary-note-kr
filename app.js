@@ -887,52 +887,57 @@ document.getElementById("homeHoliday").textContent = summary.holidayHours;
 
 }
 
-/* ===== PART 17.1 Korea Daily Salary Formula (Official Fixed) ===== */
+/* ===== PART 17.2 WorkPay KR Salary Engine ===== */
 
-function calculateDaySalary(data, wage) {
+function calculateSalary() {
 
-  const time = calculateWorkTime(
-    data.start || "08:30",
-    data.end || "17:30",
-    data.breakStart || "12:30",
-    data.break || 60
-  );
+  const wage = Number(document.getElementById("hourlyWage").value) || 10320;
+  const meal = Number(document.getElementById("mealAllowance").value) || 0;
 
-  // ===== Basic Pay =====
-  // Worked Hours (Break ဖြုတ်ပြီးသား) × Wage
-  const basicPay = time.workedHours * wage;
+  // Calendar Summary
+  const summary = getMonthlySummary();
 
-  // ===== Premiums (Extra Only) =====
-  const otPay = time.otHours * wage * 0.5;
-  const nightPay = time.nightHours * wage * 0.5;
+  const workingDays = summary.workingDays || 0;
+  const basicHours = workingDays * 8;     // ✅ Basic = 8h/day
+  const otHours = summary.otHours || 0;
+  const nightHours = summary.nightHours || 0;
+  const holidayHours = summary.holidayHours || 0;
 
-  // Holiday Premium (Part 18 မှာ Upgrade လုပ်မယ်)
-  const holidayPay =
-    data.shift === "holiday"
-      ? time.workedHours * wage * 0.5
-      : 0;
+  // ===== Auto Fill Inputs =====
+  document.getElementById("workingDays").value = workingDays;
+  document.getElementById("basicHours").value = basicHours;
+  document.getElementById("otHours").value = otHours;
+  document.getElementById("nightHours").value = nightHours;
+  document.getElementById("holidayHours").value = holidayHours;
 
-  // ===== Total Daily Salary =====
-  const totalPay =
+  // ===== Salary Formula (Korea Rule) =====
+  const basicPay = (basicHours + otHours) * wage;   // 8h + OT = 11h
+  const otPay = otHours * wage * 0.5;
+  const nightPay = nightHours * wage * 0.5;
+  const holidayPay = holidayHours * wage * 0.5;
+
+  const grossSalary =
     basicPay +
     otPay +
     nightPay +
-    holidayPay;
+    holidayPay +
+    meal;
 
-  return {
-    workedHours: time.workedHours,
-    otHours: time.otHours,
-    nightHours: time.nightHours,
+  const insurance = Math.round(grossSalary * 0.09);
+  const takeHome = grossSalary - insurance;
 
-    basicPay,
-    otPay,
-    nightPay,
-    holidayPay,
+  // ===== Result Cards =====
+  document.getElementById("grossSalary").textContent = formatWon(grossSalary);
+  document.getElementById("insurance").textContent = formatWon(insurance);
+  document.getElementById("takeHomeSalary").textContent = formatWon(takeHome);
+  document.getElementById("otPay").textContent = formatWon(otPay);
+  document.getElementById("nightPay").textContent = formatWon(nightPay);
 
-    totalPay
-  };
+  // Home Sync
+  document.getElementById("homeSalary").textContent = formatWon(takeHome);
 
 }
+
 /* ===== Time Calculation Engine (WorkPay KR Official) ===== */
 
 function calculateWorkTime(start, end, breakStart = "00:30", breakMinutes = 60) {
