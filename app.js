@@ -495,7 +495,8 @@ function saveTakeHomeSalary(value) {
 }
 
 /* ==========================================================
-   PART 4 — CALENDAR ENGINE (Official v1.0)
+   PART 4 — CALENDAR ENGINE
+   Korea Calendar + Month Navigation + LocalStorage
 ========================================================== */
 
 // ===== Calendar Elements =====
@@ -504,17 +505,16 @@ const monthTitle = document.getElementById("monthTitle");
 
 const prevMonth = document.getElementById("prevMonth");
 const nextMonth = document.getElementById("nextMonth");
+
 const todayBtn = document.getElementById("todayBtn");
 
 const jumpMonth = document.getElementById("jumpMonth");
 const jumpYear = document.getElementById("jumpYear");
 const jumpBtn = document.getElementById("jumpBtn");
 
-// ===== Current Month =====
-const today = new Date();
-
-let currentMonth = today.getMonth();
-let currentYear = today.getFullYear();
+// ===== Calendar State =====
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
 
 // ===== Month Names =====
 const monthNames = [
@@ -522,22 +522,29 @@ const monthNames = [
   "July","August","September","October","November","December"
 ];
 
-// ===== Shift Data =====
+// ===== Calendar LocalStorage =====
 let shiftData =
-  JSON.parse(localStorage.getItem("shiftData")) || {};
+  JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
 
 // Save Calendar
 function saveShiftData() {
-  localStorage.setItem("shiftData", JSON.stringify(shiftData));
+  localStorage.setItem(
+    "workpay_shift_data",
+    JSON.stringify(shiftData)
+  );
 }
 
-// Date Key
+// ===== Date Key =====
 function getDateKey(year, month, day) {
-  return `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+
+  const mm = String(month + 1).padStart(2, "0");
+  const dd = String(day).padStart(2, "0");
+
+  return `${year}-${mm}-${dd}`;
 }
 
 /* ==========================================================
-   PART 4.1 — Render Calendar
+   PART 4.2 — Render Calendar
 ========================================================== */
 
 function renderCalendar() {
@@ -549,10 +556,10 @@ function renderCalendar() {
   monthTitle.textContent =
     `${monthNames[currentMonth]} ${currentYear}`;
 
-  jumpMonth.value = currentMonth;
-  jumpYear.value = currentYear;
+  if (jumpMonth) jumpMonth.value = currentMonth;
+  if (jumpYear) jumpYear.value = currentYear;
 
-  const todayDate = new Date();
+  const today = new Date();
 
   const firstDay =
     new Date(currentYear, currentMonth, 1).getDay();
@@ -560,14 +567,14 @@ function renderCalendar() {
   const daysInMonth =
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Empty Cells
+  // Empty cells
   for (let i = 0; i < firstDay; i++) {
     const empty = document.createElement("div");
-    empty.className = "emptyDay";
+    empty.className = "empty";
     calendarGrid.appendChild(empty);
   }
 
-  // Days
+  // Day Cells
   for (let day = 1; day <= daysInMonth; day++) {
 
     const dateKey = getDateKey(currentYear, currentMonth, day);
@@ -575,13 +582,13 @@ function renderCalendar() {
     const saved = shiftData[dateKey] || {};
 
     const cell = document.createElement("div");
-    cell.className = "day";
+    cell.className = "dayCell";
 
-    // Today
+    // Today Highlight
     if (
-      todayDate.getFullYear() === currentYear &&
-      todayDate.getMonth() === currentMonth &&
-      todayDate.getDate() === day
+      today.getFullYear() === currentYear &&
+      today.getMonth() === currentMonth &&
+      today.getDate() === day
     ) {
       cell.classList.add("today");
     }
@@ -599,9 +606,7 @@ function renderCalendar() {
       cell.classList.add(saved.shift);
     }
 
-    cell.innerHTML = `
-      <span class="dayNumber">${day}</span>
-    `;
+    cell.innerHTML = `<span>${day}</span>`;
 
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
@@ -614,9 +619,10 @@ function renderCalendar() {
 }
 
 /* ==========================================================
-   PART 4.2 — Calendar Navigation
+   PART 4.3 — Calendar Navigation
 ========================================================== */
 
+// Previous Month
 prevMonth?.addEventListener("click", () => {
 
   currentMonth--;
@@ -630,6 +636,7 @@ prevMonth?.addEventListener("click", () => {
 
 });
 
+// Next Month
 nextMonth?.addEventListener("click", () => {
 
   currentMonth++;
@@ -643,7 +650,10 @@ nextMonth?.addEventListener("click", () => {
 
 });
 
+// Today Button
 todayBtn?.addEventListener("click", () => {
+
+  const today = new Date();
 
   currentMonth = today.getMonth();
   currentYear = today.getFullYear();
@@ -652,6 +662,7 @@ todayBtn?.addEventListener("click", () => {
 
 });
 
+// Jump Month / Year
 jumpBtn?.addEventListener("click", () => {
 
   currentMonth = Number(jumpMonth.value);
@@ -662,83 +673,20 @@ jumpBtn?.addEventListener("click", () => {
 });
 
 /* ==========================================================
-   PART 4.3 — CALENDAR NAVIGATION + APP INITIALIZE
+   PART 4.4 — App Initialize
 ========================================================== */
 
-// ===== Previous Month =====
-prevMonth?.addEventListener("click", () => {
+renderCalendar();
+syncCalendarToCalculator();
 
-  currentMonth--;
 
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    currentYear--;
-  }
 
-  renderCalendar();
 
-});
 
-// ===== Next Month =====
-nextMonth?.addEventListener("click", () => {
 
-  currentMonth++;
 
-  if (currentMonth > 11) {
-    currentMonth = 0;
-    currentYear++;
-  }
 
-  renderCalendar();
 
-});
-
-// ===== Today Button =====
-todayBtn?.addEventListener("click", () => {
-
-  const now = new Date();
-
-  currentMonth = now.getMonth();
-  currentYear = now.getFullYear();
-
-  renderCalendar();
-
-});
-
-// ===== Jump Month / Year =====
-jumpBtn?.addEventListener("click", () => {
-
-  currentMonth = Number(jumpMonth.value);
-  currentYear = Number(jumpYear.value);
-
-  renderCalendar();
-
-});
-
-/* ==========================================================
-   PART 4.4 — APP INITIALIZE
-========================================================== */
-
-window.addEventListener("load", () => {
-
-  // Calendar
-  renderCalendar();
-
-  // Dashboard (ရှိရင်)
-  if (typeof refreshDashboard === "function") {
-    refreshDashboard();
-  }
-
-  // Factory Rules (ရှိရင်)
-  if (typeof renderFactoryRules === "function") {
-    renderFactoryRules();
-  }
-
-  if (typeof renderCalculatorRules === "function") {
-    renderCalculatorRules();
-  }
-
-});
 
 
 
