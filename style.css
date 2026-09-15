@@ -1,9 +1,13 @@
 /* ===========================
-   WorkPay KR PRO v2
-   PART 1 — THEME VARIABLES (OFFICIAL FIX)
+   WORKPAY KR PRO v2
+   PART 1 — THEME + GLOBAL LAYOUT
 =========================== */
 
-/* ===== Default = DARK MODE ===== */
+/* ==========================================================
+   PART 1.1 — Theme Variables
+========================================================== */
+
+/* ===== Default Theme = DARK ===== */
 :root{
 
   --bg:#0F172A;
@@ -21,7 +25,7 @@
 
 }
 
-/* ===== Light Mode ===== */
+/* ===== Light Theme ===== */
 body.light{
 
   --bg:#F4F7FB;
@@ -32,7 +36,10 @@ body.light{
 
 }
 
-/* ===== Reset ===== */
+/* ==========================================================
+   PART 1.2 — Reset
+========================================================== */
+
 *{
   margin:0;
   padding:0;
@@ -40,14 +47,20 @@ body.light{
   font-family:"Inter",sans-serif;
 }
 
-/* ===== Body ===== */
+/* ==========================================================
+   PART 1.3 — Body
+========================================================== */
+
 body{
   background:var(--bg);
   color:var(--text);
-  transition:background .25s,color .25s;
+  transition:background .25s ease,color .25s ease;
 }
 
-/* ===== Phone ===== */
+/* ==========================================================
+   PART 1.4 — Phone Container
+========================================================== */
+
 .phone{
   max-width:480px;
   margin:auto;
@@ -55,78 +68,64 @@ body{
   padding:18px 18px 95px;
 }
 
-/* ===== Header ===== */
+/* ==========================================================
+   PART 1.5 — Header
+========================================================== */
+
 .topHeader{
+
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:20px;
+
 }
 
 .smallText{
+
   color:var(--sub);
   font-size:13px;
   margin-bottom:3px;
+
 }
 
 .topHeader h1{
+
   color:var(--text);
   font-size:30px;
   font-weight:800;
+
 }
 
-/* ===== Theme Button ===== */
+/* ==========================================================
+   PART 1.6 — Theme Button
+========================================================== */
+
 .iconBtn{
+
   width:48px;
   height:48px;
   border:none;
   border-radius:18px;
+
   background:var(--card);
   color:var(--text);
+
   font-size:22px;
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
-  transition:.25s;
-}
+  cursor:pointer;
 
-/* HEADER */
-
-.topHeader{
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:20px;
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+  transition:all .25s ease;
 
 }
 
-.smallText{
-
-  color:var(--sub);
-  font-size:13px;
-  margin-bottom:3px;
-
+.iconBtn:hover{
+  transform:scale(1.05);
 }
 
-.topHeader h1{
-
-  font-size:30px;
-  font-weight:800;
-
-}
-
-.iconBtn{
-
-  width:48px;
-  height:48px;
-  border-radius:18px;
-  border:none;
-  background:white;
-  font-size:22px;
-  box-shadow:0 8px 20px rgba(0,0,0,.06);
-
-}
-
-/* PAGE */
+/* ==========================================================
+   PART 1.7 — Pages
+========================================================== */
 
 .page{
   display:none;
@@ -135,6 +134,10 @@ body{
 .activePage{
   display:block;
 }
+
+/* ==========================================================
+   PART 2 STARTS BELOW (HERO SECTION)
+========================================================== */
 
 /* HERO */
 
