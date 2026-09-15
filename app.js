@@ -1,6 +1,6 @@
 /* ==========================================================
    WORKPAY KR PRO v1.0
-   PART 1 — THEME + BOTTOM NAVIGATION
+   PART 1 — THEME + BOTTOM NAVIGATION (Official FIX)
 ========================================================== */
 
 // ===== Theme Button =====
@@ -10,7 +10,10 @@ const themeBtn = document.getElementById("themeBtn");
 const tabs = document.querySelectorAll(".tab");
 const pages = document.querySelectorAll(".page");
 
-// ===== Page Switch =====
+/* ==========================================================
+   PART 1.1 — Bottom Navigation
+========================================================== */
+
 tabs.forEach(tab => {
 
   tab.addEventListener("click", () => {
@@ -32,34 +35,49 @@ tabs.forEach(tab => {
 
 });
 
-// ===== Theme Toggle =====
-themeBtn?.addEventListener("click", () => {
+/* ==========================================================
+   PART 1.2 — Theme System
+========================================================== */
 
-  document.body.classList.toggle("light");
+// Apply Theme
+function applyTheme(theme) {
 
-  const isLight =
-    document.body.classList.contains("light");
+  if (theme === "dark") {
 
-  themeBtn.textContent = isLight ? "☀️" : "🌙";
+    document.body.classList.remove("light");
+    themeBtn.textContent = "🌙";   // Dark Mode icon
 
-  localStorage.setItem(
-    "theme",
-    isLight ? "light" : "dark"
-  );
+  } else {
 
-});
+    document.body.classList.add("light");
+    themeBtn.textContent = "☀️";   // Light Mode icon
 
-// ===== Load Saved Theme =====
-const savedTheme = localStorage.getItem("theme");
+  }
 
-if (savedTheme === "light") {
-
-  document.body.classList.add("light");
-
-  if (themeBtn) themeBtn.textContent = "☀️";
+  localStorage.setItem("theme", theme);
 
 }
 
+// Toggle Theme
+themeBtn?.addEventListener("click", () => {
+
+  const currentTheme = document.body.classList.contains("light")
+    ? "light"
+    : "dark";
+
+  if (currentTheme === "dark") {
+    applyTheme("light");
+  } else {
+    applyTheme("dark");
+  }
+
+});
+
+// Load Saved Theme
+const savedTheme =
+  localStorage.getItem("theme") || "dark";
+
+applyTheme(savedTheme);
 /* ==========================================================
    PART 2 — LANGUAGE SYSTEM
    English / Korean / Myanmar
