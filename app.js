@@ -217,13 +217,16 @@ night_pay: "ညဆိုင်းကြေး",
   }
 };
 
-/* ===== PART 18.2 Factory Rule Popup ===== */
+/* =========================================================
+   PART 18.2 — Factory Rule Popup
+   Open / Close Add Rule Popup
+========================================================= */
 
 const rulePopup = document.getElementById("rulePopup");
 const addRuleBtn = document.getElementById("addRuleBtn");
 const closeRulePopup = document.getElementById("closeRulePopup");
 
-// Open Popup
+// ===== Open Popup =====
 addRuleBtn?.addEventListener("click", () => {
 
   document.getElementById("ruleType").value = "plus";
@@ -234,34 +237,47 @@ addRuleBtn?.addEventListener("click", () => {
 
 });
 
-// Close Button
+// ===== Close Popup Button =====
 closeRulePopup?.addEventListener("click", () => {
   rulePopup.classList.add("hidden");
 });
 
-// Click Outside = Close
+// ===== Click Outside Popup =====
 rulePopup?.addEventListener("click", (e) => {
 
   if (e.target === rulePopup) {
     rulePopup.classList.add("hidden");
   }
 
-});//factory rule popup အဆုံး?
+});
 
-/* ===== PART 18.3 Factory Rules Storage ===== */
+/* ===== PART 18.2 END ===== */
 
+
+
+/* =========================================================
+   PART 18.3 — Factory Rules Storage (Profile)
+   Save / Delete / LocalStorage / Calculator Sync
+========================================================= */
+
+// ===== Load Rules =====
 let factoryRules =
   JSON.parse(localStorage.getItem("factoryRules")) || [];
 
-// Save LocalStorage
+// ===== Save Rules =====
 function saveFactoryRules() {
+
   localStorage.setItem(
     "factoryRules",
     JSON.stringify(factoryRules)
   );
+
 }
 
-// Render Rule List
+
+// =========================================================
+// Render Rules in PROFILE
+// =========================================================
 function renderFactoryRules() {
 
   const list = document.getElementById("factoryRuleList");
@@ -269,15 +285,19 @@ function renderFactoryRules() {
 
   list.innerHTML = "";
 
+  // Empty List
   if (factoryRules.length === 0) {
+
     list.innerHTML = `
       <p style="color:#94A3B8;text-align:center;padding:18px 0;">
         No factory rules yet.
       </p>
     `;
+
     return;
   }
 
+  // Create Rule Cards
   factoryRules.forEach((rule, index) => {
 
     const item = document.createElement("div");
@@ -301,7 +321,7 @@ function renderFactoryRules() {
 
   });
 
-  // Delete Button
+  // Delete Rule
   list.querySelectorAll(".removeBtn").forEach(btn => {
 
     btn.addEventListener("click", () => {
@@ -312,6 +332,7 @@ function renderFactoryRules() {
 
       saveFactoryRules();
       renderFactoryRules();
+      renderCalculatorRules(); // Calculator Update
 
     });
 
@@ -319,7 +340,64 @@ function renderFactoryRules() {
 
 }
 
-// Save Rule
+/* ===== renderFactoryRules END ===== */
+
+
+
+// =========================================================
+// Render Rules in CALCULATOR
+// =========================================================
+function renderCalculatorRules() {
+
+  const list = document.getElementById("calculatorRuleList");
+  const totalBox = document.getElementById("factoryRuleTotal");
+
+  if (!list || !totalBox) return;
+
+  list.innerHTML = "";
+
+  let total = 0;
+
+  factoryRules.forEach(rule => {
+
+    const row = document.createElement("div");
+    row.className = "calculatorRuleItem";
+
+    const value =
+      rule.type === "plus"
+        ? rule.amount
+        : -rule.amount;
+
+    total += value;
+
+    row.innerHTML = `
+      <span>
+        ${rule.type === "plus" ? "🟢" : "🔴"} ${rule.name}
+      </span>
+
+      <strong class="${rule.type}">
+        ${rule.type === "plus" ? "+" : "-"}
+        ₩${Number(rule.amount).toLocaleString()}
+      </strong>
+    `;
+
+    list.appendChild(row);
+
+  });
+
+  totalBox.textContent =
+    (total >= 0 ? "+ " : "- ")
+    + formatWon(Math.abs(total));
+
+}
+
+/* ===== renderCalculatorRules END ===== */
+
+
+
+// =========================================================
+// Save Rule Button
+// =========================================================
 document.getElementById("saveRuleBtn")?.addEventListener("click", () => {
 
   const type = document.getElementById("ruleType").value;
@@ -327,7 +405,9 @@ document.getElementById("saveRuleBtn")?.addEventListener("click", () => {
   const amount = Number(document.getElementById("ruleAmount").value);
 
   if (!name || amount <= 0) {
+
     alert("Please enter rule name and amount.");
+
     return;
   }
 
@@ -338,11 +418,25 @@ document.getElementById("saveRuleBtn")?.addEventListener("click", () => {
   });
 
   saveFactoryRules();
+
   renderFactoryRules();
+  renderCalculatorRules();
 
   rulePopup.classList.add("hidden");
 
 });
+
+/* ===== Save Rule END ===== */
+
+
+
+// =========================================================
+// First Load (App Open)
+// =========================================================
+renderFactoryRules();
+renderCalculatorRules();
+
+/* ===== PART 18.3 END ===== */
 
 // First Load
 renderFactoryRules();
