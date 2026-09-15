@@ -217,6 +217,37 @@ night_pay: "ညဆိုင်းကြေး",
   }
 };
 
+/* ===== PART 18.2 Factory Rule Popup ===== */
+
+const rulePopup = document.getElementById("rulePopup");
+const addRuleBtn = document.getElementById("addRuleBtn");
+const closeRulePopup = document.getElementById("closeRulePopup");
+
+// Open Popup
+addRuleBtn?.addEventListener("click", () => {
+
+  document.getElementById("ruleType").value = "plus";
+  document.getElementById("ruleName").value = "";
+  document.getElementById("ruleAmount").value = "";
+
+  rulePopup.classList.remove("hidden");
+
+});
+
+// Close Button
+closeRulePopup?.addEventListener("click", () => {
+  rulePopup.classList.add("hidden");
+});
+
+// Click Outside = Close
+rulePopup?.addEventListener("click", (e) => {
+
+  if (e.target === rulePopup) {
+    rulePopup.classList.add("hidden");
+  }
+
+});
+
 function setLanguage(lang) {
   const dict = translations[lang];
 
