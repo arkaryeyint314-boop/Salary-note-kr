@@ -1,6 +1,6 @@
 /* ==========================================================
    WORKPAY KR PRO v1.0
-   PART 1 — THEME + BOTTOM NAVIGATION (Official FIX)
+   PART 1 — THEME + BOTTOM NAVIGATION (OFFICIAL FIX)
 ========================================================== */
 
 // ===== Theme Button =====
@@ -20,16 +20,12 @@ tabs.forEach(tab => {
 
     const pageId = tab.dataset.page;
 
-    // Active Tab
     tabs.forEach(btn => btn.classList.remove("active"));
     tab.classList.add("active");
 
-    // Active Page
     pages.forEach(page => page.classList.remove("activePage"));
 
-    document
-      .getElementById(pageId)
-      ?.classList.add("activePage");
+    document.getElementById(pageId)?.classList.add("activePage");
 
   });
 
@@ -39,18 +35,17 @@ tabs.forEach(tab => {
    PART 1.2 — Theme System
 ========================================================== */
 
-// Apply Theme
 function applyTheme(theme) {
 
-  if (theme === "dark") {
+  if (theme === "light") {
 
-    document.body.classList.remove("light");
-    themeBtn.textContent = "🌙";   // Dark Mode icon
+    document.body.classList.add("light");
+    themeBtn.textContent = "☀️";
 
   } else {
 
-    document.body.classList.add("light");
-    themeBtn.textContent = "☀️";   // Light Mode icon
+    document.body.classList.remove("light");
+    themeBtn.textContent = "🌙";
 
   }
 
@@ -58,26 +53,20 @@ function applyTheme(theme) {
 
 }
 
+// Load Theme (Default = Dark)
+applyTheme(localStorage.getItem("theme") || "dark");
+
 // Toggle Theme
 themeBtn?.addEventListener("click", () => {
 
-  const currentTheme = document.body.classList.contains("light")
-    ? "light"
-    : "dark";
+  const nextTheme =
+    document.body.classList.contains("light")
+      ? "dark"
+      : "light";
 
-  if (currentTheme === "dark") {
-    applyTheme("light");
-  } else {
-    applyTheme("dark");
-  }
+  applyTheme(nextTheme);
 
 });
-
-// Load Saved Theme
-const savedTheme =
-  localStorage.getItem("theme") || "dark";
-
-applyTheme(savedTheme);
 /* ==========================================================
    PART 2 — LANGUAGE SYSTEM
    English / Korean / Myanmar
