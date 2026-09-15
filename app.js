@@ -1,1440 +1,404 @@
-// ===== WorkPay KR PRO =====
+/* ==========================================================
+   WORKPAY KR OFFICIAL APP.JS
+   PART 1 — GLOBAL VARIABLES + THEME + NAVIGATION
+   Version : v1.0 Official
+========================================================== */
 
-// ---------- Elements ----------
-const tabs = document.querySelectorAll(".tab");
+console.log("🚀 WorkPay KR Official Loaded");
+
+/* ==========================================================
+   PART 1.1 — Global DOM Elements
+========================================================== */
+
+const body = document.body;
+
+// Pages
 const pages = document.querySelectorAll(".page");
+
+// Bottom Navigation Tabs
+const tabs = document.querySelectorAll(".tab");
+
+// Theme Button
 const themeBtn = document.getElementById("themeBtn");
 
-// ---------- Navigation ----------
-function openPage(pageId) {
-  pages.forEach(page => page.classList.remove("activePage"));
-  tabs.forEach(tab => tab.classList.remove("active"));
-
-  const page = document.getElementById(pageId);
-  if (page) page.classList.add("activePage");
-
-  const activeTab = document.querySelector(`.tab[data-page="${pageId}"]`);
-  if (activeTab) activeTab.classList.add("active");
-}
-
-tabs.forEach(tab => {
-  tab.addEventListener("click", () => openPage(tab.dataset.page));
-});
-
-openPage("home");
-
-// ---------- Theme ----------
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-  themeBtn.textContent = "☀️";
-}
-
-themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-
-  const dark = document.body.classList.contains("dark");
-  themeBtn.textContent = dark ? "☀️" : "🌙";
-  localStorage.setItem("theme", dark ? "dark" : "light");
-});
-
-// ---------- Language ----------
-
+// Language Select
 const languageSelect = document.getElementById("languageSelect");
 
+
+/* ==========================================================
+   PART 1.2 — Theme Engine
+   Auto / Light / Dark
+========================================================== */
+
+const savedTheme = localStorage.getItem("theme") || "dark";
+
+applyTheme(savedTheme);
+
+function applyTheme(theme) {
+
+  body.classList.remove("light", "dark");
+
+  body.classList.add(theme);
+
+  localStorage.setItem("theme", theme);
+
+  if (themeBtn) {
+    themeBtn.textContent =
+      theme === "dark" ? "☀️" : "🌙";
+  }
+
+}
+
+// Theme Toggle
+themeBtn?.addEventListener("click", () => {
+
+  const nextTheme =
+    body.classList.contains("dark")
+      ? "light"
+      : "dark";
+
+  applyTheme(nextTheme);
+
+});
+
+
+/* ==========================================================
+   PART 1.3 — Bottom Navigation
+========================================================== */
+
+tabs.forEach((tab) => {
+
+  tab.addEventListener("click", () => {
+
+    const targetPage = tab.dataset.page;
+
+    // Remove Active
+    tabs.forEach((btn) => btn.classList.remove("active"));
+    pages.forEach((page) => page.classList.remove("activePage"));
+
+    // Add Active
+    tab.classList.add("active");
+
+    document
+      .getElementById(targetPage)
+      ?.classList.add("activePage");
+
+  });
+
+});
+
+
+/* ==========================================================
+   PART 1.4 — Home Dashboard Elements
+========================================================== */
+
+const homeSalary = document.getElementById("homeSalary");
+const homeDays = document.getElementById("homeDays");
+const homeOT = document.getElementById("homeOT");
+const homeNight = document.getElementById("homeNight");
+const homeHoliday = document.getElementById("homeHoliday");
+const homeWage = document.getElementById("homeWage");
+
+
+/* ==========================================================
+   PART 1.5 — Calculator Elements
+========================================================== */
+
+const hourlyWageInput = document.getElementById("hourlyWage");
+const workingDaysInput = document.getElementById("workingDays");
+const mealAllowanceInput = document.getElementById("mealAllowance");
+
+const basicHoursInput = document.getElementById("basicHours");
+const otHoursInput = document.getElementById("otHours");
+const nightHoursInput = document.getElementById("nightHours");
+const holidayHoursInput = document.getElementById("holidayHours");
+
+
+/* ==========================================================
+   PART 1.6 — Salary Result Elements
+========================================================== */
+
+const grossSalaryBox = document.getElementById("grossSalary");
+const insuranceBox = document.getElementById("insurance");
+const netSalaryBox =
+  document.getElementById("netSalary") ||
+  document.getElementById("takeHomeSalary");
+
+const otPayBox = document.getElementById("otPay");
+const nightPayBox = document.getElementById("nightPay");
+
+
+/* ==========================================================
+   PART 1.7 — Helper Functions
+========================================================== */
+
+// Korean Won Formatter
+function formatWon(value) {
+
+  return "₩" + Math.round(value).toLocaleString("en-US");
+
+}
+
+// Number Formatter
+function toNumber(value) {
+
+  return Number(value) || 0;
+
+}
+
+/* ==========================================================
+   PART 2 — LANGUAGE TRANSLATION ENGINE
+   English / Korean / Myanmar
+========================================================== */
+
+/* ==========================================================
+   PART 2.1 — Translation Dictionary
+========================================================== */
+
 const translations = {
+
+  /* ================= ENGLISH ================= */
+
   en: {
+
+    // Navigation
+    tab_home: "Home",
+    tab_calendar: "Calendar",
+    tab_calculator: "Calc",
+    tab_history: "History",
+    tab_profile: "Profile",
+
     // Home
-    language_title: "🌐 Language",
     home_takehome: "This Month Take Home",
     home_expected: "Expected salary after insurance",
-    hourly_wage: "Hourly Wage",
-    working_days: "Working Days",
     today_shift: "Today's Shift",
+
     shift_day: "☀️ Day",
     shift_night: "🌙 Night",
     shift_holiday: "🎌 Holiday",
-calculator_title: "Salary Calculator",
-meal_allowance: "Meal Allowance",
-working_hours: "Working Hours",
-basic_hours: "Basic Hours",
-ot_hours: "OT Hours",
-night_hours: "Night Hours",
-holiday_hours: "Holiday Hours",
-calculate_salary: "Calculate Salary",
-take_home_salary: "Take Home Salary",
-gross_salary: "Gross Salary",
-insurance: "Insurance",
-ot_pay: "OT Pay",
-night_pay: "Night Pay",
-working_days_placeholder: "Working Days",
-meal_allowance_placeholder: "Meal Allowance",
-basic_hours_placeholder: "Basic Hours",
-ot_hours_placeholder: "OT Hours",
-night_hours_placeholder: "Night Hours",
-holiday_hours_placeholder: "Holiday Hours",
-meal_allowance: "Meal Allowance",
-working_hours: "Working Hours",
-basic_hours: "Basic Hours",
-ot_hours: "OT Hours",
-night_hours: "Night Hours",
-holiday_hours: "Holiday Hours",
-calculate_salary: "Calculate Salary",
-take_home_salary: "Take Home Salary",
-gross_salary: "Gross Salary",
-insurance_title: "Insurance",
-ot_pay: "OT Pay",
-night_pay: "Night Pay",
-    
- // Profile
- profile_title: "My Profile",
- profile_subtitle: "Myanmar Worker in Korea",
- appearance_title: "🎨 Appearance",
- theme_auto: "Auto",
- theme_light: "Light",
- theme_dark: "Dark",
- work_profile_title: "🏭 Work Profile",
 
-    // Placeholders
+    // Calculator
+    calculator_title: "Salary Calculator",
+    hourly_wage: "Hourly Wage",
+    working_days: "Working Days",
+    meal_allowance: "Meal Allowance",
+
+    working_hours: "Working Hours",
+    basic_hours: "Basic Hours",
+    ot_hours: "OT Hours",
+    night_hours: "Night Hours",
+    holiday_hours: "Holiday Hours",
+
+    calculate_salary: "Calculate Salary",
+
+    take_home_salary: "Take Home Salary",
+    gross_salary: "Gross Salary",
+    insurance_title: "Insurance",
+    ot_pay: "OT Pay",
+    night_pay: "Night Pay",
+
+    // Profile
+    profile_title: "My Profile",
+    profile_subtitle: "Myanmar Worker in Korea",
+
+    language_title: "🌐 Language",
+    appearance_title: "🎨 Appearance",
+    work_profile_title: "🏭 Work Profile",
+
+    theme_auto: "Auto",
+    theme_light: "Light",
+    theme_dark: "Dark",
+
+    // Placeholder
     company_name: "Company Name",
     hourly_wage_placeholder: "Hourly Wage",
+    working_days_placeholder: "Working Days",
+    meal_allowance_placeholder: "Meal Allowance",
     visa_type: "Visa Type (E9 / F2 / D2)"
+
   },
 
+  /* ================= KOREAN ================= */
+
   ko: {
-    // Home
-    language_title: "🌐 언어",
+
+    tab_home: "홈",
+    tab_calendar: "달력",
+    tab_calculator: "계산기",
+    tab_history: "기록",
+    tab_profile: "프로필",
+
     home_takehome: "이번 달 실수령 예상 급여",
-    home_expected: "4대 보험 공제 후 예상 급여",
-    hourly_wage: "시급",
-    working_days: "근무일수",
+    home_expected: "4대보험 공제 후 예상 급여",
+
     today_shift: "오늘 근무",
+
     shift_day: "☀️ 주간",
     shift_night: "🌙 야간",
     shift_holiday: "🎌 휴일",
- calculator_title: "급여 계산기",
-meal_allowance: "식대",
-working_hours: "근무 시간",
-basic_hours: "기본 근무시간",
-ot_hours: "연장 근무시간",
-night_hours: "야간 근무시간",
-holiday_hours: "휴일 근무시간",
-calculate_salary: "급여 계산하기",
-take_home_salary: "실수령 급여",
-gross_salary: "총 급여",
-insurance: "4대 보험",
-ot_pay: "연장수당",
-night_pay: "야간수당",
-working_days_placeholder: "근무일수",
-meal_allowance_placeholder: "식대",
-basic_hours_placeholder: "기본 시간",
-ot_hours_placeholder: "연장 시간",
-night_hours_placeholder: "야간 시간",
-holiday_hours_placeholder: "휴일 시간",
- meal_allowance: "식대",
-working_hours: "근무 시간",
-basic_hours: "기본 근무시간",
-ot_hours: "연장 근무시간",
-night_hours: "야간 근무시간",
-holiday_hours: "휴일 근무시간",
-calculate_salary: "급여 계산하기",
-take_home_salary: "실수령 급여",
-gross_salary: "총 급여",
-insurance_title: "4대 보험",
-ot_pay: "연장수당",
-night_pay: "야간수당",
- 
-    // Profile
+
+    calculator_title: "급여 계산기",
+
+    hourly_wage: "시급",
+    working_days: "근무일수",
+    meal_allowance: "식대",
+
+    working_hours: "근무 시간",
+
+    basic_hours: "기본 시간",
+    ot_hours: "연장 시간",
+    night_hours: "야간 시간",
+    holiday_hours: "휴일 시간",
+
+    calculate_salary: "급여 계산하기",
+
+    take_home_salary: "실수령액",
+    gross_salary: "총 급여",
+
+    insurance_title: "4대보험",
+    ot_pay: "연장수당",
+    night_pay: "야간수당",
+
     profile_title: "내 프로필",
-    profile_subtitle: "한국에서 일하는 미얀마 근로자",
+    profile_subtitle: "한국 미얀마 근로자",
+
+    language_title: "🌐 언어",
     appearance_title: "🎨 화면 설정",
+    work_profile_title: "🏭 근무 정보",
+
     theme_auto: "자동",
     theme_light: "라이트",
     theme_dark: "다크",
-    work_profile_title: "🏭 근무 정보",
 
-    // Placeholders
-    company_name: "회사 이름",
-    hourly_wage_placeholder: "시급",
-    visa_type: "비자 종류 (E9 / F2 / D2)"
+    company_name: "회사명",
+    hourly_wage_placeholder: "시급 입력",
+    working_days_placeholder: "근무일수",
+    meal_allowance_placeholder: "식대 입력",
+    visa_type: "비자 종류"
+
   },
 
+  /* ================= MYANMAR ================= */
+
   my: {
-    // Home
-    language_title: "🌐 ဘာသာစကား",
-    home_takehome: "ဒီလ လက်ခံရမယ့်လစာ",
-    home_expected: "အာမခံဖြတ်ပြီး ရရှိမယ့်လစာ",
-    hourly_wage: "တစ်နာရီလုပ်ခ",
-    working_days: "အလုပ်လုပ်ရက်",
+
+    tab_home: "ပင်မ",
+    tab_calendar: "ပြက္ခဒိန်",
+    tab_calculator: "တွက်ချက်",
+    tab_history: "မှတ်တမ်း",
+    tab_profile: "ပရိုဖိုင်",
+
+    home_takehome: "ဒီလ လက်ခံရမယ့် လစာ",
+    home_expected: "အာမခံဖြတ်ပြီး ခန့်မှန်းလစာ",
+
     today_shift: "ဒီနေ့ အလုပ်ဆိုင်း",
+
     shift_day: "☀️ နေ့ဆိုင်း",
     shift_night: "🌙 ညဆိုင်း",
-    shift_holiday: "🎌 ပိတ်ရက်",
-calculator_title: "လစာတွက်စက်",
-meal_allowance: "စားစရိတ်",
-working_hours: "အလုပ်ချိန်",
-basic_hours: "ပုံမှန်အလုပ်ချိန်",
-ot_hours: "အချိန်ပို (OT)",
-night_hours: "ညဆိုင်းနာရီ",
-holiday_hours: "ပိတ်ရက်နာရီ",
-calculate_salary: "လစာတွက်မယ်",
-take_home_salary: "လက်ခံရမယ့်လစာ",
-gross_salary: "စုစုပေါင်းလစာ",
-insurance: "အာမခံ",
-ot_pay: "OT ကြေး",
-night_pay: "ညဆိုင်းကြေး",
-working_days_placeholder: "အလုပ်လုပ်ရက်",
-meal_allowance_placeholder: "စားစရိတ်",
-basic_hours_placeholder: "ပုံမှန်နာရီ",
-ot_hours_placeholder: "OT နာရီ",
-night_hours_placeholder: "ညဆိုင်းနာရီ",
-holiday_hours_placeholder: "ပိတ်ရက်နာရီ",
-    meal_allowance: "စားစရိတ်",
-working_hours: "အလုပ်ချိန်",
-basic_hours: "ပုံမှန်အလုပ်ချိန်",
-ot_hours: "အချိန်ပို (OT)",
-night_hours: "ညဆိုင်းနာရီ",
-holiday_hours: "ပိတ်ရက်နာရီ",
-calculate_salary: "လစာတွက်မယ်",
-take_home_salary: "လက်ခံရမယ့်လစာ",
-gross_salary: "စုစုပေါင်းလစာ",
-insurance_title: "အာမခံ",
-ot_pay: "OT ကြေး",
-night_pay: "ညဆိုင်းကြေး",
-    
-    // Profile
-    profile_title: "ကျွန်ုပ်၏ ပရိုဖိုင်",
+    shift_holiday: "🎌 အားလပ်ရက်",
+
+    calculator_title: "လစာတွက်စက်",
+
+    hourly_wage: "တစ်နာရီလုပ်ခ",
+    working_days: "အလုပ်ဆင်းရက်",
+    meal_allowance: "ထမင်းစရိတ်",
+
+    working_hours: "အလုပ်ချိန်",
+
+    basic_hours: "ပုံမှန်နာရီ",
+    ot_hours: "OT နာရီ",
+    night_hours: "ညနာရီ",
+    holiday_hours: "အားလပ်ရက်နာရီ",
+
+    calculate_salary: "လစာတွက်မယ်",
+
+    take_home_salary: "လက်ခံရမယ့် လစာ",
+    gross_salary: "စုစုပေါင်းလစာ",
+
+    insurance_title: "အာမခံ",
+    ot_pay: "OT ကြေး",
+    night_pay: "ညကြေး",
+
+    profile_title: "ကျွန်ုပ် ပရိုဖိုင်",
     profile_subtitle: "ကိုရီးယားရှိ မြန်မာအလုပ်သမား",
-    appearance_title: "🎨 အပြင်အဆင်",
+
+    language_title: "🌐 ဘာသာစကား",
+    appearance_title: "🎨 အရောင်အပြင်အဆင်",
+    work_profile_title: "🏭 အလုပ်အချက်အလက်",
+
     theme_auto: "အလိုအလျောက်",
     theme_light: "အလင်း",
     theme_dark: "အမှောင်",
-    work_profile_title: "🏭 အလုပ်အချက်အလက်",
 
-    // Placeholders
-    company_name: "ကုမ္ပဏီအမည်",
+    company_name: "ကုမ္ပဏီနာမည်",
     hourly_wage_placeholder: "တစ်နာရီလုပ်ခ",
-    visa_type: "ဗီဇာအမျိုးအစား (E9 / F2 / D2)"
+    working_days_placeholder: "အလုပ်ဆင်းရက်",
+    meal_allowance_placeholder: "ထမင်းစရိတ်",
+    visa_type: "ဗီဇာအမျိုးအစား"
+
   }
+
 };
 
-/* =========================================================
-   PART 18.2 — Factory Rule Popup
-   Open / Close Add Rule Popup
-========================================================= */
-
-const rulePopup = document.getElementById("rulePopup");
-const addRuleBtn = document.getElementById("addRuleBtn");
-const closeRulePopup = document.getElementById("closeRulePopup");
-
-// ===== Open Popup =====
-addRuleBtn?.addEventListener("click", () => {
-
-  document.getElementById("ruleType").value = "plus";
-  document.getElementById("ruleName").value = "";
-  document.getElementById("ruleAmount").value = "";
-
-  rulePopup.classList.remove("hidden");
-
-});
-
-// ===== Close Popup Button =====
-closeRulePopup?.addEventListener("click", () => {
-  rulePopup.classList.add("hidden");
-});
-
-// ===== Click Outside Popup =====
-rulePopup?.addEventListener("click", (e) => {
-
-  if (e.target === rulePopup) {
-    rulePopup.classList.add("hidden");
-  }
-
-});
-
-/* ===== PART 18.2 END ===== */
-
-
-
-/* =========================================================
-   PART 18.3 — Factory Rules Storage (Profile)
-   Save / Delete / LocalStorage / Calculator Sync
-========================================================= */
-
-// ===== Load Rules =====
-let factoryRules =
-  JSON.parse(localStorage.getItem("factoryRules")) || [];
-
-// ===== Save Rules =====
-function saveFactoryRules() {
-
-  localStorage.setItem(
-    "factoryRules",
-    JSON.stringify(factoryRules)
-  );
-
-}
-
-
-// =========================================================
-// Render Rules in PROFILE
-// =========================================================
-function renderFactoryRules() {
-
-  const list = document.getElementById("factoryRuleList");
-  if (!list) return;
-
-  list.innerHTML = "";
-
-  // Empty List
-  if (factoryRules.length === 0) {
-
-    list.innerHTML = `
-      <p style="color:#94A3B8;text-align:center;padding:18px 0;">
-        No factory rules yet.
-      </p>
-    `;
-
-    return;
-  }
-
-  // Create Rule Cards
-  factoryRules.forEach((rule, index) => {
-
-    const item = document.createElement("div");
-    item.className = "ruleItem";
-
-    item.innerHTML = `
-      <div>
-        <div class="${rule.type}">
-          ${rule.type === "plus" ? "🟢 +" : "🔴 -"} ${rule.name}
-        </div>
-
-        <strong>₩${Number(rule.amount).toLocaleString()}</strong>
-      </div>
-
-      <button class="removeBtn" data-index="${index}">
-        Delete
-      </button>
-    `;
-
-    list.appendChild(item);
-
-  });
-
-  // Delete Rule
-  list.querySelectorAll(".removeBtn").forEach(btn => {
-
-    btn.addEventListener("click", () => {
-
-      const index = Number(btn.dataset.index);
-
-      factoryRules.splice(index, 1);
-
-      saveFactoryRules();
-      renderFactoryRules();
-      renderCalculatorRules(); // Calculator Update
-
-    });
-
-  });
-
-}
-
-/* ===== renderFactoryRules END ===== */
-
-
-
-// =========================================================
-// Render Rules in CALCULATOR
-// =========================================================
-function renderCalculatorRules() {
-
-  const list = document.getElementById("calculatorRuleList");
-  const totalBox = document.getElementById("factoryRuleTotal");
-
-  if (!list || !totalBox) return;
-
-  list.innerHTML = "";
-
-  let total = 0;
-
-  factoryRules.forEach(rule => {
-
-    const row = document.createElement("div");
-    row.className = "calculatorRuleItem";
-
-    const value =
-      rule.type === "plus"
-        ? rule.amount
-        : -rule.amount;
-
-    total += value;
-
-    row.innerHTML = `
-      <span>
-        ${rule.type === "plus" ? "🟢" : "🔴"} ${rule.name}
-      </span>
-
-      <strong class="${rule.type}">
-        ${rule.type === "plus" ? "+" : "-"}
-        ₩${Number(rule.amount).toLocaleString()}
-      </strong>
-    `;
-
-    list.appendChild(row);
-
-  });
-
-  totalBox.textContent =
-    (total >= 0 ? "+ " : "- ")
-    + formatWon(Math.abs(total));
-
-}
-
-/* ===== renderCalculatorRules END ===== */
-
-
-
-// =========================================================
-// Save Rule Button
-// =========================================================
-document.getElementById("saveRuleBtn")?.addEventListener("click", () => {
-
-  const type = document.getElementById("ruleType").value;
-  const name = document.getElementById("ruleName").value.trim();
-  const amount = Number(document.getElementById("ruleAmount").value);
-
-  if (!name || amount <= 0) {
-
-    alert("Please enter rule name and amount.");
-
-    return;
-  }
-
-  factoryRules.push({
-    type,
-    name,
-    amount
-  });
-
-  saveFactoryRules();
-
-  renderFactoryRules();
-  renderCalculatorRules();
-
-  rulePopup.classList.add("hidden");
-
-});
-
-/* ===== Save Rule END ===== */
-
-
-
-// =========================================================
-// First Load (App Open)
-// =========================================================
-renderFactoryRules();
-renderCalculatorRules();
-
-/* ===== PART 18.3 END ===== */
-
-// First Load
-renderFactoryRules();
+/* ==========================================================
+   PART 2.2 — Apply Language
+========================================================== */
 
 function setLanguage(lang) {
+
   const dict = translations[lang];
 
-  // Text ပြောင်းမယ်
-  document.querySelectorAll("[data-lang]").forEach(el => {
+  if (!dict) return;
+
+  // Text
+  document.querySelectorAll("[data-lang]").forEach((el) => {
+
     const key = el.dataset.lang;
+
     if (dict[key]) {
       el.textContent = dict[key];
     }
+
   });
 
-  // Placeholder ပြောင်းမယ်
-  document.querySelectorAll("[data-lang-placeholder]").forEach(el => {
+  // Placeholder
+  document.querySelectorAll("[data-lang-placeholder]").forEach((el) => {
+
     const key = el.dataset.langPlaceholder;
+
     if (dict[key]) {
       el.placeholder = dict[key];
     }
+
   });
 
-  // Language သိမ်းထားမယ်
+  // Save
   localStorage.setItem("language", lang);
 
   if (languageSelect) {
     languageSelect.value = lang;
   }
-}
-
-// App ဖွင့်တဲ့အချိန် Language ပြန်တင်မယ်
-const savedLang = localStorage.getItem("language") || "en";
-setLanguage(savedLang);
-
-// Language ပြောင်းတဲ့အချိန်
-if (languageSelect) {
-  languageSelect.addEventListener("change", (e) => {
-    setLanguage(e.target.value);
-  });
-}
-
-// ---------- Calculator ----------
-
-function formatWon(num) {
-  return "₩" + Math.round(num).toLocaleString();
-}
-
-console.log("WorkPay KR JS Loaded");
-
-// ===== CALENDAR ENGINE =====
-
-const calendarGrid = document.getElementById("calendarGrid");
-const monthTitle = document.getElementById("monthTitle");
-
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-
-const monthNames = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December"
-];
-
-// ===== SHIFT STORAGE ENGINE =====
-
-// LocalStorage မှ Shift Data ဖတ်မယ်
-let shiftData = JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
-
-// Modal မှာ လက်ရှိရွေးထားတဲ့ Date
-let selectedDate = "";
-
-// Shift Data သိမ်းတဲ့ Function
-function saveShiftData() {
-  localStorage.setItem(
-    "workpay_shift_data",
-    JSON.stringify(shiftData)
-  );
-}
-
-// ===== Korea Public Holidays Database =====
-
-const koreaHolidays = {
-
-  // ================= 2025 =================
-  2025: {
-    "2025-01-01": "신정",
-    "2025-01-27": "임시공휴일",
-    "2025-01-28": "설날 연휴",
-    "2025-01-29": "설날",
-    "2025-01-30": "설날 연휴",
-
-    "2025-03-01": "삼일절",
-    "2025-03-03": "대체공휴일",
-
-    "2025-05-01": "노동절",
-    "2025-05-05": "어린이날 · 부처님 오신 날",
-    "2025-05-06": "대체공휴일",
-
-    "2025-06-03": "대통령선거",
-    "2025-06-06": "현충일",
-
-    "2025-08-15": "광복절",
-
-    "2025-10-03": "개천절",
-    "2025-10-05": "추석 연휴",
-    "2025-10-06": "추석",
-    "2025-10-07": "추석 연휴",
-    "2025-10-08": "대체공휴일",
-    "2025-10-09": "한글날",
-
-    "2025-12-25": "크리스마스"
-  },
-
-  // ================= 2026 =================
-  2026: {
-    "2026-01-01": "신정",
-
-    "2026-02-16": "설날 연휴",
-    "2026-02-17": "설날",
-    "2026-02-18": "설날 연휴",
-
-    "2026-03-01": "삼일절",
-    "2026-03-02": "대체공휴일",
-
-    "2026-05-01": "노동절",
-    "2026-05-05": "어린이날",
-    "2026-05-25": "부처님 오신 날",
-
-    "2026-06-06": "현충일",
-
-    "2026-07-17": "제헌절",
-
-    "2026-08-15": "광복절",
-    "2026-08-17": "대체공휴일",
-
-    "2026-09-24": "추석 연휴",
-    "2026-09-25": "추석",
-    "2026-09-26": "추석 연휴",
-    "2026-09-28": "대체공휴일",
-
-    "2026-10-03": "개천절",
-    "2026-10-05": "대체공휴일",
-    "2026-10-09": "한글날",
-
-    "2026-12-25": "크리스마스"
-  },
-
-  // ================= 2027 =================
-  2027: {
-    "2027-01-01": "신정",
-
-    "2027-02-06": "설날 연휴",
-    "2027-02-07": "설날",
-    "2027-02-08": "설날 연휴",
-    "2027-02-09": "대체공휴일",
-
-    "2027-03-01": "삼일절",
-
-    "2027-05-01": "노동절",
-    "2027-05-05": "어린이날",
-    "2027-05-13": "부처님 오신 날",
-
-    "2027-06-06": "현충일",
-
-    "2027-07-17": "제헌절",
-    "2027-08-15": "광복절",
-    "2027-08-16": "대체공휴일",
-
-    "2027-09-14": "추석 연휴",
-    "2027-09-15": "추석",
-    "2027-09-16": "추석 연휴",
-
-    "2027-10-03": "개천절",
-    "2027-10-04": "대체공휴일",
-    "2027-10-09": "한글날",
-    "2027-10-11": "대체공휴일",
-
-    "2027-12-25": "크리스마스",
-    "2027-12-27": "대체공휴일"
-  },
-
-  // ================= 2028 =================
-  2028: {
-    "2028-01-01": "신정",
-
-    "2028-01-25": "설날 연휴",
-    "2028-01-26": "설날",
-    "2028-01-27": "설날 연휴",
-
-    "2028-03-01": "삼일절",
-
-    "2028-05-01": "노동절",
-    "2028-05-05": "어린이날",
-    "2028-05-12": "부처님 오신 날",
-
-    "2028-06-06": "현충일",
-
-    "2028-07-17": "제헌절",
-
-    "2028-08-15": "광복절",
-
-    "2028-10-02": "추석 연휴",
-    "2028-10-03": "추석",
-    "2028-10-04": "추석 연휴",
-    "2028-10-05": "대체공휴일",
-
-    "2028-10-09": "한글날",
-
-    "2028-12-25": "크리스마스"
-  },
-
-  // ================= 2029 =================
-  2029: {
-    "2029-01-01": "신정",
-
-    "2029-02-12": "설날 연휴",
-    "2029-02-13": "설날",
-    "2029-02-14": "설날 연휴",
-
-    "2029-03-01": "삼일절",
-
-    "2029-05-01": "노동절",
-    "2029-05-05": "어린이날",
-    "2029-05-21": "부처님 오신 날",
-
-    "2029-06-06": "현충일",
-
-    "2029-07-17": "제헌절",
-
-    "2029-08-15": "광복절",
-
-    "2029-09-21": "추석 연휴",
-    "2029-09-22": "추석",
-    "2029-09-23": "추석 연휴",
-    "2029-09-24": "대체공휴일",
-
-    "2029-10-03": "개천절",
-    "2029-10-09": "한글날",
-
-    "2029-12-25": "크리스마스"
-  },
-
-  // ================= 2030 =================
-  2030: {
-    "2030-01-01": "신정",
-
-    "2030-02-01": "설날 연휴",
-    "2030-02-02": "설날",
-    "2030-02-03": "설날 연휴",
-
-    "2030-03-01": "삼일절",
-
-    "2030-05-01": "노동절",
-    "2030-05-05": "어린이날",
-    "2030-05-10": "부처님 오신 날",
-
-    "2030-06-06": "현충일",
-
-    "2030-07-17": "제헌절",
-
-    "2030-08-15": "광복절",
-
-    "2030-09-11": "추석 연휴",
-    "2030-09-12": "추석",
-    "2030-09-13": "추석 연휴",
-
-    "2030-10-03": "개천절",
-    "2030-10-09": "한글날",
-
-    "2030-12-25": "크리스마스"
-  },
-
-  // ================= 2031 =================
-  2031: {
-    "2031-01-01": "신정",
-
-    "2031-01-22": "설날 연휴",
-    "2031-01-23": "설날",
-    "2031-01-24": "설날 연휴",
-
-    "2031-03-01": "삼일절",
-
-    "2031-05-01": "노동절",
-    "2031-05-05": "어린이날",
-    "2031-04-30": "부처님 오신 날",
-
-    "2031-06-06": "현충일",
-
-    "2031-07-17": "제헌절",
-
-    "2031-08-15": "광복절",
-
-    "2031-09-30": "추석 연휴",
-    "2031-10-01": "추석",
-    "2031-10-02": "추석 연휴",
-
-    "2031-10-03": "개천절",
-    "2031-10-09": "한글날",
-
-    "2031-12-25": "크리스마스"
-  },
-
-  // ================= 2032 =================
-  2032: {
-    "2032-01-01": "신정",
-
-    "2032-02-09": "설날 연휴",
-    "2032-02-10": "설날",
-    "2032-02-11": "설날 연휴",
-
-    "2032-03-01": "삼일절",
-
-    "2032-05-01": "노동절",
-    "2032-05-05": "어린이날",
-    "2032-05-18": "부처님 오신 날",
-
-    "2032-06-06": "현충일",
-
-    "2032-07-17": "제헌절",
-
-    "2032-08-15": "광복절",
-
-    "2032-09-18": "추석 연휴",
-    "2032-09-19": "추석",
-    "2032-09-20": "추석 연휴",
-
-    "2032-10-03": "개천절",
-    "2032-10-09": "한글날",
-
-    "2032-12-25": "크리스마스"
-  },
-
-    // ================= 2033 =================
-  2033: {
-    "2033-01-01": "신정",
-
-    "2033-01-28": "설날 연휴",
-    "2033-01-29": "설날",
-    "2033-01-30": "설날 연휴",
-
-    "2033-03-01": "삼일절",
-
-    "2033-05-01": "노동절",
-    "2033-05-05": "어린이날",
-    "2033-05-07": "부처님 오신 날",
-
-    "2033-06-06": "현충일",
-
-    "2033-07-17": "제헌절",
-
-    "2033-08-15": "광복절",
-
-    "2033-09-07": "추석 연휴",
-    "2033-09-08": "추석",
-    "2033-09-09": "추석 연휴",
-
-    "2033-10-03": "개천절",
-    "2033-10-09": "한글날",
-
-    "2033-12-25": "크리스마스"
-  },
-
-  // ================= 2034 =================
-  2034: {
-    "2034-01-01": "신정",
-
-    "2034-02-16": "설날 연휴",
-    "2034-02-17": "설날",
-    "2034-02-18": "설날 연휴",
-
-    "2034-03-01": "삼일절",
-
-    "2034-05-01": "노동절",
-    "2034-05-05": "어린이날",
-    "2034-05-26": "부처님 오신 날",
-
-    "2034-06-06": "현충일",
-
-    "2034-07-17": "제헌절",
-
-    "2034-08-15": "광복절",
-
-    "2034-09-26": "추석 연휴",
-    "2034-09-27": "추석",
-    "2034-09-28": "추석 연휴",
-
-    "2034-10-03": "개천절",
-    "2034-10-09": "한글날",
-
-    "2034-12-25": "크리스마스"
-  },
-
-  // ================= 2035 =================
-  2035: {
-    "2035-01-01": "신정",
-
-    "2035-02-05": "설날 연휴",
-    "2035-02-06": "설날",
-    "2035-02-07": "설날 연휴",
-
-    "2035-03-01": "삼일절",
-
-    "2035-05-01": "노동절",
-    "2035-05-05": "어린이날",
-    "2035-05-15": "부처님 오신 날",
-
-    "2035-06-06": "현충일",
-
-    "2035-07-17": "제헌절",
-
-    "2035-08-15": "광복절",
-
-    "2035-09-15": "추석 연휴",
-    "2035-09-16": "추석",
-    "2035-09-17": "추석 연휴",
-
-    "2035-10-03": "개천절",
-    "2035-10-09": "한글날",
-
-    "2035-12-25": "크리스마스"
-  }
-
-};
-  
-function getDateKey(year, month, day) {
-  const m = String(month + 1).padStart(2, "0");
-  const d = String(day).padStart(2, "0");
-  return `${year}-${m}-${d}`;
-}
-
-function renderCalendar() {
-
-  if (!calendarGrid) return;
-
-  calendarGrid.innerHTML = "";
-
-  monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-
-  document.getElementById("jumpMonth").value = currentMonth;
-  document.getElementById("jumpYear").value = currentYear;
-
-  const today = new Date();
-
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  // ✅ ဒီနှစ် Holiday Data ကိုယူ
-  const holidayData = koreaHolidays[currentYear] || {};
-
-  // Empty Cells
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
-    calendarGrid.appendChild(empty);
-  }
-
-  // Days
-  for (let day = 1; day <= daysInMonth; day++) {
-
-    const cell = document.createElement("div");
-    cell.className = "dayCell";
-
-    const date = new Date(currentYear, currentMonth, day);
-    const weekDay = date.getDay();
-    const dateKey = getDateKey(currentYear, currentMonth, day);
-
-    const dayNumber = document.createElement("div");
-    dayNumber.className = "dayNumber";
-    dayNumber.textContent = day;
-    cell.appendChild(dayNumber);
-
-    // Sunday
-    if (weekDay === 0) {
-      cell.classList.add("sunday");
-    }
-
-    // Today
-    if (
-      day === today.getDate() &&
-      currentMonth === today.getMonth() &&
-      currentYear === today.getFullYear()
-    ) {
-      cell.classList.add("today");
-    }
-
-    // Click Day → Open Popup
-    cell.addEventListener("click", () => {
-      openDayPopup(dateKey);
-    });
-
-    // Holiday (နှစ်အလိုက်)
-    if (holidayData[dateKey]) {
-      cell.classList.add("holiday");
-
-      const holidayName = document.createElement("div");
-      holidayName.className = "holidayName";
-      holidayName.innerHTML = holidayData[dateKey].replace(" 연휴", "<br>연휴");
-
-      cell.appendChild(holidayName);
-    }
-
- // Saved Shift Display
-const saved = shiftData[dateKey];
-
-if (saved) {
-  cell.classList.add("shift-" + saved.shift);
-
-  if (saved.ot > 0) {
-    const badge = document.createElement("div");
-    badge.className = "otBadge";
-    badge.textContent = `OT ${saved.ot}h`;
-    cell.appendChild(badge);
-  }
-}   
-
-    calendarGrid.appendChild(cell);
-  }
-
-} // ✅ renderCalendar ပိတ်တဲ့ } မပျောက်ရ
-
-/* ===== PART 15.1 Monthly Calendar Summary ===== */
-
-function getMonthlySummary(year = currentYear, month = currentMonth) {
-
-  let summary = {
-    workingDays: 0,
-    nightDays: 0,
-    holidayDays: 0,
-    otHours: 0,
-    nightHours: 0,
-    holidayHours: 0
-  };
-
-  Object.entries(shiftData).forEach(([dateKey, data]) => {
-
-    const date = new Date(dateKey);
-
-    if (
-      date.getFullYear() !== year ||
-      date.getMonth() !== month
-    ) return;
-
-    switch (data.shift) {
-
-      case "day":
-        summary.workingDays++;
-        break;
-
-      case "night":
-
-        summary.workingDays++;
-        summary.nightDays++;
-
-        // Korea Night Rule (22:00~06:00 - Break)
-        const nightResult = calculateWorkTime(
-          data.start || "20:30",
-          data.end || "08:30",
-          data.breakStart || "00:30",
-          data.break || 60
-        );
-
-        summary.nightHours += nightResult.nightHours;
-        summary.otHours += nightResult.otHours;
-
-        break;
-
-      case "holiday":
-
-        summary.holidayDays++;
-
-        const holidayResult = calculateWorkTime(
-          data.start || "08:30",
-          data.end || "17:30",
-          data.breakStart || "12:30",
-          data.break || 60
-        );
-
-        summary.holidayHours += holidayResult.workedHours;
-        summary.otHours += holidayResult.otHours;
-
-        break;
-
-    }
-
-    // Day Shift OT
-    if (data.shift === "day") {
-      summary.otHours += Number(data.ot || 0);
-    }
-
-  });
-
-  return summary;
 
 }
 
+/* ==========================================================
+   PART 2.3 — Load Saved Language
+========================================================== */
 
-// ===== PART 15.2 Calendar → Calculator Sync =====
+const savedLanguage =
+  localStorage.getItem("language") || "en";
 
-function syncCalendarToCalculator() {
+setLanguage(savedLanguage);
 
-  const summary = getMonthlySummary();
+/* ==========================================================
+   PART 2.4 — Change Language Event
+========================================================== */
 
-  // Calculator Inputs
-  document.getElementById("workingDays").value = summary.workingDays;
-  document.getElementById("otHours").value = summary.otHours;
-  document.getElementById("nightHours").value = summary.nightHours;
-  document.getElementById("holidayHours").value = summary.holidayHours;
+languageSelect?.addEventListener("change", (e) => {
 
-  // Home Summary
-  document.getElementById("homeDays").textContent = summary.workingDays;
-document.getElementById("homeOT").textContent = summary.otHours;
-document.getElementById("homeNight").textContent = summary.nightHours;
-document.getElementById("homeHoliday").textContent = summary.holidayHours;
-  
-  // Wage ရှိရင် Auto Salary Calculate
-  const wage = Number(document.getElementById("hourlyWage").value);
-
-  if (wage > 0) {
-    calculateSalary();
-  }
-
-}
-
-/* ===== PART 17.2 WorkPay KR Salary Engine (Official Fixed) ===== */
-
-function calculateSalary() {
-
-  // ===== Hourly Wage =====
-  const wage = Number(document.getElementById("hourlyWage").value) || 10320;
-  const meal = Number(document.getElementById("mealAllowance").value) || 0;
-
-  // ===== Calendar Summary =====
-  const summary = getMonthlySummary();
-
-  const workingDays = summary.workingDays || 0;
-  const basicHours = workingDays * 8;          // Basic = 8h/day
-  const otHours = summary.otHours || 0;
-  const nightHours = summary.nightHours || 0;
-  const holidayHours = summary.holidayHours || 0;
-
-  // ===== Auto Fill Calculator Inputs =====
-  document.getElementById("workingDays").value = workingDays;
-  document.getElementById("basicHours").value = basicHours;
-  document.getElementById("otHours").value = otHours;
-  document.getElementById("nightHours").value = nightHours;
-  document.getElementById("holidayHours").value = holidayHours;
-
-  // ===== Korea Salary Formula =====
-  // Worked Hours = Basic 8h + OT Hours
-  const workedHours = basicHours + otHours;
-
-  // Basic wage for all worked hours
-  const basicPay = workedHours * wage;
-
-  // Extra premiums only
-  const otPay = otHours * wage * 0.5;
-  const nightPay = nightHours * wage * 0.5;
-  const holidayPay = holidayHours * wage * 0.5;
-
-  const grossSalary =
-    basicPay +
-    otPay +
-    nightPay +
-    holidayPay +
-    meal;
-
-  const insurance = Math.round(grossSalary * 0.09);
-  const takeHome = grossSalary - insurance;
-
-  // ===== Calculator Result =====
-  document.getElementById("grossSalary").textContent = formatWon(grossSalary);
-  document.getElementById("insurance").textContent = formatWon(insurance);
-
-  document.getElementById("otPay").textContent = formatWon(otPay);
-  document.getElementById("nightPay").textContent = formatWon(nightPay);
-
-  const takeHomeBox =
-    document.getElementById("takeHomeSalary") ||
-    document.getElementById("netSalary");
-
-  if (takeHomeBox) {
-    takeHomeBox.textContent = formatWon(takeHome);
-  }
-
-  // ===== Home Dashboard =====
-  document.getElementById("homeSalary").textContent = formatWon(takeHome);
-  document.getElementById("homeWage").textContent = formatWon(wage);
-  document.getElementById("homeDays").textContent = workingDays;
-
-}
-
-/* ===== Time Calculation Engine (WorkPay KR Official) ===== */
-
-function calculateWorkTime(start, end, breakStart = "00:30", breakMinutes = 60) {
-
-  const toMinutes = (time) => {
-    const [h, m] = time.split(":").map(Number);
-    return h * 60 + m;
-  };
-
-  let startMin = toMinutes(start);
-  let endMin = toMinutes(end);
-
-  // Overnight Shift (20:30 → 08:30)
-  if (endMin <= startMin) {
-    endMin += 24 * 60;
-  }
-
-  // ===== Worked Hours =====
-  const workedHours = (endMin - startMin - breakMinutes) / 60;
-
-  // ===== OT Hours (Korea = over 8h) =====
-  const otHours = Math.max(0, workedHours - 8);
-
-  // ===== Night Hours (22:00 ~ 06:00) =====
-  let nightMinutes = 0;
-
-  for (let t = startMin; t < endMin; t++) {
-    const minuteOfDay = t % (24 * 60);
-
-    if (
-      minuteOfDay >= 22 * 60 ||   // 22:00 - 24:00
-      minuteOfDay < 6 * 60        // 00:00 - 06:00
-    ) {
-      nightMinutes++;
-    }
-  }
-
-  // ===== Break Minutes =====
-  let breakStartMin = toMinutes(breakStart);
-
-  // Break after midnight belongs to next day
-  if (breakStartMin < startMin) {
-    breakStartMin += 24 * 60;
-  }
-
-  const breakEndMin = breakStartMin + breakMinutes;
-
-  // Remove only break minutes inside night period
-  for (let t = breakStartMin; t < breakEndMin; t++) {
-    const minuteOfDay = t % (24 * 60);
-
-    if (
-      minuteOfDay >= 22 * 60 ||
-      minuteOfDay < 6 * 60
-    ) {
-      nightMinutes = Math.max(0, nightMinutes - 1);
-    }
-  }
-
-  return {
-    workedHours: Number(workedHours.toFixed(1)),
-    otHours: Number(otHours.toFixed(1)),
-    nightHours: Number((nightMinutes / 60).toFixed(1))
-  };
-
-}
-
-// ===== Month Buttons =====
-
-document.getElementById("prevMonth")?.addEventListener("click", () => {
-  currentMonth--;
-
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    currentYear--;
-  }
-
-  renderCalendar();
-  syncCalendarToCalculator();
-});
-
-document.getElementById("nextMonth")?.addEventListener("click", () => {
-  currentMonth++;
-
-  if (currentMonth > 11) {
-    currentMonth = 0;
-    currentYear++;
-  }
-
-  renderCalendar();
-  syncCalendarToCalculator();
-});
-
-// App Start
-renderCalendar();
-syncCalendarToCalculator();
-
-
-// ===== Today Button =====
-
-document.getElementById("todayBtn")?.addEventListener("click", () => {
-
-  const today = new Date();
-
-  currentMonth = today.getMonth();
-  currentYear = today.getFullYear();
-
-  renderCalendar();
-  syncCalendarToCalculator();
+  setLanguage(e.target.value);
 
 });
 
 
-// ===== Jump Button =====
 
-document.getElementById("jumpBtn")?.addEventListener("click", () => {
-
-  currentMonth = parseInt(document.getElementById("jumpMonth").value, 10);
-  currentYear = parseInt(document.getElementById("jumpYear").value, 10);
-
-  renderCalendar();
-  syncCalendarToCalculator();
-
-});
-
-// ===== Calendar Popup System (Part 14.5 Official Fix) =====
-
-const dayPopup = document.getElementById("dayPopup");
-const popupDate = document.getElementById("popupDate");
-const closePopup = document.getElementById("closePopup");
-
-const saveDayBtn = document.getElementById("saveDayBtn");
-const deleteDayBtn = document.getElementById("deleteDayBtn");
-
-let selectedShift = "day";
-
-// ---------------- Shift Buttons ----------------
-
-const shiftButtons = document.querySelectorAll(".shift-btn");
-
-shiftButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    shiftButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    selectedShift = btn.dataset.shift;
-  });
-});
-
-function resetPopupShift() {
-  shiftButtons.forEach((b) => b.classList.remove("active"));
-
-  const dayBtn = document.querySelector('.shift-btn[data-shift="day"]');
-  if (dayBtn) dayBtn.classList.add("active");
-
-  selectedShift = "day";
-}
-
-// OT တွက်
-function calculateOTHours() {
-
-  const start = document.getElementById("popupStart").value;
-  const end = document.getElementById("popupEnd").value;
-  const breakStart = document.getElementById("popupBreakStart").value || "00:30";
-  const breakMinutes = Number(document.getElementById("popupBreak").value) || 0;
-
-  if (!start || !end) return;
-
-  const result = calculateWorkTime(
-    start,
-    end,
-    breakStart,
-    breakMinutes
-  );
-
-  // OT Auto Fill
-  document.getElementById("popupOT").value =
-    result.otHours % 1 === 0
-      ? result.otHours
-      : result.otHours.toFixed(1);
-
-}
-
-// ---------------- Popup Open ----------------
-
-function openDayPopup(dateKey) {
-
-  selectedDate = dateKey;
-  popupDate.textContent = dateKey;
-
-  resetPopupShift();
-
-  const saved = shiftData[selectedDate];
-
-  if (saved) {
-
-    selectedShift = saved.shift || "day";
-
-    shiftButtons.forEach((btn) => {
-      btn.classList.toggle(
-        "active",
-        btn.dataset.shift === selectedShift
-      );
-    });
-
-    // Saved Values
-    document.getElementById("popupStart").value = saved.start || "08:30";
-    document.getElementById("popupEnd").value = saved.end || "17:30";
-    document.getElementById("popupBreakStart").value = saved.breakStart || "00:00";
-    document.getElementById("popupBreak").value = saved.break || 60;
-    document.getElementById("popupOT").value = saved.ot || "";
-    document.getElementById("popupNote").value = saved.note || "";
-
-  } else {
-
-    // Default Values
-    document.getElementById("popupStart").value = "08:30";
-    document.getElementById("popupEnd").value = "17:30";
-    document.getElementById("popupBreakStart").value = "00:00";
-    document.getElementById("popupBreak").value = 60;
-    document.getElementById("popupOT").value = "";
-    document.getElementById("popupNote").value = "";
-
-  }
-
-  calculateOTHours();
-  dayPopup.classList.remove("hidden");
-}
-
-// Auto Update OT
-["popupStart", "popupEnd", "popupBreak", "popupBreakStart"].forEach((id) => {
-
-  const input = document.getElementById(id);
-
-  if (!input) return;
-
-  input.addEventListener("input", calculateOTHours);
-  input.addEventListener("change", calculateOTHours);
-
-});
-
-// ---------------- Close Popup ----------------
-
-if (closePopup) {
-  closePopup.addEventListener("click", () => {
-    dayPopup.classList.add("hidden");
-  });
-}
-
-if (dayPopup) {
-  dayPopup.addEventListener("click", (e) => {
-    if (e.target === dayPopup) {
-      dayPopup.classList.add("hidden");
-    }
-  });
-}
-
-// ---------------- Save Shift ----------------
-
-if (saveDayBtn) {
-
-  saveDayBtn.addEventListener("click", () => {
-
-    if (!selectedDate) return;
-
-    calculateOTHours();
-
-    shiftData[selectedDate] = {
-
-      shift: selectedShift,
-
-      start: document.getElementById("popupStart").value,
-      end: document.getElementById("popupEnd").value,
-
-      // NEW (Part 16.4)
-      breakStart: document.getElementById("popupBreakStart").value,
-      break: Number(document.getElementById("popupBreak").value) || 60,
-
-      ot: Number(document.getElementById("popupOT").value) || 0,
-      note: document.getElementById("popupNote").value.trim()
-
-    };
-
-    saveShiftData();
-    renderCalendar();
-    syncCalendarToCalculator();
-
-    dayPopup.classList.add("hidden");
-
-  });
-
-}
-
-// ---------------- Delete Shift ----------------
-
-if (deleteDayBtn) {
-
-  deleteDayBtn.addEventListener("click", () => {
-
-    if (!selectedDate) return;
-
-    delete shiftData[selectedDate];
-
-    saveShiftData();
-    renderCalendar();
-    syncCalendarToCalculator();
-
-    dayPopup.classList.add("hidden");
-
-  });
-
-}
