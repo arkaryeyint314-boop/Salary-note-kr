@@ -769,6 +769,60 @@ window.addEventListener("DOMContentLoaded", () => {
 
 });
 
+/* ==========================================================
+   PART 5.2 — AUTO OT CALCULATOR
+========================================================== */
+
+// Time String → Minutes
+function timeToMinutes(time) {
+
+  const [hour, minute] = time.split(":").map(Number);
+
+  return (hour * 60) + minute;
+
+}
+
+// Calculate OT Hours
+function calculateOTHours() {
+
+  const start = document.getElementById("popupStart").value;
+  const end = document.getElementById("popupEnd").value;
+  const breakMinutes =
+    Number(document.getElementById("popupBreak").value) || 0;
+
+  if (!start || !end) return;
+
+  let startMin = timeToMinutes(start);
+  let endMin = timeToMinutes(end);
+
+  // Night Shift (cross midnight)
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
+  }
+
+  const totalMinutes =
+    endMin - startMin - breakMinutes;
+
+  const totalHours = totalMinutes / 60;
+
+  // Basic Working Hours = 8
+  const otHours = Math.max(0, totalHours - 8);
+
+  document.getElementById("popupOT").value =
+    otHours.toFixed(1);
+
+}
+
+// Auto Recalculate
+["popupStart","popupEnd","popupBreak"].forEach(id => {
+
+  document.getElementById(id)?.addEventListener(
+    "input",
+    calculateOTHours
+  );
+
+});
+
 
 
 
