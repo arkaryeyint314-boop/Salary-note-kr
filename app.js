@@ -261,58 +261,6 @@ function formatWon(num) {
   return "₩" + Math.round(num).toLocaleString();
 }
 
-function calculateSalary() {
-  // Validate required fields
-const wageInput = document.getElementById("hourlyWage");
-const daysInput = document.getElementById("workingDays");
-
-if (wageInput.value.trim() === "") {
-  alert("Please enter your hourly wage.");
-  wageInput.focus();
-  return;
-}
-
-if (daysInput.value.trim() === "") {
-  alert("Please enter working days.");
-  daysInput.focus();
-  return;
-}
-  // ===== Calendar Mode Data =====
-const summary = getMonthlySummary();
-
-const wage = Number(document.getElementById("hourlyWage").value) || 0;
-const days = Number(document.getElementById("workingDays").value) || summary.workingDays;
-const meal = Number(document.getElementById("mealAllowance").value) || 0;
-const basic = Number(document.getElementById("basicHours").value) || 8;
-const ot = Number(document.getElementById("otHours").value) || summary.otHours;
-const night = Number(document.getElementById("nightHours").value) || summary.nightHours;
-const holiday = Number(document.getElementById("holidayHours").value) || summary.holidayHours;
-
-  // Salary calculation
-  const basicPay = wage * basic * days;
-  const otPay = wage * 1.5 * ot;
-  const nightPay = wage * 1.5 * night;
-  const holidayPay = wage * 2 * holiday;
-
-  const gross = basicPay + otPay + nightPay + holidayPay + meal;
-  const insurance = gross * 0.09;
-  const net = gross - insurance;
-
-  // Calculator page results
-  document.getElementById("grossSalary").textContent = formatWon(gross);
-  document.getElementById("insurance").textContent = formatWon(insurance);
-  document.getElementById("otPay").textContent = formatWon(otPay);
-  document.getElementById("nightPay").textContent = formatWon(nightPay);
-  document.getElementById("netSalary").textContent = formatWon(net);
-
-  // ===== Home Dashboard Update =====
-document.getElementById("homeSalary").textContent = formatWon(net);
-document.getElementById("homeWage").textContent = formatWon(wage);
-
-// Calendar Summary က Working Days ကိုပြ
-document.getElementById("homeDays").textContent = summary.workingDays;
-}
-
 console.log("WorkPay KR JS Loaded");
 
 // ===== CALENDAR ENGINE =====
@@ -910,11 +858,17 @@ function calculateSalary() {
   document.getElementById("nightHours").value = nightHours;
   document.getElementById("holidayHours").value = holidayHours;
 
-  // ===== Salary Formula (Korea Rule) =====
-  const basicPay = (basicHours + otHours) * wage;   // 8h + OT = 11h
-  const otPay = otHours * wage * 0.5;
-  const nightPay = nightHours * wage * 0.5;
-  const holidayPay = holidayHours * wage * 0.5;
+// ===== Salary Formula (WorkPay KR Official) =====
+
+// Basic wage includes all worked hours (8h + OT hours)
+const workedHours = basicHours + otHours;
+
+const basicPay = workedHours * wage;
+
+// Premiums only (extra 50%)
+const otPay = otHours * wage * 0.5;
+const nightPay = nightHours * wage * 0.5;
+const holidayPay = holidayHours * wage * 0.5;
 
   const grossSalary =
     basicPay +
@@ -929,7 +883,13 @@ function calculateSalary() {
   // ===== Result Cards =====
   document.getElementById("grossSalary").textContent = formatWon(grossSalary);
   document.getElementById("insurance").textContent = formatWon(insurance);
-  document.getElementById("takeHomeSalary").textContent = formatWon(takeHome);
+  const takeHomeBox =
+  document.getElementById("takeHomeSalary") ||
+  document.getElementById("netSalary");
+
+if (takeHomeBox) {
+  takeHomeBox.textContent = formatWon(takeHome);
+}
   document.getElementById("otPay").textContent = formatWon(otPay);
   document.getElementById("nightPay").textContent = formatWon(nightPay);
 
