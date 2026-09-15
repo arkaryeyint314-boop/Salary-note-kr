@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!-- =========================================================
+     WORKPAY KR PRO v1.0
+     Myanmar Worker Salary Calculator (Korea)
+     Official HTML Structure (Part 13 → Part 22)
+========================================================= -->
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,33 +17,46 @@
 
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="phone">
 
-  <!-- Header -->
-  <header class="topHeader">
-    <div>
-      <p class="smallText">🇰🇷 September Salary</p>
-      <h1>WorkPay KR</h1>
-    </div>
-    <button id="themeBtn" class="iconBtn">🌙</button>
-  </header>
+<!-- =========================================================
+     APP HEADER
+========================================================= -->
 
-<!-- HOME -->
+<header class="topHeader">
+  <div>
+    <p class="smallText">🇰🇷 September Salary</p>
+    <h1>WorkPay KR</h1>
+  </div>
+
+  <button id="themeBtn" class="iconBtn">🌙</button>
+</header>
+
+<!-- =========================================================
+     HOME PAGE (Dashboard)
+========================================================= -->
+
 <main id="home" class="page activePage">
 
-  <!-- Hero Salary Card -->
+  <!-- ===== HOME 1 : Salary Summary Card ===== -->
+
   <section class="heroCard">
+
     <p data-lang="home_takehome">This Month Take Home</p>
+
     <h2 id="homeSalary">₩0</h2>
 
     <span data-lang="home_expected">
       Expected salary after insurance
     </span>
+
   </section>
 
-  <!-- Monthly Summary Dashboard -->
+  <!-- ===== HOME 2 : Monthly Summary Dashboard ===== -->
+
   <section class="grid2">
 
     <div class="miniCard blue">
@@ -62,7 +81,8 @@
 
   </section>
 
-  <!-- Hourly Wage -->
+  <!-- ===== HOME 3 : Hourly Wage Card ===== -->
+
   <section class="grid2">
 
     <div class="miniCard blue">
@@ -72,76 +92,94 @@
 
   </section>
 
-  <!-- Today's Shift -->
+  <!-- ===== HOME 4 : Today's Shift Card ===== -->
+
   <section class="card">
+
     <h3 data-lang="today_shift">Today's Shift</h3>
 
     <div class="chips">
-      <button class="chip active" data-lang="shift_day">☀️ Day</button>
-      <button class="chip" data-lang="shift_night">🌙 Night</button>
-      <button class="chip" data-lang="shift_holiday">🎌 Holiday</button>
+
+      <button class="chip active" data-lang="shift_day">
+        ☀️ Day
+      </button>
+
+      <button class="chip" data-lang="shift_night">
+        🌙 Night
+      </button>
+
+      <button class="chip" data-lang="shift_holiday">
+        🎌 Holiday
+      </button>
+
     </div>
+
   </section>
 
 </main>
-  
-<!-- CALENDAR -->
+
+<!-- =========================================================
+     CALENDAR PAGE (Part 13 → Part 16)
+========================================================= -->
+
 <main id="calendar" class="page">
 
   <section class="card">
 
     <div class="monthHeader">
 
-  <button id="prevMonth">◀</button>
+      <button id="prevMonth">◀</button>
 
-  <div class="monthCenter">
-    <h2 id="monthTitle">September 2026</h2>
-    <p id="monthSubtitle">대한민국 Work Calendar</p>
+      <div class="monthCenter">
 
-    <button id="todayBtn" class="todayBtn">
-      📍 Today
-    </button>
-  </div>
+        <h2 id="monthTitle">September 2026</h2>
 
-  <button id="nextMonth">▶</button>
+        <p id="monthSubtitle">대한민국 Work Calendar</p>
 
-</div>
+        <button id="todayBtn" class="todayBtn">
+          📍 Today
+        </button>
 
-<!-- Jump Month / Year -->
+      </div>
 
-<div class="jumpCalendar">
+      <button id="nextMonth">▶</button>
 
-  <select id="jumpMonth">
-    <option value="0">January</option>
-    <option value="1">February</option>
-    <option value="2">March</option>
-    <option value="3">April</option>
-    <option value="4">May</option>
-    <option value="5">June</option>
-    <option value="6">July</option>
-    <option value="7">August</option>
-    <option value="8">September</option>
-    <option value="9">October</option>
-    <option value="10">November</option>
-    <option value="11">December</option>
-  </select>
+    </div>
 
-  <input
-    id="jumpYear"
-    type="number"
-    min="2020"
-    max="2050"
-    value="2026"
-    placeholder="Year"
-  >
+    <!-- ===== PART 13.1 : Month / Year Navigation ===== -->
 
-  <button id="jumpBtn">
-    Go
-  </button>
+    <div class="jumpCalendar">
 
-</div>
+      <select id="jumpMonth">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+
+      <input
+        id="jumpYear"
+        type="number"
+        min="2020"
+        max="2050"
+        value="2026"
+        placeholder="Year"
+      >
+
+      <button id="jumpBtn">Go</button>
+
+    </div>
 
     <div class="weekDays">
+
       <span class="sun">SUN</span>
       <span>MON</span>
       <span>TUE</span>
@@ -149,14 +187,17 @@
       <span>THU</span>
       <span>FRI</span>
       <span class="sat">SAT</span>
+
     </div>
 
     <div id="calendarGrid" class="calendarGrid"></div>
 
   </section>
 
-  <!-- Legend -->
+  <!-- ===== PART 13.2 : Calendar Legend ===== -->
+
   <section class="card">
+
     <h3>Calendar Legend</h3>
 
     <div class="legendGrid">
@@ -191,283 +232,382 @@
   </section>
 
 </main>
-  
-<!-- ================= CALCULATOR ================= -->
+
+<!-- =========================================================
+     CALCULATOR PAGE (Part 17 → Part 19)
+========================================================= -->
+
 <main id="calculator" class="page">
 
-  <!-- Salary Input -->
+  <!-- ===== PART 17.1 : Salary Calculator Inputs ===== -->
+
   <section class="card">
+
     <h2 data-lang="calculator_title">Salary Calculator</h2>
 
     <label data-lang="hourly_wage">Hourly Wage (₩)</label>
-    <input id="hourlyWage" type="number"
-           data-lang-placeholder="hourly_wage_placeholder"
-           placeholder="10320">
+    <input
+      id="hourlyWage"
+      type="number"
+      data-lang-placeholder="hourly_wage_placeholder"
+      placeholder="10320"
+    >
 
     <label data-lang="working_days">Working Days</label>
-    <input id="workingDays" type="number"
-           data-lang-placeholder="working_days_placeholder"
-           placeholder="22"
-           readonly>
+    <input
+      id="workingDays"
+      type="number"
+      data-lang-placeholder="working_days_placeholder"
+      placeholder="22"
+      readonly
+    >
 
     <label data-lang="meal_allowance">Meal Allowance</label>
-    <input id="mealAllowance" type="number"
-           data-lang-placeholder="meal_allowance_placeholder"
-           placeholder="100000">
+    <input
+      id="mealAllowance"
+      type="number"
+      data-lang-placeholder="meal_allowance_placeholder"
+      placeholder="100000"
+    >
+
   </section>
 
-  <!-- Working Hours -->
+  <!-- ===== PART 17.2 : Working Hours Summary ===== -->
+
   <section class="card">
+
     <h3 data-lang="working_hours">Working Hours</h3>
 
     <div class="grid2Inputs">
 
       <div>
         <label data-lang="basic_hours">Basic Hours</label>
-        <input id="basicHours" type="number"
-               value="0"
-               readonly>
+        <input
+          id="basicHours"
+          type="number"
+          value="0"
+          readonly
+        >
       </div>
 
       <div>
         <label data-lang="ot_hours">OT Hours</label>
-        <input id="otHours" type="number"
-               readonly>
+        <input
+          id="otHours"
+          type="number"
+          readonly
+        >
       </div>
 
       <div>
         <label data-lang="night_hours">Night Hours</label>
-        <input id="nightHours" type="number"
-               readonly>
+        <input
+          id="nightHours"
+          type="number"
+          readonly
+        >
       </div>
 
       <div>
         <label data-lang="holiday_hours">Holiday Hours</label>
-        <input id="holidayHours" type="number"
-               readonly>
+        <input
+          id="holidayHours"
+          type="number"
+          readonly
+        >
       </div>
 
     </div>
+
   </section>
 
-  <!-- ================= PART 18.1 Custom Pay / Deduction ================= -->
+  <!-- ===== PART 18 : Extra Pay / Deduction ===== -->
 
   <section class="card" id="customPayCard">
 
     <div class="cardHeader">
+
       <h3>💰 Extra Pay / Deduction</h3>
 
       <button id="addPayItem" class="smallBtn">
         + Add
       </button>
+
     </div>
 
-    <!-- Dynamic Items -->
+    <!-- Rules loaded automatically from Profile -->
     <div id="payItemList"></div>
 
     <div class="summaryBox">
+
       <span>Total Extra / Deduction</span>
+
       <h3 id="extraTotal">₩0</h3>
+
       <small>
         (+) Add salary / (-) Deduction from salary
       </small>
+
     </div>
 
   </section>
 
-  <!-- Calculate Button -->
-  <button class="primaryBtn"
-          onclick="calculateSalary()"
-          data-lang="calculate_salary">
+  <!-- ===== PART 19.1 : Calculate Salary Button ===== -->
+
+  <button
+    class="primaryBtn"
+    onclick="calculateSalary()"
+    data-lang="calculate_salary"
+  >
     Calculate Salary
   </button>
 
-  <!-- Result -->
+  <!-- ===== PART 19.2 : Salary Result Cards ===== -->
+
   <section class="resultSection">
 
+    <!-- Take Home Salary -->
+
     <div class="resultCard">
-      <span data-lang="take_home_salary">Take Home Salary</span>
+
+      <span data-lang="take_home_salary">
+        Take Home Salary
+      </span>
+
       <h2 id="netSalary">₩0</h2>
+
     </div>
 
     <div class="grid2">
+
+      <!-- Gross Salary -->
 
       <div class="miniResult blue">
         <p data-lang="gross_salary">Gross Salary</p>
         <h4 id="grossSalary">₩0</h4>
       </div>
 
+      <!-- Insurance -->
+
       <div class="miniResult red">
         <p data-lang="insurance_title">Insurance</p>
         <h4 id="insurance">₩0</h4>
       </div>
+
+      <!-- OT Pay -->
 
       <div class="miniResult green">
         <p data-lang="ot_pay">OT Pay</p>
         <h4 id="otPay">₩0</h4>
       </div>
 
+      <!-- Night Pay -->
+
       <div class="miniResult purple">
         <p data-lang="night_pay">Night Pay</p>
         <h4 id="nightPay">₩0</h4>
       </div>
-      
+
     </div>
 
   </section>
 
 </main>
-  <!-- HISTORY -->
-  <main id="history" class="page">
 
-    <section class="card">
-      <h2>Monthly History</h2>
-      <div id="historyList">No salary history.</div>
-    </section>
+<!-- =========================================================
+     HISTORY PAGE
+========================================================= -->
 
-  </main>
-
-  <!-- PAYSLIP -->
-  <main id="payslip" class="page">
-
-    <section class="card">
-      <h2>Payslip Compare</h2>
-
-      <label>Expected Salary</label>
-      <input type="number" placeholder="2500000">
-
-      <label>Actual Salary</label>
-      <input type="number" placeholder="2450000">
-
-      <button class="primaryBtn small">Compare</button>
-    </section>
-
-  </main>
-
-  <!-- PROFILE -->
-<main id="profile" class="page">
-
-  <section class="profileCard">
-    <div class="avatar">👤</div>
-    <h2 data-lang="profile_title">My Profile</h2>
-    <p data-lang="profile_subtitle">Myanmar Worker in Korea</p>
-  </section>
+<main id="history" class="page">
 
   <section class="card">
-    <h3 data-lang="language_title">🌐 Language</h3>
+
+    <h2>Monthly History</h2>
+
+    <div id="historyList">
+      No salary history.
+    </div>
+
+  </section>
+
+</main>
+
+<!-- =========================================================
+     PAYSLIP PAGE
+========================================================= -->
+
+<main id="payslip" class="page">
+
+  <section class="card">
+
+    <h2>Payslip Compare</h2>
+
+    <label>Expected Salary</label>
+    <input type="number" placeholder="2500000">
+
+    <label>Actual Salary</label>
+    <input type="number" placeholder="2450000">
+
+    <button class="primaryBtn small">
+      Compare
+    </button>
+
+  </section>
+
+</main>
+
+<!-- =========================================================
+     PROFILE PAGE (Part 20 → Part 22)
+========================================================= -->
+
+<main id="profile" class="page">
+
+  <!-- ===== PART 20 : Profile Header ===== -->
+
+  <section class="profileCard">
+
+    <div class="avatar">👤</div>
+
+    <h2 data-lang="profile_title">
+      My Profile
+    </h2>
+
+    <p data-lang="profile_subtitle">
+      Myanmar Worker in Korea
+    </p>
+
+  </section>
+
+  <!-- ===== PART 20.1 : Language Settings ===== -->
+
+  <section class="card">
+
+    <h3 data-lang="language_title">
+      🌐 Language
+    </h3>
 
     <select id="languageSelect" class="languageSelect">
       <option value="en">🇺🇸 English</option>
       <option value="ko">🇰🇷 한국어</option>
       <option value="my">🇲🇲 မြန်မာ</option>
     </select>
+
   </section>
 
+  <!-- ===== PART 20.2 : Theme Settings ===== -->
+
   <section class="card">
-    <h3 data-lang="appearance_title">🎨 Appearance</h3>
+
+    <h3 data-lang="appearance_title">
+      🎨 Appearance
+    </h3>
 
     <div class="languageList">
-      <button class="language active" data-lang="theme_auto">Auto</button>
-      <button class="language" data-lang="theme_light">Light</button>
-      <button class="language" data-lang="theme_dark">Dark</button>
+
+      <button class="language active"
+              data-lang="theme_auto">
+        Auto
+      </button>
+
+      <button class="language"
+              data-lang="theme_light">
+        Light
+      </button>
+
+      <button class="language"
+              data-lang="theme_dark">
+        Dark
+      </button>
+
     </div>
+
   </section>
 
-<!-- ===== PART 18.1 Factory Pay Rules ===== -->
+  <!-- ===== PART 21 : Factory Pay Rules ===== -->
 
-<section class="card" id="factoryRulesCard">
+  <section class="card" id="factoryRulesCard">
 
-  <div class="cardHeader">
-    <h3>🏭 Factory Pay Rules</h3>
+    <div class="cardHeader">
 
-    <button id="addRuleBtn" class="smallBtn">
-      + Add Rule
-    </button>
-  </div>
+      <h3>🏭 Factory Pay Rules</h3>
 
-  <p class="cardSub">
-    Save your factory's allowance and deduction rules once.
-    Calculator will use them automatically.
-  </p>
-
-  <!-- Saved Rules -->
-  <div id="factoryRuleList"></div>
-
-</section>
-
-<!-- ===== PART 18.2 Add Factory Rule Popup ===== -->
-
-<div id="rulePopup" class="day-popup hidden">
-
-  <div class="popup-card">
-
-    <div class="popup-header">
-      <h3>Factory Pay Rule</h3>
-      <button id="closeRulePopup">✕</button>
-    </div>
-
-    <label>Rule Type</label>
-    <select id="ruleType">
-      <option value="plus">🟢 + Allowance / Bonus</option>
-      <option value="minus">🔴 - Deduction</option>
-    </select>
-
-    <label>Rule Name</label>
-    <input
-      id="ruleName"
-      type="text"
-      placeholder="Dormitory Fee / Meal Allowance">
-
-    <label>Amount (₩)</label>
-    <input
-      id="ruleAmount"
-      type="number"
-      placeholder="150000">
-
-    <div class="popup-actions">
-      <button id="saveRuleBtn" class="save-btn">
-        💾 Save Rule
+      <button id="addRuleBtn" class="smallBtn">
+        + Add Rule
       </button>
+
     </div>
 
-  </div>
+    <p class="cardSub">
+      Save your factory's allowance and deduction rules once.
+      Calculator will use them automatically.
+    </p>
 
-</div>
-  
+    <!-- Saved Rules -->
+    <div id="factoryRuleList"></div>
+
+  </section>
+
+  <!-- ===== PART 22 : Work Profile Settings ===== -->
+
   <section class="card">
-    <h3 data-lang="work_profile_title">🏭 Work Profile</h3>
 
-    <input data-lang-placeholder="company_name" placeholder="Company Name">
-    <input data-lang-placeholder="hourly_wage_placeholder" placeholder="Hourly Wage">
-    <input data-lang-placeholder="visa_type" placeholder="Visa Type (E9 / F2 / D2)">
+    <h3 data-lang="work_profile_title">
+      🏭 Work Profile
+    </h3>
+
+    <input
+      data-lang-placeholder="company_name"
+      placeholder="Company Name">
+
+    <input
+      data-lang-placeholder="hourly_wage_placeholder"
+      placeholder="Hourly Wage">
+
+    <input
+      data-lang-placeholder="visa_type"
+      placeholder="Visa Type (E9 / F2 / D2)">
+
   </section>
 
 </main>
-  
-<!-- Bottom Navigation -->
+
+<!-- =========================================================
+     BOTTOM NAVIGATION
+========================================================= -->
+
 <nav class="bottomNav">
 
-  <button class="tab active" data-page="home" data-lang="tab_home">
+  <button class="tab active"
+          data-page="home"
+          data-lang="tab_home">
     🏠
     <span>Home</span>
   </button>
 
-  <button class="tab" data-page="calendar" data-lang="tab_calendar">
+  <button class="tab"
+          data-page="calendar"
+          data-lang="tab_calendar">
     📅
     <span>Calendar</span>
   </button>
 
-  <button class="tab" data-page="calculator" data-lang="tab_calculator">
+  <button class="tab"
+          data-page="calculator"
+          data-lang="tab_calculator">
     🧮
     <span>Calc</span>
   </button>
 
-  <button class="tab" data-page="history" data-lang="tab_history">
+  <button class="tab"
+          data-page="history"
+          data-lang="tab_history">
     📜
     <span>History</span>
   </button>
 
-  <button class="tab" data-page="profile" data-lang="tab_profile">
+  <button class="tab"
+          data-page="profile"
+          data-lang="tab_profile">
     👤
     <span>Profile</span>
   </button>
@@ -476,15 +616,24 @@
 
 </div>
 
-  <!-- ===== Calendar Day Popup ===== -->
+<!-- =========================================================
+     GLOBAL POPUPS
+========================================================= -->
+
+<!-- ===== PART 14 : Calendar Shift Popup ===== -->
+
 <div id="dayPopup" class="day-popup hidden">
 
   <div class="popup-card">
 
     <div class="popup-header">
-      <h3 id="popupDate">2026-09-13</h3>
+
+      <h3 id="popupDate">
+        2026-09-13
+      </h3>
 
       <button id="closePopup">✕</button>
+
     </div>
 
     <div class="popup-body">
@@ -493,69 +642,149 @@
 
       <div class="shift-buttons">
 
-        <button class="shift-btn" data-shift="day">☀️ Day</button>
+        <button class="shift-btn"
+                data-shift="day">
+          ☀️ Day
+        </button>
 
-        <button class="shift-btn" data-shift="night">🌙 Night</button>
+        <button class="shift-btn"
+                data-shift="night">
+          🌙 Night
+        </button>
 
-        <button class="shift-btn" data-shift="holiday">🎌 Holiday</button>
+        <button class="shift-btn"
+                data-shift="holiday">
+          🎌 Holiday
+        </button>
 
-        <button class="shift-btn" data-shift="off">😴 Off</button>
+        <button class="shift-btn"
+                data-shift="off">
+          😴 Off
+        </button>
 
       </div>
 
-      <!-- ===== Working Time ===== -->
+      <!-- ===== PART 14.1 : Working Time Inputs ===== -->
 
-<label>Start Time</label>
-<input type="time" id="popupStart" value="08:30">
+      <label>Start Time</label>
+      <input
+        type="time"
+        id="popupStart"
+        value="08:30">
 
-<label>End Time</label>
-<input type="time" id="popupEnd" value="17:30">
+      <label>End Time</label>
+      <input
+        type="time"
+        id="popupEnd"
+        value="17:30">
 
-<label>Break Start Time</label>
-<input
-  type="time"
-  id="popupBreakStart"
-  value="00:00">
+      <label>Break Start Time</label>
+      <input
+        type="time"
+        id="popupBreakStart"
+        value="00:00">
 
-<label>Break Duration (minutes)</label>
-<input
-  type="number"
-  id="popupBreak"
-  value="60"
-  min="0"
-  max="180"
-  step="15"
-  placeholder="60">
+      <label>Break Duration (minutes)</label>
+      <input
+        type="number"
+        id="popupBreak"
+        value="60"
+        min="0"
+        max="180"
+        step="15"
+        placeholder="60">
 
       <label>OT Hours</label>
-     <input
-  type="number"
-  id="popupOT"
-  readonly
-  placeholder="Auto Calculate"
-/> 
+      <input
+        type="number"
+        id="popupOT"
+        readonly
+        placeholder="Auto Calculate">
 
-     <!-- Note -->
-<label>Note</label>
-<textarea id="popupNote" placeholder="Write your note..."></textarea>
+      <!-- ===== PART 14.2 : Note ===== -->
 
-<!-- 👇 အသစ်ဖန်တီး -->
-<div class="popup-actions">
+      <label>Note</label>
+      <textarea
+        id="popupNote"
+        placeholder="Write your note..."></textarea>
 
-  <button id="saveDayBtn" class="save-btn">
-    💾 Save
-  </button>
+      <!-- ===== PART 14.3 : Popup Actions ===== -->
 
-  <button id="deleteDayBtn" class="delete-btn">
-    🗑 Delete
-  </button>
+      <div class="popup-actions">
 
-</div> 
+        <button id="saveDayBtn" class="save-btn">
+          💾 Save
+        </button>
+
+        <button id="deleteDayBtn" class="delete-btn">
+          🗑 Delete
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 
 </div>
-<!-- ===== End Popup ===== -->
+
+<!-- ===== PART 21.1 : Factory Rule Popup ===== -->
+
+<div id="rulePopup" class="day-popup hidden">
+
+  <div class="popup-card">
+
+    <div class="popup-header">
+
+      <h3>Factory Pay Rule</h3>
+
+      <button id="closeRulePopup">✕</button>
+
+    </div>
+
+    <label>Rule Type</label>
+
+    <select id="ruleType">
+
+      <option value="plus">
+        🟢 + Allowance / Bonus
+      </option>
+
+      <option value="minus">
+        🔴 - Deduction
+      </option>
+
+    </select>
+
+    <label>Rule Name</label>
+
+    <input
+      id="ruleName"
+      type="text"
+      placeholder="Dormitory Fee / Meal Allowance">
+
+    <label>Amount (₩)</label>
+
+    <input
+      id="ruleAmount"
+      type="number"
+      placeholder="150000">
+
+    <div class="popup-actions">
+
+      <button id="saveRuleBtn" class="save-btn">
+        💾 Save Rule
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
 
 <script src="app.js"></script>
 
