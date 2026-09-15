@@ -679,7 +679,69 @@ jumpBtn?.addEventListener("click", () => {
 renderCalendar();
 syncCalendarToCalculator();
 
+/* ==========================================================
+   PART 5.1 — OPEN DAY POPUP
+========================================================== */
 
+// Popup Elements
+const dayPopup = document.getElementById("dayPopup");
+const popupDate = document.getElementById("popupDate");
+const closePopup = document.getElementById("closePopup");
+
+let selectedDate = "";
+let selectedShift = "day";
+
+// ===== Open Popup =====
+function openDayPopup(dateKey) {
+
+  selectedDate = dateKey;
+
+  popupDate.textContent = dateKey;
+
+  const saved = shiftData[dateKey] || {};
+
+  selectedShift = saved.shift || "day";
+
+  document.getElementById("popupStart").value =
+    saved.start || "08:30";
+
+  document.getElementById("popupEnd").value =
+    saved.end || "17:30";
+
+  document.getElementById("popupBreakStart").value =
+    saved.breakStart || "12:00";
+
+  document.getElementById("popupBreak").value =
+    saved.breakMinutes || 60;
+
+  document.getElementById("popupOT").value =
+    saved.otHours || 0;
+
+  document.getElementById("popupNote").value =
+    saved.note || "";
+
+  // Active Shift Button
+  document.querySelectorAll(".shift-btn").forEach(btn => {
+    btn.classList.remove("active");
+
+    if (btn.dataset.shift === selectedShift) {
+      btn.classList.add("active");
+    }
+  });
+
+  dayPopup.classList.remove("hidden");
+}
+
+// ===== Close Popup =====
+closePopup?.addEventListener("click", () => {
+  dayPopup.classList.add("hidden");
+});
+
+dayPopup?.addEventListener("click", (e) => {
+  if (e.target === dayPopup) {
+    dayPopup.classList.add("hidden");
+  }
+});
 
 
 
