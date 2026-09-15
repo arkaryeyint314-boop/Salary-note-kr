@@ -722,35 +722,51 @@ body{
 }
 
 /* ==========================================================
-   PART 5 — CALENDAR SHIFT COLORS + LEGEND
+   PART 5 — CALENDAR SHIFT COLORS + LEGEND (OFFICIAL DARK FIX)
 ========================================================== */
 
 /* ===== Day Shift ===== */
-.dayCell.day{
-  background:#DCFCE7;
-  border-color:#22C55E;
-  color:#166534;
+.dayCell.day,
+.dayCell.dayColor{
+  background:#16A34A !important;
+  border:2px solid #22C55E !important;
+  color:#FFFFFF !important;
 }
 
 /* ===== Night Shift ===== */
-.dayCell.night{
-  background:#EDE9FE;
-  border-color:#7C3AED;
-  color:#5B21B6;
+.dayCell.night,
+.dayCell.nightColor{
+  background:#6D28D9 !important;
+  border:2px solid #8B5CF6 !important;
+  color:#FFFFFF !important;
 }
 
 /* ===== Holiday Work ===== */
-.dayCell.holiday{
-  background:#FEF3C7;
-  border-color:#F59E0B;
-  color:#B45309;
+.dayCell.holiday,
+.dayCell.holidayWorkColor{
+  background:#EA580C !important;
+  border:2px solid #FB923C !important;
+  color:#FFFFFF !important;
 }
 
 /* ===== Off Day ===== */
-.dayCell.off{
-  background:#E5E7EB;
-  border-color:#9CA3AF;
-  color:#4B5563;
+.dayCell.off,
+.dayCell.offColor{
+  background:#475569 !important;
+  border:2px solid #94A3B8 !important;
+  color:#FFFFFF !important;
+}
+
+/* ===== Keep Today Ring ===== */
+.dayCell.today{
+  box-shadow:0 0 0 3px #4F46E5 inset;
+}
+
+/* ===== Keep Public Holiday Text ===== */
+.dayCell.publicHoliday .holidayName{
+  color:#FF6B6B;
+  font-size:10px;
+  font-weight:700;
 }
 
 /* ===== Public Holiday / Sunday ===== */
