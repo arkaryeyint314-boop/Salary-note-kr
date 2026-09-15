@@ -496,10 +496,9 @@ function saveTakeHomeSalary(value) {
 
 /* ==========================================================
    PART 4 — CALENDAR ENGINE (Official v1.0)
-   Calendar Core + LocalStorage
 ========================================================== */
 
-// ===== Calendar DOM =====
+// ===== Calendar Elements =====
 const calendarGrid = document.getElementById("calendarGrid");
 const monthTitle = document.getElementById("monthTitle");
 
@@ -511,7 +510,7 @@ const jumpMonth = document.getElementById("jumpMonth");
 const jumpYear = document.getElementById("jumpYear");
 const jumpBtn = document.getElementById("jumpBtn");
 
-// ===== Current Date =====
+// ===== Current Month =====
 const today = new Date();
 
 let currentMonth = today.getMonth();
@@ -523,21 +522,22 @@ const monthNames = [
   "July","August","September","October","November","December"
 ];
 
-// ===== Shift Data (LocalStorage) =====
-let shiftData = JSON.parse(localStorage.getItem("shiftData")) || {};
+// ===== Shift Data =====
+let shiftData =
+  JSON.parse(localStorage.getItem("shiftData")) || {};
 
-// Save Shift Data
+// Save Calendar
 function saveShiftData() {
   localStorage.setItem("shiftData", JSON.stringify(shiftData));
 }
 
-// Date Key (Example: 2026-09-15)
+// Date Key
 function getDateKey(year, month, day) {
-  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
 }
 
 /* ==========================================================
-   PART 4.2 — Render Calendar
+   PART 4.1 — Render Calendar
 ========================================================== */
 
 function renderCalendar() {
@@ -546,70 +546,77 @@ function renderCalendar() {
 
   calendarGrid.innerHTML = "";
 
-  // Month Title
-  monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+  monthTitle.textContent =
+    `${monthNames[currentMonth]} ${currentYear}`;
 
-  // Jump Selector Sync
-  if (jumpMonth) jumpMonth.value = currentMonth;
-  if (jumpYear) jumpYear.value = currentYear;
+  jumpMonth.value = currentMonth;
+  jumpYear.value = currentYear;
 
-  const today = new Date();
+  const todayDate = new Date();
 
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const firstDay =
+    new Date(currentYear, currentMonth, 1).getDay();
 
-  // Empty boxes before first day
+  const daysInMonth =
+    new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  // Empty Cells
   for (let i = 0; i < firstDay; i++) {
     const empty = document.createElement("div");
-    empty.className = "empty";
+    empty.className = "emptyDay";
     calendarGrid.appendChild(empty);
   }
 
-  // Create every day
+  // Days
   for (let day = 1; day <= daysInMonth; day++) {
 
     const dateKey = getDateKey(currentYear, currentMonth, day);
+
     const saved = shiftData[dateKey] || {};
 
     const cell = document.createElement("div");
-    cell.className = "dayCell";
+    cell.className = "day";
 
-    // Today Highlight
+    // Today
     if (
-      today.getFullYear() === currentYear &&
-      today.getMonth() === currentMonth &&
-      today.getDate() === day
+      todayDate.getFullYear() === currentYear &&
+      todayDate.getMonth() === currentMonth &&
+      todayDate.getDate() === day
     ) {
       cell.classList.add("today");
     }
 
-    // Sunday Color
-    const weekDay = new Date(currentYear, currentMonth, day).getDay();
-    if (weekDay === 0) cell.classList.add("sunday");
+    // Sunday
+    const weekDay =
+      new Date(currentYear, currentMonth, day).getDay();
 
-    // Shift Colors
-    if (saved.shift === "day") cell.classList.add("day");
-    if (saved.shift === "night") cell.classList.add("night");
-    if (saved.shift === "holiday") cell.classList.add("holiday");
-    if (saved.shift === "off") cell.classList.add("off");
+    if (weekDay === 0) {
+      cell.classList.add("sunday");
+    }
 
-    cell.innerHTML = `<span>${day}</span>`;
+    // Shift Color
+    if (saved.shift) {
+      cell.classList.add(saved.shift);
+    }
 
-    // Open Popup
+    cell.innerHTML = `
+      <span class="dayNumber">${day}</span>
+    `;
+
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
     });
 
     calendarGrid.appendChild(cell);
+
   }
 
 }
 
 /* ==========================================================
-   PART 4.3 — Calendar Navigation
+   PART 4.2 — Calendar Navigation
 ========================================================== */
 
-// Previous Month
 prevMonth?.addEventListener("click", () => {
 
   currentMonth--;
@@ -623,7 +630,6 @@ prevMonth?.addEventListener("click", () => {
 
 });
 
-// Next Month
 nextMonth?.addEventListener("click", () => {
 
   currentMonth++;
@@ -637,10 +643,7 @@ nextMonth?.addEventListener("click", () => {
 
 });
 
-// Today Button
 todayBtn?.addEventListener("click", () => {
-
-  const today = new Date();
 
   currentMonth = today.getMonth();
   currentYear = today.getFullYear();
@@ -649,7 +652,6 @@ todayBtn?.addEventListener("click", () => {
 
 });
 
-// Jump Month / Year
 jumpBtn?.addEventListener("click", () => {
 
   currentMonth = Number(jumpMonth.value);
@@ -658,6 +660,86 @@ jumpBtn?.addEventListener("click", () => {
   renderCalendar();
 
 });
+
+/* ==========================================================
+   PART 4.3 — CALENDAR NAVIGATION + APP INITIALIZE
+========================================================== */
+
+// ===== Previous Month =====
+prevMonth?.addEventListener("click", () => {
+
+  currentMonth--;
+
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+
+  renderCalendar();
+
+});
+
+// ===== Next Month =====
+nextMonth?.addEventListener("click", () => {
+
+  currentMonth++;
+
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+
+  renderCalendar();
+
+});
+
+// ===== Today Button =====
+todayBtn?.addEventListener("click", () => {
+
+  const now = new Date();
+
+  currentMonth = now.getMonth();
+  currentYear = now.getFullYear();
+
+  renderCalendar();
+
+});
+
+// ===== Jump Month / Year =====
+jumpBtn?.addEventListener("click", () => {
+
+  currentMonth = Number(jumpMonth.value);
+  currentYear = Number(jumpYear.value);
+
+  renderCalendar();
+
+});
+
+/* ==========================================================
+   PART 4.4 — APP INITIALIZE
+========================================================== */
+
+window.addEventListener("load", () => {
+
+  // Calendar
+  renderCalendar();
+
+  // Dashboard (ရှိရင်)
+  if (typeof refreshDashboard === "function") {
+    refreshDashboard();
+  }
+
+  // Factory Rules (ရှိရင်)
+  if (typeof renderFactoryRules === "function") {
+    renderFactoryRules();
+  }
+
+  if (typeof renderCalculatorRules === "function") {
+    renderCalculatorRules();
+  }
+
+});
+
 
 
 
