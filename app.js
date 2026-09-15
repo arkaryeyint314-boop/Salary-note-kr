@@ -441,17 +441,14 @@ const monthNames = [
 ];
 
 /* ==========================================================
-   PART 4.2.1 — Korea Public Holidays (2025–2035)
+   PART 4.2.1 — Korea Public Holiday Database (2025–2035)
 ========================================================== */
 
 const koreaHolidays = {
 
-  /* ========================= 2025 ========================= */
-
-  2025:{
-
+  // ==================== 2025 ====================
+  2025: {
     "2025-01-01":"신정",
-
     "2025-01-28":"설날 연휴",
     "2025-01-29":"설날",
     "2025-01-30":"설날 연휴",
@@ -466,22 +463,17 @@ const koreaHolidays = {
     "2025-08-15":"광복절",
 
     "2025-10-03":"개천절",
-
     "2025-10-05":"추석 연휴",
     "2025-10-06":"추석",
     "2025-10-07":"추석 연휴",
     "2025-10-08":"추석 대체공휴일",
-
     "2025-10-09":"한글날",
 
     "2025-12-25":"성탄절"
-
   },
 
-  /* ========================= 2026 ========================= */
-
-  2026:{
-
+  // ==================== 2026 ====================
+  2026: {
     "2026-01-01":"신정",
 
     "2026-02-16":"설날 연휴",
@@ -492,7 +484,6 @@ const koreaHolidays = {
     "2026-03-02":"삼일절 대체공휴일",
 
     "2026-05-05":"어린이날",
-
     "2026-05-24":"부처님오신날",
     "2026-05-25":"부처님오신날 대체공휴일",
 
@@ -509,17 +500,13 @@ const koreaHolidays = {
 
     "2026-10-03":"개천절",
     "2026-10-05":"개천절 대체공휴일",
-
     "2026-10-09":"한글날",
 
     "2026-12-25":"성탄절"
-
   },
 
-  /* ========================= 2027 ========================= */
-
-  2027:{
-
+  // ==================== 2027 ====================
+  2027: {
     "2027-01-01":"신정",
 
     "2027-02-06":"설날 연휴",
@@ -530,7 +517,6 @@ const koreaHolidays = {
     "2027-03-01":"삼일절",
 
     "2027-05-05":"어린이날",
-
     "2027-05-13":"부처님오신날",
 
     "2027-06-06":"현충일",
@@ -545,21 +531,17 @@ const koreaHolidays = {
 
     "2027-10-03":"개천절",
     "2027-10-04":"개천절 대체공휴일",
-
     "2027-10-09":"한글날",
     "2027-10-11":"한글날 대체공휴일",
 
     "2027-12-25":"성탄절",
     "2027-12-27":"성탄절 대체공휴일"
-
   },
 
-  /* ========================= 2028 ========================= */
-
-  2028:{
-
-    "2028-01-27":"설날",
+  // ==================== 2028 ====================
+  2028: {
     "2028-01-26":"설날 연휴",
+    "2028-01-27":"설날",
     "2028-01-28":"설날 연휴",
 
     "2028-03-01":"삼일절",
@@ -578,13 +560,10 @@ const koreaHolidays = {
     "2028-10-09":"한글날",
 
     "2028-12-25":"성탄절"
-
   },
 
-  /* ========================= 2029 ========================= */
-
-  2029:{
-
+  // ==================== 2029 ====================
+  2029: {
     "2029-01-01":"신정",
 
     "2029-02-12":"설날 연휴",
@@ -609,13 +588,10 @@ const koreaHolidays = {
     "2029-10-09":"한글날",
 
     "2029-12-25":"성탄절"
-
   },
 
-  /* ========================= 2030 ========================= */
-
-  2030:{
-
+  // ==================== 2030 ====================
+  2030: {
     "2030-01-01":"신정",
 
     "2030-02-02":"설날 연휴",
@@ -639,13 +615,10 @@ const koreaHolidays = {
     "2030-10-09":"한글날",
 
     "2030-12-25":"성탄절"
-
   },
 
-  /* ========================= 2031 ========================= */
-
-  2031:{
-
+  // ==================== 2031 ====================
+  2031: {
     "2031-01-22":"설날 연휴",
     "2031-01-23":"설날",
     "2031-01-24":"설날 연휴",
@@ -667,13 +640,10 @@ const koreaHolidays = {
     "2031-10-09":"한글날",
 
     "2031-12-25":"성탄절"
-
   },
 
-  /* ========================= 2032 ========================= */
-
-  2032:{
-
+  // ==================== 2032 ====================
+  2032: {
     "2032-01-10":"설날 연휴",
     "2032-01-11":"설날",
     "2032-01-12":"설날 연휴",
@@ -695,15 +665,12 @@ const koreaHolidays = {
     "2032-10-09":"한글날",
 
     "2032-12-25":"성탄절"
-
   },
 
-  /* ========================= 2033 ========================= */
-
-  2033:{
-
-    "2033-01-30":"설날",
+  // ==================== 2033 ====================
+  2033: {
     "2033-01-29":"설날 연휴",
+    "2033-01-30":"설날",
     "2033-01-31":"설날 연휴",
 
     "2033-03-01":"삼일절",
@@ -723,13 +690,10 @@ const koreaHolidays = {
     "2033-10-09":"한글날",
 
     "2033-12-25":"성탄절"
-
   },
 
-  /* ========================= 2034 ========================= */
-
-  2034:{
-
+  // ==================== 2034 ====================
+  2034: {
     "2034-02-18":"설날 연휴",
     "2034-02-19":"설날",
     "2034-02-20":"설날 연휴",
@@ -751,13 +715,10 @@ const koreaHolidays = {
     "2034-10-09":"한글날",
 
     "2034-12-25":"성탄절"
-
   },
 
-  /* ========================= 2035 ========================= */
-
-  2035:{
-
+  // ==================== 2035 ====================
+  2035: {
     "2035-02-07":"설날 연휴",
     "2035-02-08":"설날",
     "2035-02-09":"설날 연휴",
@@ -779,10 +740,10 @@ const koreaHolidays = {
     "2035-10-09":"한글날",
 
     "2035-12-25":"성탄절"
-
   }
 
 };
+
 /* ==========================================================
    PART 4.3 — Calendar Storage
 ========================================================== */
@@ -808,28 +769,23 @@ function getDateKey(year, month, day) {
 }
 
 /* ==========================================================
-   PART 4.4 — Render Calendar (Holiday Fix)
+   PART 4.4 — Render Calendar (Official Holiday FIX)
 ========================================================== */
 
 function renderCalendar() {
 
-  // Calendar မရှိရင် မလုပ်ဘူး
   if (!calendarGrid) return;
 
-  // Clear Calendar
   calendarGrid.innerHTML = "";
 
-  // Month Title
   monthTitle.textContent =
     `${monthNames[currentMonth]} ${currentYear}`;
 
-  // Jump Selector Sync
   if (jumpMonth) jumpMonth.value = currentMonth;
   if (jumpYear) jumpYear.value = currentYear;
 
   const today = new Date();
 
-  // Month Info
   const firstDay =
     new Date(currentYear, currentMonth, 1).getDay();
 
@@ -839,46 +795,45 @@ function renderCalendar() {
   /* ===== Empty Cells ===== */
 
   for (let i = 0; i < firstDay; i++) {
-
     const empty = document.createElement("div");
     empty.className = "emptyDay";
-
     calendarGrid.appendChild(empty);
-
   }
 
   /* ===== Calendar Day Cells ===== */
 
   for (let day = 1; day <= daysInMonth; day++) {
 
+    const currentDate = new Date(currentYear, currentMonth, day);
     const dateKey = getDateKey(currentYear, currentMonth, day);
+
     const saved = shiftData[dateKey] || {};
 
-    // ✅ Korea Public Holiday
+    // ✅ Holiday Lookup (Official)
     const holidayName =
-      koreaHolidays?.[currentYear]?.[dateKey] || "";
+      koreaHolidays[currentYear] &&
+      koreaHolidays[currentYear][dateKey]
+        ? koreaHolidays[currentYear][dateKey]
+        : null;
 
     const cell = document.createElement("div");
     cell.className = "dayCell";
 
-    // Today Highlight
+    // Today
     if (
-      today.getFullYear() === currentYear &&
-      today.getMonth() === currentMonth &&
-      today.getDate() === day
+      currentDate.getFullYear() === today.getFullYear() &&
+      currentDate.getMonth() === today.getMonth() &&
+      currentDate.getDate() === today.getDate()
     ) {
       cell.classList.add("today");
     }
 
-    // Sunday Highlight
-    const weekDay =
-      new Date(currentYear, currentMonth, day).getDay();
-
-    if (weekDay === 0) {
+    // Sunday
+    if (currentDate.getDay() === 0) {
       cell.classList.add("sunday");
     }
 
-    // ✅ Public Holiday Highlight
+    // Public Holiday
     if (holidayName) {
       cell.classList.add("publicHoliday");
     }
@@ -888,25 +843,18 @@ function renderCalendar() {
       cell.classList.add(saved.shift);
     }
 
-    // Day Number + Holiday Name
+    // Calendar Cell
     cell.innerHTML = `
       <span class="dayNumber">${day}</span>
-      ${
-        holidayName
-          ? `<span class="holidayName">${holidayName}</span>`
-          : ""
-      }
+      ${holidayName ? `<span class="holidayName">${holidayName}</span>` : ""}
     `;
 
-    // Open Popup
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
     });
 
     calendarGrid.appendChild(cell);
-
   }
-
 }
 /* ==========================================================
    PART 4.5 — Calendar Navigation
