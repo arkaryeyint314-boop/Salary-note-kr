@@ -535,3 +535,132 @@ function saveShiftData() {
 function getDateKey(year, month, day) {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
+
+/* ==========================================================
+   PART 4.2 — Render Calendar
+========================================================== */
+
+function renderCalendar() {
+
+  if (!calendarGrid) return;
+
+  calendarGrid.innerHTML = "";
+
+  // Month Title
+  monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+  // Jump Selector Sync
+  if (jumpMonth) jumpMonth.value = currentMonth;
+  if (jumpYear) jumpYear.value = currentYear;
+
+  const today = new Date();
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  // Empty boxes before first day
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    calendarGrid.appendChild(empty);
+  }
+
+  // Create every day
+  for (let day = 1; day <= daysInMonth; day++) {
+
+    const dateKey = getDateKey(currentYear, currentMonth, day);
+    const saved = shiftData[dateKey] || {};
+
+    const cell = document.createElement("div");
+    cell.className = "dayCell";
+
+    // Today Highlight
+    if (
+      today.getFullYear() === currentYear &&
+      today.getMonth() === currentMonth &&
+      today.getDate() === day
+    ) {
+      cell.classList.add("today");
+    }
+
+    // Sunday Color
+    const weekDay = new Date(currentYear, currentMonth, day).getDay();
+    if (weekDay === 0) cell.classList.add("sunday");
+
+    // Shift Colors
+    if (saved.shift === "day") cell.classList.add("day");
+    if (saved.shift === "night") cell.classList.add("night");
+    if (saved.shift === "holiday") cell.classList.add("holiday");
+    if (saved.shift === "off") cell.classList.add("off");
+
+    cell.innerHTML = `<span>${day}</span>`;
+
+    // Open Popup
+    cell.addEventListener("click", () => {
+      openDayPopup(dateKey);
+    });
+
+    calendarGrid.appendChild(cell);
+  }
+
+}
+
+/* ==========================================================
+   PART 4.3 — Calendar Navigation
+========================================================== */
+
+// Previous Month
+prevMonth?.addEventListener("click", () => {
+
+  currentMonth--;
+
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+
+  renderCalendar();
+
+});
+
+// Next Month
+nextMonth?.addEventListener("click", () => {
+
+  currentMonth++;
+
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+
+  renderCalendar();
+
+});
+
+// Today Button
+todayBtn?.addEventListener("click", () => {
+
+  const today = new Date();
+
+  currentMonth = today.getMonth();
+  currentYear = today.getFullYear();
+
+  renderCalendar();
+
+});
+
+// Jump Month / Year
+jumpBtn?.addEventListener("click", () => {
+
+  currentMonth = Number(jumpMonth.value);
+  currentYear = Number(jumpYear.value);
+
+  renderCalendar();
+
+});
+
+
+
+
+
+
