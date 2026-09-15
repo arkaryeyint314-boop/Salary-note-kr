@@ -1199,3 +1199,15 @@ body.dark .tab.active{
   color:#EF4444;
   font-weight:700;
 }
+
+/* ===== PART 18.2 Factory Rule Popup ===== */
+
+#rulePopup select{
+  width:100%;
+  padding:12px;
+  margin:8px 0 16px;
+  border-radius:12px;
+  background:#20263A;
+  color:#fff;
+  border:1px solid #334155;
+}
