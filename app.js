@@ -246,7 +246,106 @@ rulePopup?.addEventListener("click", (e) => {
     rulePopup.classList.add("hidden");
   }
 
+});//factory rule popup အဆုံး?
+
+/* ===== PART 18.3 Factory Rules Storage ===== */
+
+let factoryRules =
+  JSON.parse(localStorage.getItem("factoryRules")) || [];
+
+// Save LocalStorage
+function saveFactoryRules() {
+  localStorage.setItem(
+    "factoryRules",
+    JSON.stringify(factoryRules)
+  );
+}
+
+// Render Rule List
+function renderFactoryRules() {
+
+  const list = document.getElementById("factoryRuleList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  if (factoryRules.length === 0) {
+    list.innerHTML = `
+      <p style="color:#94A3B8;text-align:center;padding:18px 0;">
+        No factory rules yet.
+      </p>
+    `;
+    return;
+  }
+
+  factoryRules.forEach((rule, index) => {
+
+    const item = document.createElement("div");
+    item.className = "ruleItem";
+
+    item.innerHTML = `
+      <div>
+        <div class="${rule.type}">
+          ${rule.type === "plus" ? "🟢 +" : "🔴 -"} ${rule.name}
+        </div>
+
+        <strong>₩${Number(rule.amount).toLocaleString()}</strong>
+      </div>
+
+      <button class="removeBtn" data-index="${index}">
+        Delete
+      </button>
+    `;
+
+    list.appendChild(item);
+
+  });
+
+  // Delete Button
+  list.querySelectorAll(".removeBtn").forEach(btn => {
+
+    btn.addEventListener("click", () => {
+
+      const index = Number(btn.dataset.index);
+
+      factoryRules.splice(index, 1);
+
+      saveFactoryRules();
+      renderFactoryRules();
+
+    });
+
+  });
+
+}
+
+// Save Rule
+document.getElementById("saveRuleBtn")?.addEventListener("click", () => {
+
+  const type = document.getElementById("ruleType").value;
+  const name = document.getElementById("ruleName").value.trim();
+  const amount = Number(document.getElementById("ruleAmount").value);
+
+  if (!name || amount <= 0) {
+    alert("Please enter rule name and amount.");
+    return;
+  }
+
+  factoryRules.push({
+    type,
+    name,
+    amount
+  });
+
+  saveFactoryRules();
+  renderFactoryRules();
+
+  rulePopup.classList.add("hidden");
+
 });
+
+// First Load
+renderFactoryRules();
 
 function setLanguage(lang) {
   const dict = translations[lang];
