@@ -1153,3 +1153,49 @@ body.dark .tab.active{
   font-size:22px;
   font-weight:700;
 }
+
+/* ===== PART 18.1 Factory Rules ===== */
+
+.cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.cardSub{
+  font-size:13px;
+  color:#94A3B8;
+  margin-bottom:16px;
+}
+
+.smallBtn{
+  background:#2563EB;
+  color:white;
+  border:none;
+  border-radius:12px;
+  padding:8px 14px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.ruleItem{
+  background:#1E293B;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.ruleItem .plus{
+  color:#22C55E;
+  font-weight:700;
+}
+
+.ruleItem .minus{
+  color:#EF4444;
+  font-weight:700;
+}
