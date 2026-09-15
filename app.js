@@ -494,3 +494,59 @@ function saveTakeHomeSalary(value) {
 
 }
 
+/* ==========================================================
+   PART 4.1 — CALENDAR CORE ENGINE
+   Month / Year / Calendar Variables
+========================================================== */
+
+// Calendar Elements
+const calendarGrid = document.getElementById("calendarGrid");
+const monthTitle = document.getElementById("monthTitle");
+
+const prevMonthBtn = document.getElementById("prevMonth");
+const nextMonthBtn = document.getElementById("nextMonth");
+const todayBtn = document.getElementById("todayBtn");
+
+const jumpMonth = document.getElementById("jumpMonth");
+const jumpYear = document.getElementById("jumpYear");
+const jumpBtn = document.getElementById("jumpBtn");
+
+// Current Calendar State
+let currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+
+// Month Names
+const monthNames = [
+  "January", "February", "March", "April",
+  "May", "June", "July", "August",
+  "September", "October", "November", "December"
+];
+
+// Weekday Names
+const weekNames = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+
+/* ==========================================================
+   PART 4.2 — Calendar Storage
+========================================================== */
+
+let calendarData =
+  JSON.parse(localStorage.getItem("calendarData")) || {};
+
+// Date Key (2026-09-15)
+function getDateKey(year, month, day) {
+
+  const mm = String(month + 1).padStart(2,"0");
+  const dd = String(day).padStart(2,"0");
+
+  return `${year}-${mm}-${dd}`;
+}
+
+function saveCalendarData() {
+
+  localStorage.setItem(
+    "calendarData",
+    JSON.stringify(calendarData)
+  );
+
+}
