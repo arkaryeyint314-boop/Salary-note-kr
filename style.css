@@ -1230,3 +1230,44 @@ body.dark .tab.active{
   padding:8px 12px;
   cursor:pointer;
 }
+
+/* ===== PART 18.4 Calculator Factory Rules ===== */
+
+.calculatorRuleItem{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.calculatorRuleItem:last-child{
+  border-bottom:none;
+}
+
+.calculatorRuleItem .plus{
+  color:#22C55E;
+  font-weight:700;
+}
+
+.calculatorRuleItem .minus{
+  color:#EF4444;
+  font-weight:700;
+}
+
+.summaryBox{
+  margin-top:14px;
+  padding:14px;
+  border-radius:14px;
+  background:#1F2937;
+}
+
+.summaryBox span{
+  color:#94A3B8;
+  font-size:13px;
+}
+
+.summaryBox h3{
+  margin-top:6px;
+  font-size:22px;
+}
