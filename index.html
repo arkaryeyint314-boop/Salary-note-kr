@@ -192,9 +192,10 @@
 
 </main>
   
- <!-- CALCULATOR -->
+<!-- ================= CALCULATOR ================= -->
 <main id="calculator" class="page">
 
+  <!-- Salary Input -->
   <section class="card">
     <h2 data-lang="calculator_title">Salary Calculator</h2>
 
@@ -206,7 +207,8 @@
     <label data-lang="working_days">Working Days</label>
     <input id="workingDays" type="number"
            data-lang-placeholder="working_days_placeholder"
-           placeholder="22">
+           placeholder="22"
+           readonly>
 
     <label data-lang="meal_allowance">Meal Allowance</label>
     <input id="mealAllowance" type="number"
@@ -214,52 +216,73 @@
            placeholder="100000">
   </section>
 
+  <!-- Working Hours -->
   <section class="card">
     <h3 data-lang="working_hours">Working Hours</h3>
 
     <div class="grid2Inputs">
 
       <div>
-        
-<label data-lang="basic_hours">Basic Hours</label>
-
-<input
-  id="basicHours"
-  type="number"
-  value="0"
-  readonly
-  data-lang-placeholder="basic_hours_placeholder"
-  placeholder="0"> 
+        <label data-lang="basic_hours">Basic Hours</label>
+        <input id="basicHours" type="number"
+               value="0"
+               readonly>
+      </div>
 
       <div>
         <label data-lang="ot_hours">OT Hours</label>
         <input id="otHours" type="number"
-               data-lang-placeholder="ot_hours_placeholder"
-               placeholder="2">
+               readonly>
       </div>
 
       <div>
         <label data-lang="night_hours">Night Hours</label>
         <input id="nightHours" type="number"
-               data-lang-placeholder="night_hours_placeholder"
-               placeholder="4">
+               readonly>
       </div>
 
       <div>
         <label data-lang="holiday_hours">Holiday Hours</label>
         <input id="holidayHours" type="number"
-               data-lang-placeholder="holiday_hours_placeholder"
-               placeholder="8">
+               readonly>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ================= PART 18.1 Custom Pay / Deduction ================= -->
+
+  <section class="card" id="customPayCard">
+
+    <div class="cardHeader">
+      <h3>💰 Extra Pay / Deduction</h3>
+
+      <button id="addPayItem" class="smallBtn">
+        + Add
+      </button>
+    </div>
+
+    <!-- Dynamic Items -->
+    <div id="payItemList"></div>
+
+    <div class="summaryBox">
+      <span>Total Extra / Deduction</span>
+      <h3 id="extraTotal">₩0</h3>
+      <small>
+        (+) Add salary / (-) Deduction from salary
+      </small>
     </div>
 
   </section>
 
-  <button class="primaryBtn" onclick="calculateSalary()" data-lang="calculate_salary">
+  <!-- Calculate Button -->
+  <button class="primaryBtn"
+          onclick="calculateSalary()"
+          data-lang="calculate_salary">
     Calculate Salary
   </button>
 
+  <!-- Result -->
   <section class="resultSection">
 
     <div class="resultCard">
@@ -275,7 +298,7 @@
       </div>
 
       <div class="miniResult red">
-    <p data-lang="insurance_title">Insurance</p>
+        <p data-lang="insurance_title">Insurance</p>
         <h4 id="insurance">₩0</h4>
       </div>
 
@@ -294,7 +317,6 @@
   </section>
 
 </main>
-  
   <!-- HISTORY -->
   <main id="history" class="page">
 
