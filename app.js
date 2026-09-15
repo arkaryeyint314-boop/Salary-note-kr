@@ -1,174 +1,92 @@
 /* ==========================================================
-   WORKPAY KR OFFICIAL APP.JS
-   PART 1 — GLOBAL VARIABLES + THEME + NAVIGATION
-   Version : v1.0 Official
+   WORKPAY KR PRO v1.0
+   PART 1 — THEME + BOTTOM NAVIGATION
 ========================================================== */
 
-console.log("🚀 WorkPay KR Official Loaded");
-
-/* ==========================================================
-   PART 1.1 — Global DOM Elements
-========================================================== */
-
-const body = document.body;
-
-// Pages
-const pages = document.querySelectorAll(".page");
-
-// Bottom Navigation Tabs
-const tabs = document.querySelectorAll(".tab");
-
-// Theme Button
+// ===== Theme Button =====
 const themeBtn = document.getElementById("themeBtn");
 
-// Language Select
-const languageSelect = document.getElementById("languageSelect");
+// ===== Bottom Navigation =====
+const tabs = document.querySelectorAll(".tab");
+const pages = document.querySelectorAll(".page");
 
-
-/* ==========================================================
-   PART 1.2 — Theme Engine
-   Auto / Light / Dark
-========================================================== */
-
-const savedTheme = localStorage.getItem("theme") || "dark";
-
-applyTheme(savedTheme);
-
-function applyTheme(theme) {
-
-  body.classList.remove("light", "dark");
-
-  body.classList.add(theme);
-
-  localStorage.setItem("theme", theme);
-
-  if (themeBtn) {
-    themeBtn.textContent =
-      theme === "dark" ? "☀️" : "🌙";
-  }
-
-}
-
-// Theme Toggle
-themeBtn?.addEventListener("click", () => {
-
-  const nextTheme =
-    body.classList.contains("dark")
-      ? "light"
-      : "dark";
-
-  applyTheme(nextTheme);
-
-});
-
-
-/* ==========================================================
-   PART 1.3 — Bottom Navigation
-========================================================== */
-
-tabs.forEach((tab) => {
+// ===== Page Switch =====
+tabs.forEach(tab => {
 
   tab.addEventListener("click", () => {
 
-    const targetPage = tab.dataset.page;
+    const pageId = tab.dataset.page;
 
-    // Remove Active
-    tabs.forEach((btn) => btn.classList.remove("active"));
-    pages.forEach((page) => page.classList.remove("activePage"));
-
-    // Add Active
+    // Active Tab
+    tabs.forEach(btn => btn.classList.remove("active"));
     tab.classList.add("active");
 
+    // Active Page
+    pages.forEach(page => page.classList.remove("activePage"));
+
     document
-      .getElementById(targetPage)
+      .getElementById(pageId)
       ?.classList.add("activePage");
 
   });
 
 });
 
+// ===== Theme Toggle =====
+themeBtn?.addEventListener("click", () => {
 
-/* ==========================================================
-   PART 1.4 — Home Dashboard Elements
-========================================================== */
+  document.body.classList.toggle("light");
 
-const homeSalary = document.getElementById("homeSalary");
-const homeDays = document.getElementById("homeDays");
-const homeOT = document.getElementById("homeOT");
-const homeNight = document.getElementById("homeNight");
-const homeHoliday = document.getElementById("homeHoliday");
-const homeWage = document.getElementById("homeWage");
+  const isLight =
+    document.body.classList.contains("light");
 
+  themeBtn.textContent = isLight ? "☀️" : "🌙";
 
-/* ==========================================================
-   PART 1.5 — Calculator Elements
-========================================================== */
+  localStorage.setItem(
+    "theme",
+    isLight ? "light" : "dark"
+  );
 
-const hourlyWageInput = document.getElementById("hourlyWage");
-const workingDaysInput = document.getElementById("workingDays");
-const mealAllowanceInput = document.getElementById("mealAllowance");
+});
 
-const basicHoursInput = document.getElementById("basicHours");
-const otHoursInput = document.getElementById("otHours");
-const nightHoursInput = document.getElementById("nightHours");
-const holidayHoursInput = document.getElementById("holidayHours");
+// ===== Load Saved Theme =====
+const savedTheme = localStorage.getItem("theme");
 
+if (savedTheme === "light") {
 
-/* ==========================================================
-   PART 1.6 — Salary Result Elements
-========================================================== */
+  document.body.classList.add("light");
 
-const grossSalaryBox = document.getElementById("grossSalary");
-const insuranceBox = document.getElementById("insurance");
-const netSalaryBox =
-  document.getElementById("netSalary") ||
-  document.getElementById("takeHomeSalary");
-
-const otPayBox = document.getElementById("otPay");
-const nightPayBox = document.getElementById("nightPay");
-
-
-/* ==========================================================
-   PART 1.7 — Helper Functions
-========================================================== */
-
-// Korean Won Formatter
-function formatWon(value) {
-
-  return "₩" + Math.round(value).toLocaleString("en-US");
-
-}
-
-// Number Formatter
-function toNumber(value) {
-
-  return Number(value) || 0;
+  if (themeBtn) themeBtn.textContent = "☀️";
 
 }
 
 /* ==========================================================
-   PART 2 — LANGUAGE TRANSLATION ENGINE
+   PART 2 — LANGUAGE SYSTEM
    English / Korean / Myanmar
 ========================================================== */
 
-/* ==========================================================
-   PART 2.1 — Translation Dictionary
-========================================================== */
+// ===== Language Selector =====
+const languageSelect = document.getElementById("languageSelect");
+
+// ==========================================================
+// Translation Dictionary
+// ==========================================================
 
 const translations = {
 
-  /* ================= ENGLISH ================= */
-
+  // ===== English =====
   en: {
 
-    // Navigation
+    /* ---------- Bottom Navigation ---------- */
+
     tab_home: "Home",
     tab_calendar: "Calendar",
-    tab_calculator: "Calc",
+    tab_calculator: "Calculator",
     tab_history: "History",
     tab_profile: "Profile",
 
-    // Home
+    /* ---------- Home ---------- */
+
     home_takehome: "This Month Take Home",
     home_expected: "Expected salary after insurance",
     today_shift: "Today's Shift",
@@ -177,13 +95,14 @@ const translations = {
     shift_night: "🌙 Night",
     shift_holiday: "🎌 Holiday",
 
-    // Calculator
+    /* ---------- Calculator ---------- */
+
     calculator_title: "Salary Calculator",
-    hourly_wage: "Hourly Wage",
+    hourly_wage: "Hourly Wage (₩)",
     working_days: "Working Days",
     meal_allowance: "Meal Allowance",
-
     working_hours: "Working Hours",
+
     basic_hours: "Basic Hours",
     ot_hours: "OT Hours",
     night_hours: "Night Hours",
@@ -197,7 +116,8 @@ const translations = {
     ot_pay: "OT Pay",
     night_pay: "Night Pay",
 
-    // Profile
+    /* ---------- Profile ---------- */
+
     profile_title: "My Profile",
     profile_subtitle: "Myanmar Worker in Korea",
 
@@ -209,17 +129,18 @@ const translations = {
     theme_light: "Light",
     theme_dark: "Dark",
 
-    // Placeholder
+    /* ---------- Placeholders ---------- */
+
     company_name: "Company Name",
     hourly_wage_placeholder: "Hourly Wage",
     working_days_placeholder: "Working Days",
     meal_allowance_placeholder: "Meal Allowance",
+
     visa_type: "Visa Type (E9 / F2 / D2)"
 
   },
 
-  /* ================= KOREAN ================= */
-
+  // ===== Korean =====
   ko: {
 
     tab_home: "홈",
@@ -228,8 +149,8 @@ const translations = {
     tab_history: "기록",
     tab_profile: "프로필",
 
-    home_takehome: "이번 달 실수령 예상 급여",
-    home_expected: "4대보험 공제 후 예상 급여",
+    home_takehome: "이번 달 실수령액",
+    home_expected: "보험 공제 후 예상 급여",
 
     today_shift: "오늘 근무",
 
@@ -239,7 +160,7 @@ const translations = {
 
     calculator_title: "급여 계산기",
 
-    hourly_wage: "시급",
+    hourly_wage: "시급 (₩)",
     working_days: "근무일수",
     meal_allowance: "식대",
 
@@ -250,56 +171,56 @@ const translations = {
     night_hours: "야간 시간",
     holiday_hours: "휴일 시간",
 
-    calculate_salary: "급여 계산하기",
+    calculate_salary: "급여 계산",
 
     take_home_salary: "실수령액",
     gross_salary: "총 급여",
+    insurance_title: "4대 보험",
 
-    insurance_title: "4대보험",
-    ot_pay: "연장수당",
-    night_pay: "야간수당",
+    ot_pay: "연장 수당",
+    night_pay: "야간 수당",
 
     profile_title: "내 프로필",
     profile_subtitle: "한국 미얀마 근로자",
 
     language_title: "🌐 언어",
-    appearance_title: "🎨 화면 설정",
-    work_profile_title: "🏭 근무 정보",
+    appearance_title: "🎨 테마",
+    work_profile_title: "🏭 회사 정보",
 
     theme_auto: "자동",
     theme_light: "라이트",
     theme_dark: "다크",
 
-    company_name: "회사명",
+    company_name: "회사 이름",
     hourly_wage_placeholder: "시급 입력",
-    working_days_placeholder: "근무일수",
+    working_days_placeholder: "근무일수 입력",
     meal_allowance_placeholder: "식대 입력",
-    visa_type: "비자 종류"
+
+    visa_type: "비자 종류 (E9 / F2 / D2)"
 
   },
 
-  /* ================= MYANMAR ================= */
-
+  // ===== Myanmar =====
   my: {
 
     tab_home: "ပင်မ",
     tab_calendar: "ပြက္ခဒိန်",
-    tab_calculator: "တွက်ချက်",
+    tab_calculator: "တွက်စက်",
     tab_history: "မှတ်တမ်း",
     tab_profile: "ပရိုဖိုင်",
 
-    home_takehome: "ဒီလ လက်ခံရမယ့် လစာ",
-    home_expected: "အာမခံဖြတ်ပြီး ခန့်မှန်းလစာ",
+    home_takehome: "ဒီလ ရရှိမည့် လစာ",
+    home_expected: "Insurance ဖြတ်ပြီး ရရှိမည့်လစာ",
 
     today_shift: "ဒီနေ့ အလုပ်ဆိုင်း",
 
     shift_day: "☀️ နေ့ဆိုင်း",
     shift_night: "🌙 ညဆိုင်း",
-    shift_holiday: "🎌 အားလပ်ရက်",
+    shift_holiday: "🎌 အနီရက်",
 
     calculator_title: "လစာတွက်စက်",
 
-    hourly_wage: "တစ်နာရီလုပ်ခ",
+    hourly_wage: "တစ်နာရီလုပ်ခ (₩)",
     working_days: "အလုပ်ဆင်းရက်",
     meal_allowance: "ထမင်းစရိတ်",
 
@@ -307,51 +228,53 @@ const translations = {
 
     basic_hours: "ပုံမှန်နာရီ",
     ot_hours: "OT နာရီ",
-    night_hours: "ညနာရီ",
-    holiday_hours: "အားလပ်ရက်နာရီ",
+    night_hours: "ညဆိုင်းနာရီ",
+    holiday_hours: "အနီရက်နာရီ",
 
     calculate_salary: "လစာတွက်မယ်",
 
-    take_home_salary: "လက်ခံရမယ့် လစာ",
+    take_home_salary: "ရရှိမည့်လစာ",
     gross_salary: "စုစုပေါင်းလစာ",
-
     insurance_title: "အာမခံ",
+
     ot_pay: "OT ကြေး",
-    night_pay: "ညကြေး",
+    night_pay: "ညဆိုင်းကြေး",
 
     profile_title: "ကျွန်ုပ် ပရိုဖိုင်",
-    profile_subtitle: "ကိုရီးယားရှိ မြန်မာအလုပ်သမား",
+    profile_subtitle: "ကိုရီးယားရောက် မြန်မာအလုပ်သမား",
 
     language_title: "🌐 ဘာသာစကား",
-    appearance_title: "🎨 အရောင်အပြင်အဆင်",
+    appearance_title: "🎨 Theme",
     work_profile_title: "🏭 အလုပ်အချက်အလက်",
 
     theme_auto: "အလိုအလျောက်",
     theme_light: "အလင်း",
     theme_dark: "အမှောင်",
 
-    company_name: "ကုမ္ပဏီနာမည်",
+    company_name: "ကုမ္ပဏီအမည်",
     hourly_wage_placeholder: "တစ်နာရီလုပ်ခ",
     working_days_placeholder: "အလုပ်ဆင်းရက်",
     meal_allowance_placeholder: "ထမင်းစရိတ်",
-    visa_type: "ဗီဇာအမျိုးအစား"
+
+    visa_type: "ဗီဇာအမျိုးအစား (E9 / F2 / D2)"
 
   }
 
 };
 
 /* ==========================================================
-   PART 2.2 — Apply Language
+   PART 2.2 — CHANGE LANGUAGE
 ========================================================== */
 
+// Change Language
 function setLanguage(lang) {
 
   const dict = translations[lang];
 
   if (!dict) return;
 
-  // Text
-  document.querySelectorAll("[data-lang]").forEach((el) => {
+  // ===== Text =====
+  document.querySelectorAll("[data-lang]").forEach(el => {
 
     const key = el.dataset.lang;
 
@@ -361,8 +284,8 @@ function setLanguage(lang) {
 
   });
 
-  // Placeholder
-  document.querySelectorAll("[data-lang-placeholder]").forEach((el) => {
+  // ===== Placeholder =====
+  document.querySelectorAll("[data-lang-placeholder]").forEach(el => {
 
     const key = el.dataset.langPlaceholder;
 
@@ -372,7 +295,7 @@ function setLanguage(lang) {
 
   });
 
-  // Save
+  // Save Language
   localStorage.setItem("language", lang);
 
   if (languageSelect) {
@@ -381,19 +304,13 @@ function setLanguage(lang) {
 
 }
 
-/* ==========================================================
-   PART 2.3 — Load Saved Language
-========================================================== */
-
-const savedLanguage =
+// ===== Load Saved Language =====
+const savedLang =
   localStorage.getItem("language") || "en";
 
-setLanguage(savedLanguage);
+setLanguage(savedLang);
 
-/* ==========================================================
-   PART 2.4 — Change Language Event
-========================================================== */
-
+// ===== Language Change =====
 languageSelect?.addEventListener("change", (e) => {
 
   setLanguage(e.target.value);
@@ -401,139 +318,134 @@ languageSelect?.addEventListener("change", (e) => {
 });
 
 /* ==========================================================
-   PART 3 — HOME DASHBOARD + MONTHLY SUMMARY ENGINE
-   Dashboard Auto Sync (Calendar → Home)
+   PART 3 — HOME DASHBOARD
+   Monthly Summary + Hero Salary Card
 ========================================================== */
 
+// ===== Home Card Elements =====
+const homeSalary = document.getElementById("homeSalary");
+const homeDays = document.getElementById("homeDays");
+const homeOT = document.getElementById("homeOT");
+const homeNight = document.getElementById("homeNight");
+const homeHoliday = document.getElementById("homeHoliday");
+const homeWage = document.getElementById("homeWage");
+
 /* ==========================================================
-   PART 3.1 — Dashboard Update Function
+   PART 3.1 — Update Home Dashboard
 ========================================================== */
 
 function updateHomeDashboard() {
 
-  const summary = getMonthlySummary();
-
-  // Working Summary
-  homeDays.textContent = summary.workingDays;
-  homeOT.textContent = summary.otHours;
-  homeNight.textContent = summary.nightHours;
-  homeHoliday.textContent = summary.holidayHours;
-
   // Hourly Wage
   const wage =
-    Number(localStorage.getItem("hourlyWage")) ||
-    toNumber(hourlyWageInput?.value);
+    Number(document.getElementById("hourlyWage")?.value) || 0;
 
-  homeWage.textContent = formatWon(wage);
+  homeWage.textContent =
+    `₩${wage.toLocaleString()}`;
 
-  // Current Take Home (Last Calculate Result)
-  const savedSalary =
-    Number(localStorage.getItem("takeHomeSalary")) || 0;
+  // Calendar Summary
+  let workDays = 0;
+  let otHours = 0;
+  let nightHours = 0;
+  let holidayHours = 0;
 
-  homeSalary.textContent = formatWon(savedSalary);
+  Object.values(shiftData).forEach(day => {
 
-}
+    if (day.shift === "day") workDays++;
+    if (day.shift === "night") workDays++;
+    if (day.shift === "holiday") workDays++;
 
+    otHours += Number(day.otHours || 0);
 
-/* ==========================================================
-   PART 3.2 — Save Hourly Wage
-========================================================== */
+    nightHours += Number(day.nightHours || 0);
 
-hourlyWageInput?.addEventListener("input", () => {
+    holidayHours += Number(day.holidayHours || 0);
 
-  localStorage.setItem(
-    "hourlyWage",
-    toNumber(hourlyWageInput.value)
-  );
+  });
 
-  updateHomeDashboard();
+  // Summary Cards
+  homeDays.textContent = workDays;
+  homeOT.textContent = otHours.toFixed(1);
+  homeNight.textContent = nightHours.toFixed(1);
+  homeHoliday.textContent = holidayHours.toFixed(1);
 
-});
+  // Take Home Salary
+  const net =
+    Number(
+      document.getElementById("netSalary")?.textContent.replace(/[₩,]/g, "")
+    ) || 0;
 
-
-/* ==========================================================
-   PART 3.3 — Monthly Summary Auto Fill Calculator
-========================================================== */
-
-function syncSummaryToCalculator() {
-
-  const summary = getMonthlySummary();
-
-  workingDaysInput.value = summary.workingDays;
-  basicHoursInput.value = summary.workingDays * 8;
-
-  otHoursInput.value = summary.otHours;
-  nightHoursInput.value = summary.nightHours;
-  holidayHoursInput.value = summary.holidayHours;
+  homeSalary.textContent =
+    `₩${net.toLocaleString()}`;
 
 }
 
-
 /* ==========================================================
-   PART 3.4 — Calendar Change Refresh
+   PART 3.2 — Refresh Dashboard
 ========================================================== */
 
 function refreshDashboard() {
 
-  syncSummaryToCalculator();
-
-  updateHomeDashboard();
-
-}
-
-
-/* ==========================================================
-   PART 3.5 — Save Take Home Salary
-========================================================== */
-
-function saveTakeHomeSalary(value) {
-
-  localStorage.setItem("takeHomeSalary", value);
-
   updateHomeDashboard();
 
 }
 
 /* ==========================================================
-   PART 4.1 — CALENDAR CORE
-   Calendar Variables + LocalStorage
+   PART 4 — CALENDAR ENGINE
+   Korea Calendar + Month Navigation + LocalStorage
 ========================================================== */
 
-// ===== Calendar DOM =====
+/* ==========================================================
+   PART 4.1 — Calendar Elements
+========================================================== */
+
+// ===== Calendar Grid =====
 const calendarGrid = document.getElementById("calendarGrid");
 const monthTitle = document.getElementById("monthTitle");
 
+// ===== Month Navigation =====
 const prevMonth = document.getElementById("prevMonth");
 const nextMonth = document.getElementById("nextMonth");
 const todayBtn = document.getElementById("todayBtn");
 
+// ===== Jump Month / Year =====
 const jumpMonth = document.getElementById("jumpMonth");
 const jumpYear = document.getElementById("jumpYear");
 const jumpBtn = document.getElementById("jumpBtn");
 
-// ===== Current Calendar =====
+/* ==========================================================
+   PART 4.2 — Calendar State
+========================================================== */
+
+// Current Month / Year
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 
-// ===== Month Names =====
+// Korea Calendar Data
+let shiftData =
+  JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
+
+// Month Names
 const monthNames = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December"
 ];
 
-// ===== Shift Data =====
-let shiftData =
-  JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
+/* ==========================================================
+   PART 4.3 — Calendar Storage
+========================================================== */
 
 // Save Shift Data
 function saveShiftData() {
+
   localStorage.setItem(
     "workpay_shift_data",
     JSON.stringify(shiftData)
   );
+
 }
 
-// Date Key
+// Date Key (2026-09-15)
 function getDateKey(year, month, day) {
 
   const mm = String(month + 1).padStart(2, "0");
@@ -544,13 +456,15 @@ function getDateKey(year, month, day) {
 }
 
 /* ==========================================================
-   PART 4.2 — RENDER CALENDAR
+   PART 4.4 — Render Calendar
 ========================================================== */
 
 function renderCalendar() {
 
+  // Calendar မရှိရင် မလုပ်ဘူး
   if (!calendarGrid) return;
 
+  // Clear Calendar Grid
   calendarGrid.innerHTML = "";
 
   // Month Title
@@ -563,13 +477,15 @@ function renderCalendar() {
 
   const today = new Date();
 
+  // Month Information
   const firstDay =
     new Date(currentYear, currentMonth, 1).getDay();
 
   const daysInMonth =
     new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // Empty Cells
+  /* ===== Empty Cells ===== */
+
   for (let i = 0; i < firstDay; i++) {
 
     const empty = document.createElement("div");
@@ -579,7 +495,8 @@ function renderCalendar() {
 
   }
 
-  // Calendar Days
+  /* ===== Calendar Day Cells ===== */
+
   for (let day = 1; day <= daysInMonth; day++) {
 
     const dateKey =
@@ -591,7 +508,8 @@ function renderCalendar() {
     const cell = document.createElement("div");
     cell.className = "dayCell";
 
-    // Today Highlight
+    /* ===== Today Highlight ===== */
+
     if (
       today.getFullYear() === currentYear &&
       today.getMonth() === currentMonth &&
@@ -600,7 +518,8 @@ function renderCalendar() {
       cell.classList.add("today");
     }
 
-    // Sunday Color
+    /* ===== Sunday Highlight ===== */
+
     const weekDay =
       new Date(currentYear, currentMonth, day).getDay();
 
@@ -608,15 +527,30 @@ function renderCalendar() {
       cell.classList.add("sunday");
     }
 
-    // Shift Colors
-    if (saved.shift === "day") cell.classList.add("dayColor");
-    if (saved.shift === "night") cell.classList.add("nightColor");
-    if (saved.shift === "holiday") cell.classList.add("holidayWorkColor");
-    if (saved.shift === "off") cell.classList.add("offColor");
+    /* ===== Shift Colors ===== */
+
+    if (saved.shift === "day") {
+      cell.classList.add("dayColor");
+    }
+
+    if (saved.shift === "night") {
+      cell.classList.add("nightColor");
+    }
+
+    if (saved.shift === "holiday") {
+      cell.classList.add("holidayWorkColor");
+    }
+
+    if (saved.shift === "off") {
+      cell.classList.add("offColor");
+    }
+
+    /* ===== Day Number ===== */
 
     cell.innerHTML = `<span>${day}</span>`;
 
-    // Popup
+    /* ===== Open Day Popup ===== */
+
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
     });
@@ -625,10 +559,10 @@ function renderCalendar() {
 
   }
 
-}
+} // ===== End renderCalendar() =====
 
 /* ==========================================================
-   PART 4.3 — CALENDAR NAVIGATION
+   PART 4.8 — Calendar Navigation
 ========================================================== */
 
 // Previous Month
@@ -659,7 +593,7 @@ nextMonth?.addEventListener("click", () => {
 
 });
 
-// Today Button
+// Today
 todayBtn?.addEventListener("click", () => {
 
   const today = new Date();
@@ -680,154 +614,6 @@ jumpBtn?.addEventListener("click", () => {
   renderCalendar();
 
 });
-
-/* ==========================================================
-   PART 5.0 — POPUP STATE
-========================================================== */
-
-const dayPopup = document.getElementById("dayPopup");
-const popupDate = document.getElementById("popupDate");
-const closePopup = document.getElementById("closePopup");
-
-let selectedDate = "";
-let selectedShift = "day";
-
-/* ==========================================================
-   PART 5.1 — OPEN / CLOSE DAY POPUP
-========================================================== */
-
-function openDayPopup(dateKey) {
-
-  selectedDate = dateKey;
-
-  popupDate.textContent = dateKey;
-
-  const saved =
-    shiftData[dateKey] || {};
-
-  selectedShift = saved.shift || "day";
-
-  document.getElementById("popupStart").value =
-    saved.start || "08:30";
-
-  document.getElementById("popupEnd").value =
-    saved.end || "17:30";
-
-  document.getElementById("popupBreakStart").value =
-    saved.breakStart || "12:00";
-
-  document.getElementById("popupBreak").value =
-    saved.breakMinutes || 60;
-
-  document.getElementById("popupOT").value =
-    saved.otHours || 0;
-
-  document.getElementById("popupNote").value =
-    saved.note || "";
-
-  // Shift Button Active
-  document.querySelectorAll(".shift-btn").forEach(btn => {
-
-    btn.classList.remove("active");
-
-    if (btn.dataset.shift === selectedShift) {
-      btn.classList.add("active");
-    }
-
-  });
-
-  // Show Popup
-  dayPopup.classList.remove("hidden");
-
-}
-
-// Close Popup
-closePopup?.addEventListener("click", () => {
-  dayPopup.classList.add("hidden");
-});
-
-// Click Outside
-dayPopup?.addEventListener("click", (e) => {
-
-  if (e.target === dayPopup) {
-    dayPopup.classList.add("hidden");
-  }
-
-});
-
-/* ==========================================================
-   PART 4.4 — APP START
-========================================================== */
-
-window.addEventListener("DOMContentLoaded", () => {
-
-  renderCalendar();
-
-  if (typeof syncCalendarToCalculator === "function") {
-    syncCalendarToCalculator();
-  }
-
-});
-
-/* ==========================================================
-   PART 5.2 — AUTO OT CALCULATOR
-========================================================== */
-
-// Time String → Minutes
-function timeToMinutes(time) {
-
-  const [hour, minute] = time.split(":").map(Number);
-
-  return (hour * 60) + minute;
-
-}
-
-// Calculate OT Hours
-function calculateOTHours() {
-
-  const start = document.getElementById("popupStart").value;
-  const end = document.getElementById("popupEnd").value;
-  const breakMinutes =
-    Number(document.getElementById("popupBreak").value) || 0;
-
-  if (!start || !end) return;
-
-  let startMin = timeToMinutes(start);
-  let endMin = timeToMinutes(end);
-
-  // Night Shift (cross midnight)
-  if (endMin <= startMin) {
-    endMin += 24 * 60;
-  }
-
-  const totalMinutes =
-    endMin - startMin - breakMinutes;
-
-  const totalHours = totalMinutes / 60;
-
-  // Basic Working Hours = 8
-  const otHours = Math.max(0, totalHours - 8);
-
-  document.getElementById("popupOT").value =
-    otHours.toFixed(1);
-
-}
-
-// Auto Recalculate
-["popupStart","popupEnd","popupBreak"].forEach(id => {
-
-  document.getElementById(id)?.addEventListener(
-    "input",
-    calculateOTHours
-  );
-
-});
-
-
-
-
-
-
 
 
 
