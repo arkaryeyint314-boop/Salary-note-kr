@@ -835,40 +835,41 @@ document.getElementById("homeHoliday").textContent = summary.holidayHours;
 
 }
 
-/* ===== PART 17.2 WorkPay KR Salary Engine ===== */
+/* ===== PART 17.2 WorkPay KR Salary Engine (Official Fixed) ===== */
 
 function calculateSalary() {
 
+  // ===== Hourly Wage =====
   const wage = Number(document.getElementById("hourlyWage").value) || 10320;
   const meal = Number(document.getElementById("mealAllowance").value) || 0;
 
-  // Calendar Summary
+  // ===== Calendar Summary =====
   const summary = getMonthlySummary();
 
   const workingDays = summary.workingDays || 0;
-  const basicHours = workingDays * 8;     // ✅ Basic = 8h/day
+  const basicHours = workingDays * 8;          // Basic = 8h/day
   const otHours = summary.otHours || 0;
   const nightHours = summary.nightHours || 0;
   const holidayHours = summary.holidayHours || 0;
 
-  // ===== Auto Fill Inputs =====
+  // ===== Auto Fill Calculator Inputs =====
   document.getElementById("workingDays").value = workingDays;
   document.getElementById("basicHours").value = basicHours;
   document.getElementById("otHours").value = otHours;
   document.getElementById("nightHours").value = nightHours;
   document.getElementById("holidayHours").value = holidayHours;
 
-// ===== Salary Formula (WorkPay KR Official) =====
+  // ===== Korea Salary Formula =====
+  // Worked Hours = Basic 8h + OT Hours
+  const workedHours = basicHours + otHours;
 
-// Basic wage includes all worked hours (8h + OT hours)
-const workedHours = basicHours + otHours;
+  // Basic wage for all worked hours
+  const basicPay = workedHours * wage;
 
-const basicPay = workedHours * wage;
-
-// Premiums only (extra 50%)
-const otPay = otHours * wage * 0.5;
-const nightPay = nightHours * wage * 0.5;
-const holidayPay = holidayHours * wage * 0.5;
+  // Extra premiums only
+  const otPay = otHours * wage * 0.5;
+  const nightPay = nightHours * wage * 0.5;
+  const holidayPay = holidayHours * wage * 0.5;
 
   const grossSalary =
     basicPay +
@@ -880,21 +881,25 @@ const holidayPay = holidayHours * wage * 0.5;
   const insurance = Math.round(grossSalary * 0.09);
   const takeHome = grossSalary - insurance;
 
-  // ===== Result Cards =====
+  // ===== Calculator Result =====
   document.getElementById("grossSalary").textContent = formatWon(grossSalary);
   document.getElementById("insurance").textContent = formatWon(insurance);
-  const takeHomeBox =
-  document.getElementById("takeHomeSalary") ||
-  document.getElementById("netSalary");
 
-if (takeHomeBox) {
-  takeHomeBox.textContent = formatWon(takeHome);
-}
   document.getElementById("otPay").textContent = formatWon(otPay);
   document.getElementById("nightPay").textContent = formatWon(nightPay);
 
-  // Home Sync
+  const takeHomeBox =
+    document.getElementById("takeHomeSalary") ||
+    document.getElementById("netSalary");
+
+  if (takeHomeBox) {
+    takeHomeBox.textContent = formatWon(takeHome);
+  }
+
+  // ===== Home Dashboard =====
   document.getElementById("homeSalary").textContent = formatWon(takeHome);
+  document.getElementById("homeWage").textContent = formatWon(wage);
+  document.getElementById("homeDays").textContent = workingDays;
 
 }
 
