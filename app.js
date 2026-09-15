@@ -424,25 +424,74 @@ const jumpBtn = document.getElementById("jumpBtn");
    PART 4.2 — Calendar State
 ========================================================== */
 
-// Current Month / Year
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
+// ===== Current Month / Year =====
+const today = new Date();
 
-// Korea Calendar Data
+let currentMonth = today.getMonth();
+let currentYear = today.getFullYear();
+
+// ===== Calendar LocalStorage =====
 let shiftData =
   JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
 
-// Month Names
+// ===== Month Names =====
 const monthNames = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December"
 ];
 
+// ===== Korea Public Holidays (2025–2035) =====
+const koreaHolidays = {
+
+  2025: {
+    "2025-01-01":"New Year",
+    "2025-03-01":"Independence Movement Day",
+    "2025-05-05":"Children's Day",
+    "2025-06-06":"Memorial Day",
+    "2025-08-15":"Liberation Day",
+    "2025-10-03":"National Foundation Day",
+    "2025-10-09":"Hangul Day",
+    "2025-12-25":"Christmas"
+  },
+
+  2026: {
+    "2026-01-01":"New Year",
+    "2026-03-01":"Independence Movement Day",
+    "2026-05-05":"Children's Day",
+    "2026-06-06":"Memorial Day",
+    "2026-08-15":"Liberation Day",
+    "2026-10-03":"National Foundation Day",
+    "2026-10-09":"Hangul Day",
+    "2026-12-25":"Christmas"
+  },
+
+  2027: {
+    "2027-01-01":"New Year",
+    "2027-03-01":"Independence Movement Day",
+    "2027-05-05":"Children's Day",
+    "2027-06-06":"Memorial Day",
+    "2027-08-15":"Liberation Day",
+    "2027-10-03":"National Foundation Day",
+    "2027-10-09":"Hangul Day",
+    "2027-12-25":"Christmas"
+  },
+
+  2028: {},
+  2029: {},
+  2030: {},
+  2031: {},
+  2032: {},
+  2033: {},
+  2034: {},
+  2035: {}
+
+};
+
 /* ==========================================================
    PART 4.3 — Calendar Storage
 ========================================================== */
 
-// Save Shift Data
+// ===== Save Shift Data =====
 function saveShiftData() {
 
   localStorage.setItem(
@@ -452,7 +501,7 @@ function saveShiftData() {
 
 }
 
-// Date Key (2026-09-15)
+// ===== Date Key (2026-09-15) =====
 function getDateKey(year, month, day) {
 
   const mm = String(month + 1).padStart(2, "0");
@@ -463,7 +512,7 @@ function getDateKey(year, month, day) {
 }
 
 /* ==========================================================
-   PART 4.4 — Render Calendar (Official FIX)
+   PART 4.4 — Render Calendar (Holiday Fix)
 ========================================================== */
 
 function renderCalendar() {
@@ -509,6 +558,10 @@ function renderCalendar() {
     const dateKey = getDateKey(currentYear, currentMonth, day);
     const saved = shiftData[dateKey] || {};
 
+    // ✅ Korea Public Holiday
+    const holidayName =
+      koreaHolidays?.[currentYear]?.[dateKey] || "";
+
     const cell = document.createElement("div");
     cell.className = "dayCell";
 
@@ -529,14 +582,24 @@ function renderCalendar() {
       cell.classList.add("sunday");
     }
 
-    // Shift Color (CSS class)
+    // ✅ Public Holiday Highlight
+    if (holidayName) {
+      cell.classList.add("publicHoliday");
+    }
+
+    // Shift Color
     if (saved.shift) {
       cell.classList.add(saved.shift);
     }
 
-    // Day Number
+    // Day Number + Holiday Name
     cell.innerHTML = `
       <span class="dayNumber">${day}</span>
+      ${
+        holidayName
+          ? `<span class="holidayName">${holidayName}</span>`
+          : ""
+      }
     `;
 
     // Open Popup
@@ -549,7 +612,6 @@ function renderCalendar() {
   }
 
 }
-
 /* ==========================================================
    PART 4.5 — Calendar Navigation
 ========================================================== */
