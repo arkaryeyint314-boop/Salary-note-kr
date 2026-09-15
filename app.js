@@ -769,23 +769,28 @@ function getDateKey(year, month, day) {
 }
 
 /* ==========================================================
-   PART 4.4 — Render Calendar (Official Holiday FIX)
+   PART 4.4 — Render Calendar (Official v2 BUG FIX)
 ========================================================== */
 
 function renderCalendar() {
 
+  // Calendar မရှိရင် မလုပ်ဘူး
   if (!calendarGrid) return;
 
+  // Clear Calendar
   calendarGrid.innerHTML = "";
 
+  // Month Title
   monthTitle.textContent =
     `${monthNames[currentMonth]} ${currentYear}`;
 
+  // Jump Selector Sync
   if (jumpMonth) jumpMonth.value = currentMonth;
   if (jumpYear) jumpYear.value = currentYear;
 
-  const today = new Date();
+  const todayDate = new Date();
 
+  // Month Info
   const firstDay =
     new Date(currentYear, currentMonth, 1).getDay();
 
@@ -804,66 +809,70 @@ function renderCalendar() {
 
   for (let day = 1; day <= daysInMonth; day++) {
 
-    const currentDate = new Date(currentYear, currentMonth, day);
     const dateKey = getDateKey(currentYear, currentMonth, day);
+    const currentDate = new Date(currentYear, currentMonth, day);
 
     const saved = shiftData[dateKey] || {};
 
-    // ✅ Holiday Lookup (Official)
+    // Korea Holiday
     const holidayName =
-      koreaHolidays[currentYear] &&
-      koreaHolidays[currentYear][dateKey]
-        ? koreaHolidays[currentYear][dateKey]
-        : null;
+      koreaHolidays[currentYear]?.[dateKey] || "";
 
     const cell = document.createElement("div");
     cell.className = "dayCell";
 
-    // Today
+    /* ===== Today ===== */
+
     if (
-      currentDate.getFullYear() === today.getFullYear() &&
-      currentDate.getMonth() === today.getMonth() &&
-      currentDate.getDate() === today.getDate()
+      todayDate.getFullYear() === currentYear &&
+      todayDate.getMonth() === currentMonth &&
+      todayDate.getDate() === day
     ) {
       cell.classList.add("today");
     }
 
-    // Sunday
+    /* ===== Sunday ===== */
+
     if (currentDate.getDay() === 0) {
       cell.classList.add("sunday");
     }
 
-    // Public Holiday
+    /* ===== Korea Holiday ===== */
+
     if (holidayName) {
       cell.classList.add("publicHoliday");
     }
 
- // ===== Shift Color (Official FIX) =====
-switch (saved.shift) {
+    /* ===== Shift Color (FIX) ===== */
 
-  case "day":
-    cell.classList.add("dayColor");
-    break;
+    if (saved.shift === "day") {
+      cell.classList.add("dayColor");
+    }
 
-  case "night":
-    cell.classList.add("nightColor");
-    break;
+    if (saved.shift === "night") {
+      cell.classList.add("nightColor");
+    }
 
-  case "holiday":
-    cell.classList.add("holidayWorkColor");
-    break;
+    if (saved.shift === "holiday") {
+      cell.classList.add("holidayWorkColor");
+    }
 
-  case "off":
-    cell.classList.add("offColor");
-    break;
+    if (saved.shift === "off") {
+      cell.classList.add("offColor");
+    }
 
-}
+    /* ===== Calendar Cell ===== */
 
-    // Calendar Cell
     cell.innerHTML = `
       <span class="dayNumber">${day}</span>
-      ${holidayName ? `<span class="holidayName">${holidayName}</span>` : ""}
+      ${
+        holidayName
+          ? `<span class="holidayName">${holidayName}</span>`
+          : ""
+      }
     `;
+
+    /* ===== Open Popup ===== */
 
     cell.addEventListener("click", () => {
       openDayPopup(dateKey);
@@ -872,6 +881,7 @@ switch (saved.shift) {
     calendarGrid.appendChild(cell);
   }
 }
+
 /* ==========================================================
    PART 4.5 — Calendar Navigation
 ========================================================== */
