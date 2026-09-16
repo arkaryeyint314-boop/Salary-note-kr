@@ -1054,19 +1054,16 @@ shiftButtons.forEach(btn => {
 });
 
 /* ==========================================================
-   PART 5.4 — Auto OT Calculator
+   PART 5.4 — Auto OT Calculator (Official FIX)
 ========================================================== */
 
 // HH:MM → Minutes
 function timeToMinutes(time) {
-
   const [hour, minute] = time.split(":").map(Number);
-
-  return (hour * 60) + minute;
-
+  return hour * 60 + minute;
 }
 
-// Calculate OT
+// Auto Calculate Working Hours / OT / Night
 function calculateOTHours() {
 
   if (!popupStart.value || !popupEnd.value) return;
@@ -1074,31 +1071,51 @@ function calculateOTHours() {
   let startMin = timeToMinutes(popupStart.value);
   let endMin = timeToMinutes(popupEnd.value);
 
-  // Night Shift
+  // Next Day Shift (17:30 → 01:30, 20:30 → 08:30)
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
 
-  const breakMinutes =
-    Number(popupBreak.value) || 0;
+  const breakMinutes = Number(popupBreak.value) || 0;
 
-  const totalHours =
-    (endMin - startMin - breakMinutes) / 60;
+  // Total Working Hours
+  const totalHours = (endMin - startMin - breakMinutes) / 60;
 
-  const otHours =
-    Math.max(0, totalHours - 8);
+  // OT = Hours over 8
+  const otHours = Math.max(0, totalHours - 8);
 
+  // Night Hours (22:00 ~ 06:00)
+  let nightMinutes = 0;
+
+  const nightStart = 22 * 60;      // 22:00
+  const nightEnd = 30 * 60;         // 06:00 (next day = 30:00)
+
+  const overlapStart = Math.max(startMin, nightStart);
+  const overlapEnd = Math.min(endMin, nightEnd);
+
+  if (overlapEnd > overlapStart) {
+    nightMinutes = overlapEnd - overlapStart;
+  }
+
+  const nightHours = nightMinutes / 60;
+
+  // Update Popup
   popupOT.value = otHours.toFixed(1);
+
+  // Night input ရှိရင် Update
+  const popupNight = document.getElementById("popupNight");
+  if (popupNight) {
+    popupNight.value = nightHours.toFixed(1);
+  }
 
 }
 
 // Auto Update
 [popupStart, popupEnd, popupBreak].forEach(input => {
-
   input?.addEventListener("input", calculateOTHours);
   input?.addEventListener("change", calculateOTHours);
-
 });
+
 
 /* ==========================================================
    PART 5.5 — Save Calendar Day
