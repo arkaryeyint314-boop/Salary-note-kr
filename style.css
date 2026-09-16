@@ -837,25 +837,25 @@ body{
 }
 
 /* ==========================================================
-   PART 6 — CALENDAR DAY POPUP
+   PART 6 — CALENDAR DAY POPUP (OFFICIAL COMPACT UI)
 ========================================================== */
 
 /* ===== Popup Background ===== */
 
 .day-popup{
-
   position:fixed;
   inset:0;
 
   display:flex;
   justify-content:center;
-  align-items:flex-end;
+  align-items:center;
+
+  padding:16px;
 
   background:rgba(0,0,0,.55);
   backdrop-filter:blur(6px);
 
-  z-index:999;
-
+  z-index:9999;
 }
 
 .day-popup.hidden{
@@ -865,34 +865,33 @@ body{
 /* ===== Popup Card ===== */
 
 .popup-card{
-
   width:100%;
-  max-width:480px;
+  max-width:430px;
 
   background:var(--card);
 
-  border-radius:28px 28px 0 0;
+  border-radius:24px;
+  padding:18px;
 
-  padding:22px 20px 28px;
+  max-height:88vh;
+  overflow-y:auto;
 
-  animation:popupUp .25s ease;
+  box-shadow:0 18px 40px rgba(0,0,0,.25);
 
+  animation:popupUp .22s ease;
 }
 
 /* ===== Animation ===== */
 
 @keyframes popupUp{
-
   from{
-    transform:translateY(100%);
+    transform:translateY(20px);
     opacity:0;
   }
-
   to{
     transform:translateY(0);
     opacity:1;
   }
-
 }
 
 /* ==========================================================
@@ -900,37 +899,38 @@ body{
 ========================================================== */
 
 .popup-header{
-
   display:flex;
   justify-content:space-between;
   align-items:center;
 
-  margin-bottom:20px;
+  margin-bottom:16px;
 
+  position:sticky;
+  top:0;
+
+  background:var(--card);
+  z-index:2;
 }
 
 .popup-header h3{
-
   color:var(--text);
-  font-size:22px;
+  font-size:18px;
   font-weight:700;
-
 }
 
 .popup-header button{
-
-  width:38px;
-  height:38px;
+  width:34px;
+  height:34px;
 
   border:none;
-  border-radius:12px;
+  border-radius:10px;
 
-  background:var(--bg);
-  color:var(--text);
+  background:#EF4444;
+  color:#FFFFFF;
 
-  font-size:20px;
+  font-size:18px;
+  font-weight:700;
   cursor:pointer;
-
 }
 
 /* ==========================================================
@@ -938,44 +938,103 @@ body{
 ========================================================== */
 
 .popup-body{
-
   display:flex;
   flex-direction:column;
-  gap:14px;
-
+  gap:12px;
 }
 
 .popup-body label{
-
+  display:block;
   color:var(--sub);
-  font-size:13px;
+  font-size:12px;
+  font-weight:600;
   margin-bottom:4px;
-
 }
+
+/* ===== 2 Columns ===== */
+
+.popup-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+/* ===== Inputs ===== */
 
 .popup-body input,
 .popup-body textarea,
 .popup-body select{
-
   width:100%;
 
-  padding:14px;
+  padding:11px 12px;
 
-  border-radius:14px;
+  border-radius:12px;
   border:1px solid var(--line);
 
   background:var(--bg);
   color:var(--text);
 
+  font-size:14px;
   outline:none;
-
 }
 
 .popup-body textarea{
-
   resize:none;
-  min-height:90px;
+  min-height:60px;
+}
 
+/* ===== Shift Buttons ===== */
+
+.shift-buttons{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.shift-btn{
+  border:none;
+  border-radius:12px;
+  padding:10px;
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-size:14px;
+  font-weight:700;
+}
+
+.shift-btn.active{
+  background:var(--primary);
+  color:#FFFFFF;
+}
+
+/* ===== Bottom Buttons ===== */
+
+.popup-footer{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+
+  margin-top:18px;
+}
+
+#saveDayBtn,
+#deleteDayBtn{
+  border:none;
+  border-radius:14px;
+  padding:12px;
+
+  color:#FFFFFF;
+  font-size:15px;
+  font-weight:700;
+}
+
+#saveDayBtn{
+  background:#16A34A;
+}
+
+#deleteDayBtn{
+  background:#EF4444;
 }
 
 /* ==========================================================
