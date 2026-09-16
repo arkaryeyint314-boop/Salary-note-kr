@@ -959,7 +959,8 @@ const popupBreakStart = document.getElementById("popupBreakStart");
 const popupBreak = document.getElementById("popupBreak");
 
 const popupOT = document.getElementById("popupOT");
-const popupNight = document.getElementById("popupNight"); // NEW
+const popupNight = document.getElementById("popupNight");
+const popupHoliday = document.getElementById("popupHoliday"); // ✅ NEW
 const popupNote = document.getElementById("popupNote");
 
 const closePopup = document.getElementById("closePopup");
@@ -969,19 +970,20 @@ const deleteDayBtn = document.getElementById("deleteDayBtn");
 // ===== Popup State =====
 let selectedDate = "";
 let selectedShift = "day";
-
 /* ==========================================================
-   PART 5.2 — Open / Close Day Popup (Official Manual)
+   PART 5.2 — Open / Close Day Popup (WORKPAY KR OFFICIAL v1.6)
 ========================================================== */
 
 function openDayPopup(dateKey) {
 
+  // Selected Date
   selectedDate = dateKey;
   popupDate.textContent = dateKey;
 
+  // Saved Data
   const saved = shiftData[dateKey] || {};
 
-  // ===== Restore Selected Shift =====
+  // ===== Restore Shift =====
   selectedShift = saved.shift || "day";
 
   shiftButtons.forEach(btn => {
@@ -991,43 +993,45 @@ function openDayPopup(dateKey) {
     );
   });
 
-  // ===== Restore Saved Values =====
+  // ===== Restore Time =====
   popupStart.value = saved.start || "";
   popupEnd.value = saved.end || "";
 
+  // ===== Restore Break =====
   popupBreakStart.value = saved.breakStart || "";
-  popupBreak.value = saved.breakMinutes ?? 0; // Default 0
+  popupBreak.value = saved.breakMinutes ?? 0;
 
+  // ===== Restore Calculated Hours =====
   popupOT.value = saved.otHours ?? 0;
+  popupNight.value = saved.nightHours ?? 0;
+  popupHoliday.value = saved.holidayHours ?? 0;
 
-  if (popupNight) {
-    popupNight.value = saved.nightHours ?? 0;
-  }
-
+  // ===== Restore Note =====
   popupNote.value = saved.note || "";
 
   // ===== Show Popup =====
   dayPopup.classList.remove("hidden");
 
-  // Auto Calculate
+  // Auto Calculate (Start/End ရှိရင် Update)
   if (popupStart.value && popupEnd.value) {
     calculateOTHours();
   }
 
 }
 
-// ===== Close Popup (X) =====
+/* ===== Close Popup (X Button) ===== */
+
 closePopup?.addEventListener("click", () => {
   dayPopup.classList.add("hidden");
 });
 
-// ===== Close Popup (Background Click) =====
+/* ===== Close Popup (Tap Background) ===== */
+
 dayPopup?.addEventListener("click", (e) => {
   if (e.target === dayPopup) {
     dayPopup.classList.add("hidden");
   }
 });
-
 /* ==========================================================
    PART 5.3 — Shift Button Selection (Official Manual)
 ========================================================== */
@@ -1135,9 +1139,8 @@ function calculateOTHours() {
   input?.addEventListener("change", calculateOTHours);
 });
 
-
 /* ==========================================================
-   PART 5.5 — Save Calendar Day (WORKPAY KR OFFICIAL)
+   PART 5.5 — Save Calendar Day (WORKPAY KR OFFICIAL v1.5)
 ========================================================== */
 
 saveDayBtn?.addEventListener("click", () => {
@@ -1145,9 +1148,7 @@ saveDayBtn?.addEventListener("click", () => {
   let startMin = timeToMinutes(popupStart.value);
   let endMin = timeToMinutes(popupEnd.value);
 
-  if (endMin <= startMin) {
-    endMin += 1440;
-  }
+  if (endMin <= startMin) endMin += 1440;
 
   const breakMinutes = Number(popupBreak.value) || 0;
 
@@ -1155,12 +1156,12 @@ saveDayBtn?.addEventListener("click", () => {
     Math.max(0, (endMin - startMin - breakMinutes) / 60);
 
   const date = new Date(selectedDate + "T00:00:00");
+  const weekDay = date.getDay();
 
-  const isSaturday = date.getDay() === 6;
-
-  const isPublicHoliday =
-    koreaHolidays[currentYear] &&
-    koreaHolidays[currentYear][selectedDate];
+  // Saturday OR Korea Public Holiday
+  const isHolidayDay =
+    weekDay === 6 ||
+    !!koreaHolidays?.[date.getFullYear()]?.[selectedDate];
 
   // ===== Save =====
   shiftData[selectedDate] = {
@@ -1171,23 +1172,25 @@ saveDayBtn?.addEventListener("click", () => {
     end: popupEnd.value,
 
     breakStart: popupBreakStart.value,
-    breakMinutes: breakMinutes,
+    breakMinutes,
 
+    // ✅ Basic Hours (Day / Night / Holiday)
     basicHours:
-      selectedShift === "off"
-        ? 0
-        : Math.min(workedHours, 8),
+      selectedShift === "off" ? 0 : Math.min(workedHours, 8),
 
+    // ✅ OT Hours
     otHours: Number(popupOT.value) || 0,
 
-    nightHours: Number(popupNight?.value || 0),
+    // ✅ Night Hours
+    nightHours: Number(popupNight.value) || 0,
 
+    // ✅ Holiday Hours
     holidayHours:
-      selectedShift === "holiday" || isSaturday || isPublicHoliday
+      (selectedShift === "holiday" || isHolidayDay)
         ? Math.min(workedHours, 8)
         : 0,
 
-    note: popupNote.value
+    note: popupNote.value || ""
 
   };
 
@@ -1202,6 +1205,7 @@ saveDayBtn?.addEventListener("click", () => {
   dayPopup.classList.add("hidden");
 
 });
+
 
 /* ==========================================================
    PART 5.6 — Delete Calendar Day
