@@ -821,114 +821,140 @@
 
 <!-- ==========================================================
      CALENDAR DAY POPUP
-     PART 7 — Daily Shift Editor
+     PART 7 — Daily Shift Editor (OFFICIAL COMPACT)
 =========================================================== -->
 
 <div id="dayPopup" class="day-popup hidden">
 
   <div class="popup-card">
 
-    <!-- Popup Header -->
+    <!-- ================= Popup Header ================= -->
+
     <div class="popup-header">
-
       <h3 id="popupDate">2026-09-13</h3>
-
-      <button id="closePopup">✕</button>
-
+      <button id="closePopup" type="button">✕</button>
     </div>
 
     <div class="popup-body">
 
-      <!-- ====================================================
-           Shift Type
-      ===================================================== -->
+      <!-- ================= Shift Type ================= -->
 
       <label>Shift Type</label>
 
       <div class="shift-buttons">
 
-        <button class="shift-btn" data-shift="day">
+        <button type="button" class="shift-btn" data-shift="day">
           ☀️ Day
         </button>
 
-        <button class="shift-btn" data-shift="night">
+        <button type="button" class="shift-btn" data-shift="night">
           🌙 Night
         </button>
 
-        <button class="shift-btn" data-shift="holiday">
+        <button type="button" class="shift-btn" data-shift="holiday">
           🎌 Holiday
         </button>
 
-        <button class="shift-btn" data-shift="off">
+        <button type="button" class="shift-btn" data-shift="off">
           😴 Off
         </button>
 
       </div>
 
-      <!-- ====================================================
-           Working Time
-      ===================================================== -->
+      <!-- ================= Working Time ================= -->
 
-      <label>Start Time</label>
-      <input type="time" id="popupStart" value="08:30">
+      <div class="popup-row">
 
-      <label>End Time</label>
-      <input type="time" id="popupEnd" value="17:30">
+        <div>
+          <label>Start Time</label>
+          <input type="time" id="popupStart">
+        </div>
 
-      <label>Break Start Time</label>
-      <input
-        type="time"
-        id="popupBreakStart"
-        value="00:00"
-      >
+        <div>
+          <label>End Time</label>
+          <input type="time" id="popupEnd">
+        </div>
 
-      <label>Break Duration (minutes)</label>
-      <input
-        type="number"
-        id="popupBreak"
-        value="60"
-        min="0"
-        max="180"
-        step="15"
-        placeholder="60"
-      >
+      </div>
 
-      <!-- ====================================================
-           Auto OT Hours
-      ===================================================== -->
+      <!-- ================= Break Time ================= -->
 
-      <label>OT Hours</label>
+      <div class="popup-row">
 
-      <input
-        type="number"
-        id="popupOT"
-        readonly
-        placeholder="Auto Calculate"
-      >
+        <div>
+          <label>Break Start</label>
+          <input type="time" id="popupBreakStart">
+        </div>
 
-      <!-- ====================================================
-           Daily Note
-      ===================================================== -->
+        <div>
+          <label>Break (min)</label>
+          <input
+            type="number"
+            id="popupBreak"
+            value="0"
+            min="0"
+            max="180"
+            step="15"
+            placeholder="0"
+          >
+        </div>
+
+      </div>
+
+      <!-- ================= Auto Calculate ================= -->
+
+      <div class="popup-row">
+
+        <div>
+          <label>OT Hours</label>
+          <input
+            type="number"
+            id="popupOT"
+            readonly
+            placeholder="0.0"
+          >
+        </div>
+
+        <div>
+          <label>Night Hours</label>
+          <input
+            type="number"
+            id="popupNight"
+            readonly
+            placeholder="0.0"
+          >
+        </div>
+
+      </div>
+
+      <!-- ================= Daily Note ================= -->
 
       <label>Note</label>
 
       <textarea
         id="popupNote"
+        rows="2"
         placeholder="Write your note..."
       ></textarea>
 
-      <!-- ====================================================
-           Popup Actions
-      ===================================================== -->
+      <!-- ================= Popup Actions ================= -->
 
       <div class="popup-actions">
 
-        <button id="saveDayBtn" class="save-btn">
-          💾 Save
+        <button
+          id="deleteDayBtn"
+          class="delete-btn"
+          type="button"
+        >
+          🗑 Delete
         </button>
 
-        <button id="deleteDayBtn" class="delete-btn">
-          🗑 Delete
+        <button
+          id="saveDayBtn"
+          class="save-btn"
+          type="button"
+        >
+          💾 Save
         </button>
 
       </div>
@@ -938,6 +964,7 @@
   </div>
 
 </div>
+
      
 <!-- ==========================================================
      APP JAVASCRIPT
