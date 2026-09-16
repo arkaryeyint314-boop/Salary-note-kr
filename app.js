@@ -972,10 +972,9 @@ let selectedDate = "";
 let selectedShift = "day";
 
 /* ==========================================================
-   PART 5.2 — Open / Close Popup
+   PART 5.2 — Open Day Popup (Official Manual Input)
 ========================================================== */
 
-// ===== Open Popup =====
 function openDayPopup(dateKey) {
 
   selectedDate = dateKey;
@@ -984,54 +983,41 @@ function openDayPopup(dateKey) {
 
   const saved = shiftData[dateKey] || {};
 
+  // ===== Shift =====
   selectedShift = saved.shift || "day";
 
-  popupStart.value = saved.start || "08:30";
-  popupEnd.value = saved.end || "17:30";
-
-  popupBreakStart.value = saved.breakStart || "00:00";
-  popupBreak.value = saved.breakMinutes || 60;
-
-  popupOT.value = saved.otHours || 0;
-  popupNote.value = saved.note || "";
-
-  // Shift Button Active
-  document.querySelectorAll(".shift-btn").forEach(btn => {
-
+  shiftButtons.forEach(btn => {
     btn.classList.remove("active");
 
     if (btn.dataset.shift === selectedShift) {
       btn.classList.add("active");
     }
-
   });
 
-  // Auto OT
-  calculateOTHours();
+  // ===== Manual Values (Saved First) =====
+  popupStart.value = saved.start || "";
+  popupEnd.value = saved.end || "";
 
-  // Show Popup
+  popupBreakStart.value = saved.breakStart || "";
+  popupBreak.value =
+    saved.breakMinutes ?? 0;   // Default = 0 (NOT 60)
+
+  popupOT.value = saved.otHours ?? 0;
+
+  popupNote.value = saved.note || "";
+
+  // ===== Show Popup =====
   dayPopup.classList.remove("hidden");
+
+  // Auto calculate only if start/end already exist
+  if (popupStart.value && popupEnd.value) {
+    calculateOTHours();
+  }
 
 }
 
-// ===== Close Button =====
-closePopup?.addEventListener("click", () => {
-
-  dayPopup.classList.add("hidden");
-
-});
-
-// ===== Click Outside Popup =====
-dayPopup?.addEventListener("click", (e) => {
-
-  if (e.target === dayPopup) {
-    dayPopup.classList.add("hidden");
-  }
-
-});
-
 /* ==========================================================
-   PART 5.3 — Shift Button Selection (FIX)
+   PART 5.3 — Shift Button Selection (Official Manual)
 ========================================================== */
 
 const shiftButtons = document.querySelectorAll(".shift-btn");
@@ -1040,18 +1026,25 @@ shiftButtons.forEach(btn => {
 
   btn.addEventListener("click", () => {
 
-    // Remove old active button
-    shiftButtons.forEach(item => item.classList.remove("active"));
+    // ===== Remove old active button =====
+    shiftButtons.forEach(item =>
+      item.classList.remove("active")
+    );
 
-    // Active current button
+    // ===== Active current button =====
     btn.classList.add("active");
 
-    // Save selected shift
+    // ===== Save selected shift only =====
     selectedShift = btn.dataset.shift;
+
+    // Manual Mode:
+    // Start Time / End Time / Break / OT ကို မပြောင်းဘူး။
+    // User ရိုက်ထားတဲ့ value တွေကို မဖျက်ဘူး။
 
   });
 
 });
+
 
 /* ==========================================================
    PART 5.4 — Auto OT Calculator (Official)
@@ -1259,20 +1252,26 @@ function syncCalendarToCalculator() {
     // ===== OT =====
     otHours += Number(day.otHours || 0);
 
-    // ===== Night Shift =====
-    if (day.shift === "night") {
+// ===== Night Shift (22:00 ~ 06:00 Only) =====
+if (day.shift === "night") {
 
-      let start = timeToMinutes(day.start || "20:30");
-      let end = timeToMinutes(day.end || "08:30");
+  let start = timeToMinutes(day.start || "20:30");
+  let end = timeToMinutes(day.end || "08:30");
 
-      if (end <= start) end += 1440;
+  // Next Day
+  if (end <= start) end += 1440;
 
-      const worked =
-        (end - start - Number(day.breakMinutes || 60)) / 60;
+  const nightStart = 22 * 60; // 22:00
+  const nightEnd = 30 * 60;   // 06:00 next day
 
-      nightHours += Math.max(0, worked);
+  const overlapStart = Math.max(start, nightStart);
+  const overlapEnd = Math.min(end, nightEnd);
 
-    }
+  if (overlapEnd > overlapStart) {
+    nightHours += (overlapEnd - overlapStart) / 60;
+  }
+
+} 
 
     // ===== Holiday Shift =====
     if (day.shift === "holiday") {
