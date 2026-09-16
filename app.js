@@ -1228,13 +1228,13 @@ const nightHoursInput = document.getElementById("nightHours");
 const holidayHoursInput = document.getElementById("holidayHours");
 
 /* ==========================================================
-   PART 6.2 — Sync Calendar To Calculator
-   WORKPAY KR OFFICIAL v1.1
+   PART 6.2 — Sync Calendar To Calculator (WORKPAY KR RULE)
 ========================================================== */
 
 function syncCalendarToCalculator() {
 
   let workingDays = 0;
+
   let basicHours = 0;
   let otHours = 0;
   let nightHours = 0;
@@ -1242,9 +1242,9 @@ function syncCalendarToCalculator() {
 
   Object.entries(shiftData).forEach(([dateKey, day]) => {
 
-    const weekDay = new Date(dateKey + "T00:00:00").getDay();
+    if (!day.shift) return;
 
-    // ===== Working Days =====
+    // Working Day Count
     if (
       day.shift === "day" ||
       day.shift === "night" ||
@@ -1253,39 +1253,55 @@ function syncCalendarToCalculator() {
       workingDays++;
     }
 
-    // ===== Basic Hours =====
+    // Basic Hours
     if (day.shift === "day") {
       basicHours += 8;
     }
 
-    // Weekday Night Shift (Mon–Fri)
-    if (day.shift === "night" && weekDay !== 6) {
+    // Night Shift = Basic 8h
+    if (day.shift === "night") {
       basicHours += 8;
     }
 
-    // ===== OT =====
+    // Holiday Shift = Basic မယူဘူး
+    if (day.shift === "holiday") {
+      holidayHours += Number(day.holidayHours || 0);
+    }
+
+    // OT
     otHours += Number(day.otHours || 0);
 
-    // ===== Night Hours =====
+    // Night Hours (Popup က save ထားတဲ့ value ကိုယူ)
     nightHours += Number(day.nightHours || 0);
 
-    // ===== Holiday Hours =====
-    holidayHours += Number(day.holidayHours || 0);
+    // Saturday Night Rule
+    const weekDay = new Date(dateKey + "T00:00:00").getDay();
+
+    if (weekDay === 6 && day.shift === "night") {
+      holidayHours += Number(day.holidayHours || 8);
+    }
+
+    // Korea Public Holiday Night Rule
+    if (
+      koreaHolidays[currentYear] &&
+      koreaHolidays[currentYear][dateKey] &&
+      day.shift === "night"
+    ) {
+      holidayHours += Number(day.holidayHours || 8);
+    }
 
   });
 
-  // ===== Fill Calculator =====
+  // Calculator Fill
   workingDaysInput.value = workingDays;
   basicHoursInput.value = basicHours;
   otHoursInput.value = otHours.toFixed(1);
   nightHoursInput.value = nightHours.toFixed(1);
   holidayHoursInput.value = holidayHours.toFixed(1);
 
-  // ===== Refresh Home Dashboard =====
   if (typeof updateHomeDashboard === "function") {
     updateHomeDashboard();
   }
-
 }
 
 /* ==========================================================
