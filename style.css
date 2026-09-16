@@ -1082,7 +1082,43 @@ body{
 
 }
 
+/* ==========================================================
+   PART 6.3 — iPhone Time Input FIX
+========================================================== */
 
+/* Popup 2-column item */
+.popup-row > div{
+  width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+/* iPhone Safari input width fix */
+.popup-row input[type="time"],
+.popup-row input[type="number"]{
+  display:block;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
+
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+/* Time input text alignment */
+.popup-row input[type="time"]::-webkit-date-and-time-value{
+  text-align:left;
+}
+
+/* Break / OT / Night input fix */
+#popupBreak,
+#popupOT,
+#popupNight{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+}
 /* ==========================================================
    PART 7 — CALCULATOR PAGE
 ========================================================== */
