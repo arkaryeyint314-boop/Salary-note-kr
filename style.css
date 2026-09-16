@@ -1300,34 +1300,26 @@ input[readonly]{
 }
 
 /* ==========================================================
-   PART 8 — PROFILE PAGE + FACTORY RULES
+   PART 8 — PROFILE PAGE + FACTORY TEMPLATE
+   WORKPAY KR OFFICIAL v2
 ========================================================== */
 
-/* ===== Profile Card ===== */
+/* ================= Profile Card ================= */
 
 .profileCard{
-
-  background:linear-gradient(
-    135deg,
-    var(--primary),
-    #7C3AED
-  );
-
-  color:#FFFFFF;
+  background:linear-gradient(135deg,var(--primary),#7C3AED);
+  color:#fff;
   text-align:center;
 
-  padding:26px;
-  border-radius:26px;
+  padding:22px;
+  border-radius:22px;
   margin-bottom:18px;
-
 }
 
 .avatar{
-
-  width:74px;
-  height:74px;
-
-  margin:0 auto 14px;
+  width:70px;
+  height:70px;
+  margin:0 auto 12px;
 
   display:flex;
   justify-content:center;
@@ -1336,151 +1328,287 @@ input[readonly]{
   border-radius:50%;
   background:rgba(255,255,255,.15);
 
-  font-size:34px;
-
+  font-size:32px;
 }
 
 .profileCard h2{
-
-  font-size:24px;
-  margin-bottom:6px;
-
+  font-size:22px;
+  margin-bottom:4px;
 }
 
 .profileCard p{
-
+  font-size:13px;
   opacity:.9;
-  font-size:14px;
-
 }
 
-/* ==========================================================
-   PART 8.1 — Language Selector
-========================================================== */
+/* ================= Language ================= */
 
 .languageSelect{
-
   width:100%;
+  height:48px;
 
-  padding:14px;
+  padding:0 14px;
+
   border-radius:14px;
-
   border:1px solid var(--line);
 
   background:var(--bg);
   color:var(--text);
 
+  font-size:14px;
 }
 
 .languageList{
-
   display:flex;
-  gap:10px;
+  gap:8px;
   flex-wrap:wrap;
-
 }
 
 .language{
-
   flex:1;
+  min-width:90px;
 
-  padding:12px;
+  height:42px;
 
-  border-radius:14px;
+  border-radius:12px;
   border:1px solid var(--line);
 
   background:var(--bg);
   color:var(--text);
 
+  font-size:13px;
+  font-weight:600;
   cursor:pointer;
-  transition:.2s;
 
+  transition:.2s;
 }
 
 .language.active{
-
   background:var(--primary);
   border-color:var(--primary);
-  color:#FFFFFF;
-
+  color:#fff;
 }
 
 /* ==========================================================
-   PART 8.2 — Factory Rules Card
+   PART 8.2 — Factory Template Card
 ========================================================== */
 
-#factoryRuleList{
-
+.factory-card{
   display:flex;
   flex-direction:column;
-  gap:12px;
-
+  gap:14px;
 }
 
-.ruleItem{
+.factory-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
+.factory-header h3{
+  margin:0;
+}
+
+.addTemplateBtn{
+  height:38px;
+  padding:0 14px;
+
+  border:none;
+  border-radius:12px;
+
+  background:var(--primary);
+  color:#fff;
+
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ===== Template List ===== */
+
+#factoryTemplateList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.templateItem{
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:16px;
+
+  padding:14px;
+}
+
+.templateTop{
   display:flex;
   justify-content:space-between;
   align-items:center;
 
-  padding:14px;
-  border-radius:16px;
-
-  background:var(--bg);
-  border:1px solid var(--line);
-
+  margin-bottom:8px;
 }
 
-.ruleItem strong{
-
+.templateName{
   color:var(--text);
-  font-size:16px;
-
-}
-
-.ruleItem .plus{
-
-  color:var(--green);
+  font-size:15px;
   font-weight:700;
-
 }
 
-.ruleItem .minus{
+.templateBadge{
+  background:rgba(99,102,241,.15);
+  color:var(--primary);
 
-  color:var(--red);
+  padding:4px 10px;
+  border-radius:999px;
+
+  font-size:11px;
   font-weight:700;
-
 }
 
-.removeBtn{
+.templateInfo{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.infoBox{
+  background:var(--card);
+  border-radius:12px;
+  padding:10px;
+}
+
+.infoBox span{
+  display:block;
+  color:var(--sub);
+  font-size:11px;
+  margin-bottom:2px;
+}
+
+.infoBox strong{
+  color:var(--text);
+  font-size:14px;
+}
+
+/* ===== Template Buttons ===== */
+
+.templateActions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.editTemplateBtn,
+.deleteTemplateBtn{
+  flex:1;
+
+  height:40px;
 
   border:none;
-  border-radius:10px;
+  border-radius:12px;
 
-  padding:8px 12px;
-
-  background:var(--red);
-  color:#FFFFFF;
-
+  font-size:13px;
+  font-weight:700;
   cursor:pointer;
-  font-size:12px;
+}
 
+.editTemplateBtn{
+  background:#2563EB;
+  color:#fff;
+}
+
+.deleteTemplateBtn{
+  background:#EF4444;
+  color:#fff;
 }
 
 /* ==========================================================
-   PART 8.3 — Rule Popup
+   PART 8.3 — Factory Template Popup
 ========================================================== */
 
 #rulePopup .popup-card{
+  max-width:420px;
+}
 
-  max-width:480px;
+#rulePopup .popup-body{
+  gap:10px;
+}
 
+#rulePopup .popup-field{
+  display:flex;
+  flex-direction:column;
+}
+
+#rulePopup label{
+  margin-bottom:4px;
+
+  color:var(--sub);
+  font-size:12px;
+  font-weight:600;
 }
 
 #rulePopup input,
 #rulePopup select{
+  width:100%;
+  height:46px;
 
-  margin-bottom:14px;
+  padding:0 12px;
+
+  border-radius:12px;
+  border:1px solid var(--line);
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-size:14px;
+  box-sizing:border-box;
+}
+
+/* ===== Popup Save Button ===== */
+
+#saveRuleBtn{
+  width:100%;
+  height:48px;
+
+  margin-top:8px;
+
+  border:none;
+  border-radius:14px;
+
+  background:#16A34A;
+  color:#fff;
+
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ==========================================================
+   PART 8.4 — Small Phone Fix (iPhone 11/13)
+========================================================== */
+
+@media (max-width:430px){
+
+  .profileCard{
+    padding:18px;
+  }
+
+  .templateInfo{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .templateActions{
+    gap:6px;
+  }
+
+  .editTemplateBtn,
+  .deleteTemplateBtn{
+    font-size:12px;
+  }
+
+  .addTemplateBtn{
+    padding:0 12px;
+    font-size:12px;
+  }
 
 }
 
