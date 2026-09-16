@@ -1056,18 +1056,19 @@ shiftButtons.forEach(btn => {
 
 });
 
-
 /* ==========================================================
-   PART 5.4 — Auto OT Calculator (Official)
+   PART 5.4 — Auto OT Calculator (WORKPAY KR OFFICIAL v1.1)
 ========================================================== */
 
 // ===== HH:MM → Minutes =====
 function timeToMinutes(time) {
+  if (!time) return 0;
+
   const [hour, minute] = time.split(":").map(Number);
   return hour * 60 + minute;
 }
 
-// ===== Auto Calculate OT + Night Hours =====
+// ===== Auto Calculate OT + Night + Holiday Hours =====
 function calculateOTHours() {
 
   if (!popupStart.value || !popupEnd.value) return;
@@ -1075,25 +1076,24 @@ function calculateOTHours() {
   let startMin = timeToMinutes(popupStart.value);
   let endMin = timeToMinutes(popupEnd.value);
 
-  // Next Day Shift (17:30 → 01:30 / 20:30 → 08:30)
+  // Cross Midnight
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
 
   const breakMinutes = Number(popupBreak.value) || 0;
 
-  // Total Working Hours
-  const totalHours =
-    (endMin - startMin - breakMinutes) / 60;
+  const workedHours =
+    Math.max(0, (endMin - startMin - breakMinutes) / 60);
 
-  // OT = Hours over 8
-  const otHours = Math.max(0, totalHours - 8);
+  // ===== OT =====
+  const otHours = Math.max(0, workedHours - 8);
 
   // ===== Night Hours (22:00 ~ 06:00) =====
   let nightMinutes = 0;
 
-  const nightStart = 22 * 60;   // 22:00
-  const nightEnd = 30 * 60;     // 06:00 next day
+  const nightStart = 22 * 60;
+  const nightEnd = 30 * 60;
 
   const overlapStart = Math.max(startMin, nightStart);
   const overlapEnd = Math.min(endMin, nightEnd);
@@ -1104,47 +1104,56 @@ function calculateOTHours() {
 
   const nightHours = nightMinutes / 60;
 
-  // Update Popup
+  // ===== Holiday Hours =====
+  const weekDay =
+    new Date(selectedDate + "T00:00:00").getDay();
+
+  let holidayHours = 0;
+
+  // Saturday Night 17:30 → 01:30
+  if (
+    weekDay === 6 &&
+    selectedShift === "night"
+  ) {
+    holidayHours = Math.min(workedHours, 8);
+  }
+
+  // Sunday / Public Holiday Shift
+  if (selectedShift === "holiday") {
+    holidayHours = Math.min(workedHours, 8);
+  }
+
+  // ===== Update Popup =====
   popupOT.value = otHours.toFixed(1);
 
-  const popupNight = document.getElementById("popupNight");
   if (popupNight) {
     popupNight.value = nightHours.toFixed(1);
+  }
+
+  const popupHoliday =
+    document.getElementById("popupHolidayHours");
+
+  if (popupHoliday) {
+    popupHoliday.value = holidayHours.toFixed(1);
   }
 
 }
 
 // ===== Auto Update =====
 [popupStart, popupEnd, popupBreak].forEach(input => {
-
   input?.addEventListener("input", calculateOTHours);
   input?.addEventListener("change", calculateOTHours);
-
 });
 
 /* ==========================================================
-   PART 5.5 — Save Calendar Day (Official)
+   PART 5.5 — Save Calendar Day (WORKPAY KR OFFICIAL v1.1)
 ========================================================== */
 
 saveDayBtn?.addEventListener("click", () => {
 
-  // Date Info
-  const weekDay =
-    new Date(selectedDate + "T00:00:00").getDay();
+  const popupHoliday =
+    document.getElementById("popupHolidayHours");
 
-  let startMin = timeToMinutes(popupStart.value);
-  let endMin = timeToMinutes(popupEnd.value);
-
-  if (endMin <= startMin) {
-    endMin += 24 * 60;
-  }
-
-  const breakMinutes = Number(popupBreak.value) || 0;
-
-  const workedHours =
-    Math.max(0, (endMin - startMin - breakMinutes) / 60);
-
-  // ===== Save Shift Data =====
   shiftData[selectedDate] = {
 
     shift: selectedShift,
@@ -1153,44 +1162,31 @@ saveDayBtn?.addEventListener("click", () => {
     end: popupEnd.value,
 
     breakStart: popupBreakStart.value,
-    breakMinutes: breakMinutes,
+    breakMinutes: Number(popupBreak.value) || 0,
 
-    otHours: Number(popupOT.value),
-
-    // Saturday Holiday Rule
-    holidayHours:
-      weekDay === 6
-        ? Math.min(workedHours, 8)
-        : Number(
-            shiftData[selectedDate]?.holidayHours || 0
-          ),
+    otHours: Number(popupOT.value) || 0,
+    nightHours: Number(popupNight?.value) || 0,
+    holidayHours: Number(popupHoliday?.value) || 0,
 
     note: popupNote.value
 
   };
 
-  // Save LocalStorage
   saveShiftData();
 
-  // Refresh Calendar
   renderCalendar();
 
-  // Refresh Calculator
   if (typeof syncCalendarToCalculator === "function") {
     syncCalendarToCalculator();
   }
 
-  // Refresh Dashboard
   if (typeof updateHomeDashboard === "function") {
     updateHomeDashboard();
   }
 
-  // Close Popup
   dayPopup.classList.add("hidden");
 
 });
-
-
 
 /* ==========================================================
    PART 5.6 — Delete Calendar Day
@@ -1233,18 +1229,20 @@ const holidayHoursInput = document.getElementById("holidayHours");
 
 /* ==========================================================
    PART 6.2 — Sync Calendar To Calculator
+   WORKPAY KR OFFICIAL v1.1
 ========================================================== */
 
 function syncCalendarToCalculator() {
 
   let workingDays = 0;
-
   let basicHours = 0;
   let otHours = 0;
   let nightHours = 0;
   let holidayHours = 0;
 
-  Object.values(shiftData).forEach(day => {
+  Object.entries(shiftData).forEach(([dateKey, day]) => {
+
+    const weekDay = new Date(dateKey + "T00:00:00").getDay();
 
     // ===== Working Days =====
     if (
@@ -1252,80 +1250,43 @@ function syncCalendarToCalculator() {
       day.shift === "night" ||
       day.shift === "holiday"
     ) {
-
       workingDays++;
+    }
 
-      // Basic Hours (8h/day)
+    // ===== Basic Hours =====
+    if (day.shift === "day") {
       basicHours += 8;
+    }
 
+    // Weekday Night Shift (Mon–Fri)
+    if (day.shift === "night" && weekDay !== 6) {
+      basicHours += 8;
     }
 
     // ===== OT =====
     otHours += Number(day.otHours || 0);
 
-// ===== Night Shift (22:00 ~ 06:00 Only) =====
-if (day.shift === "night") {
+    // ===== Night Hours =====
+    nightHours += Number(day.nightHours || 0);
 
-  let start = timeToMinutes(day.start || "20:30");
-  let end = timeToMinutes(day.end || "08:30");
-
-  // Next Day
-  if (end <= start) end += 1440;
-
-  const nightStart = 22 * 60; // 22:00
-  const nightEnd = 30 * 60;   // 06:00 next day
-
-  const overlapStart = Math.max(start, nightStart);
-  const overlapEnd = Math.min(end, nightEnd);
-
-  if (overlapEnd > overlapStart) {
-    nightHours += (overlapEnd - overlapStart) / 60;
-  }
-
-} 
-
-    // ===== Holiday Shift =====
-    if (day.shift === "holiday") {
-
-      let start = timeToMinutes(day.start || "08:30");
-      let end = timeToMinutes(day.end || "17:30");
-
-      if (end <= start) end += 1440;
-
-      const worked =
-        (end - start - Number(day.breakMinutes || 60)) / 60;
-
-      holidayHours += Math.max(0, worked);
-
-    }
+    // ===== Holiday Hours =====
+    holidayHours += Number(day.holidayHours || 0);
 
   });
 
   // ===== Fill Calculator =====
   workingDaysInput.value = workingDays;
-
   basicHoursInput.value = basicHours;
   otHoursInput.value = otHours.toFixed(1);
   nightHoursInput.value = nightHours.toFixed(1);
   holidayHoursInput.value = holidayHours.toFixed(1);
 
   // ===== Refresh Home Dashboard =====
-  updateHomeDashboard();
+  if (typeof updateHomeDashboard === "function") {
+    updateHomeDashboard();
+  }
 
 }
-
-// Refresh Calendar
-renderCalendar();
-
-// Calendar → Calculator
-syncCalendarToCalculator();
-
-// Home Dashboard
-updateHomeDashboard();
-
-renderCalendar();
-syncCalendarToCalculator();
-updateHomeDashboard();
 
 /* ==========================================================
    PART 6.3 — App Refresh (Official)
