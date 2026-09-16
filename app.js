@@ -1116,49 +1116,69 @@ function calculateOTHours() {
   input?.addEventListener("change", calculateOTHours);
 });
 
-
 /* ==========================================================
-   PART 5.5 — Save Calendar Day
+   PART 5.4 — Auto OT Calculator (Official FIX)
 ========================================================== */
 
-saveDayBtn?.addEventListener("click", () => {
+// HH:MM → Minutes
+function timeToMinutes(time) {
+  const [hour, minute] = time.split(":").map(Number);
+  return hour * 60 + minute;
+}
 
-  shiftData[selectedDate] = {
+// Auto Calculate Working Hours / OT / Night
+function calculateOTHours() {
 
-    shift: selectedShift,
+  if (!popupStart.value || !popupEnd.value) return;
 
-    start: popupStart.value,
-    end: popupEnd.value,
+  let startMin = timeToMinutes(popupStart.value);
+  let endMin = timeToMinutes(popupEnd.value);
 
-    breakStart: popupBreakStart.value,
-    breakMinutes: Number(popupBreak.value),
-
-    otHours: Number(popupOT.value),
-
-    note: popupNote.value
-
-  };
-
-  // Save LocalStorage
-  saveShiftData();
-
-  // Refresh Calendar
-  renderCalendar();
-
-  // Refresh Calculator
-  if (typeof syncCalendarToCalculator === "function") {
-    syncCalendarToCalculator();
+  // Next Day Shift (17:30 → 01:30, 20:30 → 08:30)
+  if (endMin <= startMin) {
+    endMin += 24 * 60;
   }
 
-  // Refresh Dashboard
-  if (typeof updateHomeDashboard === "function") {
-    updateHomeDashboard();
+  const breakMinutes = Number(popupBreak.value) || 0;
+
+  // Total Working Hours
+  const totalHours = (endMin - startMin - breakMinutes) / 60;
+
+  // OT = Hours over 8
+  const otHours = Math.max(0, totalHours - 8);
+
+  // Night Hours (22:00 ~ 06:00)
+  let nightMinutes = 0;
+
+  const nightStart = 22 * 60;      // 22:00
+  const nightEnd = 30 * 60;         // 06:00 (next day = 30:00)
+
+  const overlapStart = Math.max(startMin, nightStart);
+  const overlapEnd = Math.min(endMin, nightEnd);
+
+  if (overlapEnd > overlapStart) {
+    nightMinutes = overlapEnd - overlapStart;
   }
 
-  // Close Popup
-  dayPopup.classList.add("hidden");
+  const nightHours = nightMinutes / 60;
 
+  // Update Popup
+  popupOT.value = otHours.toFixed(1);
+
+  // Night input ရှိရင် Update
+  const popupNight = document.getElementById("popupNight");
+  if (popupNight) {
+    popupNight.value = nightHours.toFixed(1);
+  }
+
+}
+
+// Auto Update
+[popupStart, popupEnd, popupBreak].forEach(input => {
+  input?.addEventListener("input", calculateOTHours);
+  input?.addEventListener("change", calculateOTHours);
 });
+
 
 /* ==========================================================
    PART 5.6 — Delete Calendar Day
