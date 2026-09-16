@@ -821,7 +821,7 @@
 
 <!-- ==========================================================
      CALENDAR DAY POPUP
-     PART 7 — Daily Shift Editor (OFFICIAL COMPACT)
+     PART 7 — Daily Shift Editor (WORKPAY KR OFFICIAL)
 =========================================================== -->
 
 <div id="dayPopup" class="day-popup hidden">
@@ -829,16 +829,15 @@
   <div class="popup-card">
 
     <!-- ================= Popup Header ================= -->
-
     <div class="popup-header">
       <h3 id="popupDate">2026-09-13</h3>
       <button id="closePopup" type="button">✕</button>
     </div>
 
+    <!-- ================= Popup Body ================= -->
     <div class="popup-body">
 
       <!-- ================= Shift Type ================= -->
-
       <label>Shift Type</label>
 
       <div class="shift-buttons">
@@ -862,32 +861,30 @@
       </div>
 
       <!-- ================= Working Time ================= -->
-
       <div class="popup-row">
 
-        <div>
-          <label>Start Time</label>
+        <div class="popup-field">
+          <label for="popupStart">Start Time</label>
           <input type="time" id="popupStart">
         </div>
 
-        <div>
-          <label>End Time</label>
+        <div class="popup-field">
+          <label for="popupEnd">End Time</label>
           <input type="time" id="popupEnd">
         </div>
 
       </div>
 
       <!-- ================= Break Time ================= -->
-
       <div class="popup-row">
 
-        <div>
-          <label>Break Start</label>
+        <div class="popup-field">
+          <label for="popupBreakStart">Break Start</label>
           <input type="time" id="popupBreakStart">
         </div>
 
-        <div>
-          <label>Break (min)</label>
+        <div class="popup-field">
+          <label for="popupBreak">Break (min)</label>
           <input
             type="number"
             id="popupBreak"
@@ -902,11 +899,10 @@
       </div>
 
       <!-- ================= Auto Calculate ================= -->
-
       <div class="popup-row">
 
-        <div>
-          <label>OT Hours</label>
+        <div class="popup-field">
+          <label for="popupOT">OT Hours</label>
           <input
             type="number"
             id="popupOT"
@@ -915,8 +911,8 @@
           >
         </div>
 
-        <div>
-          <label>Night Hours</label>
+        <div class="popup-field">
+          <label for="popupNight">Night Hours</label>
           <input
             type="number"
             id="popupNight"
@@ -928,28 +924,34 @@
       </div>
 
       <!-- ================= Daily Note ================= -->
+      <div class="popup-field">
+        <label for="popupNote">Note</label>
 
-      <label>Note</label>
-
-      <textarea
-        id="popupNote"
-        rows="2"
-        placeholder="Write your note..."
-      ></textarea>
+        <textarea
+          id="popupNote"
+          rows="2"
+          placeholder="Write your note..."
+        ></textarea>
+      </div>
 
       <!-- ================= Popup Actions ================= -->
+      <div class="popup-actions">
 
-   <div class="popup-actions">
+        <button
+          id="saveDayBtn"
+          class="save-btn"
+          type="button"
+        >
+          💾 Save
+        </button>
 
-  <button id="saveDayBtn" class="save-btn" type="button">
-    💾 Save
-  </button>
-
-  <button id="deleteDayBtn" class="delete-btn" type="button">
-    🗑 Delete
-  </button>
-
-</div> 
+        <button
+          id="deleteDayBtn"
+          class="delete-btn"
+          type="button"
+        >
+          🗑 Delete
+        </button>
 
       </div>
 
