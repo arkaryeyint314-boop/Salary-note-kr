@@ -726,37 +726,81 @@
     </div>
 
     <!-- ======================================================
-         Work Profile
-         User Company Information
-    ======================================================= -->
+     PART 15.1 — Work Profile + Factory Template
+====================================================== -->
 
-    <section class="card">
+<section class="card">
 
-      <h3 data-lang="work_profile_title">
-        🏭 Work Profile
-      </h3>
+  <h3 data-lang="work_profile_title">
+    🏭 Work Profile
+  </h3>
 
-      <!-- Company Name -->
-      <input
-        data-lang-placeholder="company_name"
-        placeholder="Company Name"
-      >
+  <!-- ================= Factory Template ================= -->
 
-      <!-- Hourly Wage -->
-      <input
-        data-lang-placeholder="hourly_wage_placeholder"
-        placeholder="Hourly Wage"
-      >
+  <div class="factory-template-card">
 
-      <!-- Visa Type -->
-      <input
-        data-lang-placeholder="visa_type"
-        placeholder="Visa Type (E9 / F2 / D2)"
-      >
+    <div class="factory-template-header">
 
-    </section>
+      <div>
+        <h4>Factory Template</h4>
+        <p>Save your factory work rules</p>
+      </div>
 
-  </main>
+      <button id="openFactoryTemplate" type="button">
+        Edit
+      </button>
+
+    </div>
+
+    <div class="factory-template-info">
+
+      <div class="factory-info-row">
+        <span>Factory</span>
+        <strong id="factoryName">My Factory</strong>
+      </div>
+
+      <div class="factory-info-row">
+        <span>Hourly Wage</span>
+        <strong id="factoryWage">₩10,320</strong>
+      </div>
+
+      <div class="factory-info-row">
+        <span>Meal Allowance</span>
+        <strong id="factoryMeal">₩100,000</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================= Manual Work Profile ================= -->
+
+  <h4 class="profile-subtitle">Manual Work Profile</h4>
+
+  <!-- Company Name -->
+  <input
+    id="companyName"
+    data-lang-placeholder="company_name"
+    placeholder="Company Name"
+  >
+
+  <!-- Hourly Wage -->
+  <input
+    id="hourlyWageProfile"
+    type="number"
+    inputmode="numeric"
+    data-lang-placeholder="hourly_wage_placeholder"
+    placeholder="Hourly Wage (₩)"
+  >
+
+  <!-- Visa Type -->
+  <input
+    id="visaType"
+    data-lang-placeholder="visa_type"
+    placeholder="Visa Type (E9 / F2 / D2)"
+  >
+
+</section>
 
   <!-- ========================================================
        BOTTOM NAVIGATION
