@@ -1226,7 +1226,6 @@ const holidayHoursInput = document.getElementById("holidayHours");
 function syncCalendarToCalculator() {
 
   let workingDays = 0;
-
   let basicHours = 0;
   let otHours = 0;
   let nightHours = 0;
@@ -1234,20 +1233,9 @@ function syncCalendarToCalculator() {
 
   Object.entries(shiftData).forEach(([dateKey, day]) => {
 
-    const weekDay = new Date(dateKey).getDay(); // 0=Sun ... 6=Sat
+    const weekDay = new Date(dateKey + "T00:00:00").getDay();
 
-    let start = timeToMinutes(day.start || "08:30");
-    let end = timeToMinutes(day.end || "17:30");
-
-    if (end <= start) end += 1440;
-
-    const breakMinutes = Number(day.breakMinutes || 0);
-
-    const workedHours =
-      Math.max(0, (end - start - breakMinutes) / 60);
-
-    /* ===== Working Days ===== */
-
+    // Working Day Count
     if (
       day.shift === "day" ||
       day.shift === "night" ||
@@ -1256,60 +1244,81 @@ function syncCalendarToCalculator() {
       workingDays++;
     }
 
-    /* ===== Saturday / Holiday Rule ===== */
+    // OT
+    otHours += Number(day.otHours || 0);
 
-    if (weekDay === 6 || day.shift === "holiday") {
+    // Night Hours (Popup ကတွက်ထားတဲ့ OT ကိုမပျက်စေဘူး)
+    if (day.shift === "night") {
 
-      // Saturday = First 8 hours Holiday Pay
-      holidayHours += Math.min(workedHours, 8);
+      let start = timeToMinutes(day.start || "20:30");
+      let end = timeToMinutes(day.end || "08:30");
 
-      // OT after 8 hours
-      otHours += Math.max(0, workedHours - 8);
+      if (end <= start) end += 1440;
 
-    } else {
+      const nightStart = 22 * 60;
+      const nightEnd = 30 * 60;
 
-      // Weekday Basic Hours
-      basicHours += Math.min(workedHours, 8);
+      const overlapStart = Math.max(start, nightStart);
+      const overlapEnd = Math.min(end, nightEnd);
 
-      // Weekday OT
-      otHours += Math.max(0, workedHours - 8);
+      if (overlapEnd > overlapStart) {
+        nightHours += (overlapEnd - overlapStart) / 60;
+      }
 
     }
 
-    /* ===== Night Hours (22:00 ~ 06:00) ===== */
+    // Saturday Rule (1.5x)
+    if (weekDay === 6) {
 
-    let nightMin = 0;
+      let start = timeToMinutes(day.start || "17:30");
+      let end = timeToMinutes(day.end || "01:30");
 
-    const nightStart = 22 * 60;
-    const nightEnd = 30 * 60; // 06:00 next day
+      if (end <= start) end += 1440;
 
-    const overlapStart = Math.max(start, nightStart);
-    const overlapEnd = Math.min(end, nightEnd);
+      const worked =
+        (end - start - Number(day.breakMinutes || 0)) / 60;
 
-    if (overlapEnd > overlapStart) {
-      nightMin = overlapEnd - overlapStart;
+      holidayHours += Math.min(worked, 8);
+
     }
 
-    nightHours += nightMin / 60;
+    // Sunday / Holiday Shift
+    else if (day.shift === "holiday") {
+
+      let start = timeToMinutes(day.start || "08:30");
+      let end = timeToMinutes(day.end || "17:30");
+
+      if (end <= start) end += 1440;
+
+      const worked =
+        (end - start - Number(day.breakMinutes || 60)) / 60;
+
+      holidayHours += Math.max(0, worked);
+
+    }
+
+    // Weekday Basic Hours
+    else {
+
+      basicHours += 8;
+
+    }
 
   });
 
-  /* ===== Fill Calculator ===== */
-
+  // Calculator Fill
   workingDaysInput.value = workingDays;
-
-  basicHoursInput.value = basicHours.toFixed(1);
+  basicHoursInput.value = basicHours;
   otHoursInput.value = otHours.toFixed(1);
   nightHoursInput.value = nightHours.toFixed(1);
   holidayHoursInput.value = holidayHours.toFixed(1);
-
-  /* ===== Refresh Dashboard ===== */
 
   if (typeof updateHomeDashboard === "function") {
     updateHomeDashboard();
   }
 
 }
+
 
 /* ==========================================================
    PART 6.3 — App Refresh (Official)
