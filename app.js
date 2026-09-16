@@ -1220,7 +1220,7 @@ const nightHoursInput = document.getElementById("nightHours");
 const holidayHoursInput = document.getElementById("holidayHours");
 
 /* ==========================================================
-   PART 6.2 — Sync Calendar To Calculator
+   PART 6.2 — Sync Calendar To Calculator (Official FIX)
 ========================================================== */
 
 function syncCalendarToCalculator() {
@@ -1232,82 +1232,96 @@ function syncCalendarToCalculator() {
   let nightHours = 0;
   let holidayHours = 0;
 
-  Object.values(shiftData).forEach(day => {
+  Object.entries(shiftData).forEach(([dateKey, day]) => {
 
-    // ===== Working Days =====
+    const weekDay = new Date(dateKey).getDay(); // 0=Sun ... 6=Sat
+
+    let start = timeToMinutes(day.start || "08:30");
+    let end = timeToMinutes(day.end || "17:30");
+
+    if (end <= start) end += 1440;
+
+    const breakMinutes = Number(day.breakMinutes || 0);
+
+    const workedHours =
+      Math.max(0, (end - start - breakMinutes) / 60);
+
+    /* ===== Working Days ===== */
+
     if (
       day.shift === "day" ||
       day.shift === "night" ||
       day.shift === "holiday"
     ) {
-
       workingDays++;
+    }
 
-      // Basic Hours (8h/day)
-      basicHours += 8;
+    /* ===== Saturday / Holiday Rule ===== */
+
+    if (weekDay === 6 || day.shift === "holiday") {
+
+      // Saturday = First 8 hours Holiday Pay
+      holidayHours += Math.min(workedHours, 8);
+
+      // OT after 8 hours
+      otHours += Math.max(0, workedHours - 8);
+
+    } else {
+
+      // Weekday Basic Hours
+      basicHours += Math.min(workedHours, 8);
+
+      // Weekday OT
+      otHours += Math.max(0, workedHours - 8);
 
     }
 
-    // ===== OT =====
-    otHours += Number(day.otHours || 0);
+    /* ===== Night Hours (22:00 ~ 06:00) ===== */
 
-    // ===== Night Shift =====
-    if (day.shift === "night") {
+    let nightMin = 0;
 
-      let start = timeToMinutes(day.start || "20:30");
-      let end = timeToMinutes(day.end || "08:30");
+    const nightStart = 22 * 60;
+    const nightEnd = 30 * 60; // 06:00 next day
 
-      if (end <= start) end += 1440;
+    const overlapStart = Math.max(start, nightStart);
+    const overlapEnd = Math.min(end, nightEnd);
 
-      const worked =
-        (end - start - Number(day.breakMinutes || 60)) / 60;
-
-      nightHours += Math.max(0, worked);
-
+    if (overlapEnd > overlapStart) {
+      nightMin = overlapEnd - overlapStart;
     }
 
-    // ===== Holiday Shift =====
-    if (day.shift === "holiday") {
-
-      let start = timeToMinutes(day.start || "08:30");
-      let end = timeToMinutes(day.end || "17:30");
-
-      if (end <= start) end += 1440;
-
-      const worked =
-        (end - start - Number(day.breakMinutes || 60)) / 60;
-
-      holidayHours += Math.max(0, worked);
-
-    }
+    nightHours += nightMin / 60;
 
   });
 
-  // ===== Fill Calculator =====
+  /* ===== Fill Calculator ===== */
+
   workingDaysInput.value = workingDays;
 
-  basicHoursInput.value = basicHours;
+  basicHoursInput.value = basicHours.toFixed(1);
   otHoursInput.value = otHours.toFixed(1);
   nightHoursInput.value = nightHours.toFixed(1);
   holidayHoursInput.value = holidayHours.toFixed(1);
 
-  // ===== Refresh Home Dashboard =====
-  updateHomeDashboard();
+  /* ===== Refresh Dashboard ===== */
+
+  if (typeof updateHomeDashboard === "function") {
+    updateHomeDashboard();
+  }
 
 }
 
-// Refresh Calendar
-renderCalendar();
-
-// Calendar → Calculator
-syncCalendarToCalculator();
-
-// Home Dashboard
-updateHomeDashboard();
+/* ==========================================================
+   PART 6.3 — App Refresh (Official)
+========================================================== */
 
 renderCalendar();
 syncCalendarToCalculator();
-updateHomeDashboard();
+
+if (typeof updateHomeDashboard === "function") {
+  updateHomeDashboard();
+}
+
 
 /* ==========================================================
    PART 7 — SALARY CALCULATOR ENGINE
