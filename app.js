@@ -939,8 +939,6 @@ jumpBtn?.addEventListener("click", () => {
 // First Load
 renderCalendar();
 
-
-
 /* ==========================================================
    PART 5 — CALENDAR DAY POPUP
    Open / Close / Shift / Save / Delete
@@ -961,6 +959,7 @@ const popupBreakStart = document.getElementById("popupBreakStart");
 const popupBreak = document.getElementById("popupBreak");
 
 const popupOT = document.getElementById("popupOT");
+const popupNight = document.getElementById("popupNight"); // NEW
 const popupNote = document.getElementById("popupNote");
 
 const closePopup = document.getElementById("closePopup");
@@ -972,49 +971,62 @@ let selectedDate = "";
 let selectedShift = "day";
 
 /* ==========================================================
-   PART 5.2 — Open Day Popup (Official Manual Input)
+   PART 5.2 — Open / Close Day Popup (Official Manual)
 ========================================================== */
 
 function openDayPopup(dateKey) {
 
   selectedDate = dateKey;
-
   popupDate.textContent = dateKey;
 
   const saved = shiftData[dateKey] || {};
 
-  // ===== Shift =====
+  // ===== Restore Selected Shift =====
   selectedShift = saved.shift || "day";
 
   shiftButtons.forEach(btn => {
-    btn.classList.remove("active");
-
-    if (btn.dataset.shift === selectedShift) {
-      btn.classList.add("active");
-    }
+    btn.classList.toggle(
+      "active",
+      btn.dataset.shift === selectedShift
+    );
   });
 
-  // ===== Manual Values (Saved First) =====
+  // ===== Restore Saved Values =====
   popupStart.value = saved.start || "";
   popupEnd.value = saved.end || "";
 
   popupBreakStart.value = saved.breakStart || "";
-  popupBreak.value =
-    saved.breakMinutes ?? 0;   // Default = 0 (NOT 60)
+  popupBreak.value = saved.breakMinutes ?? 0; // Default 0
 
   popupOT.value = saved.otHours ?? 0;
+
+  if (popupNight) {
+    popupNight.value = saved.nightHours ?? 0;
+  }
 
   popupNote.value = saved.note || "";
 
   // ===== Show Popup =====
   dayPopup.classList.remove("hidden");
 
-  // Auto calculate only if start/end already exist
+  // Auto Calculate
   if (popupStart.value && popupEnd.value) {
     calculateOTHours();
   }
 
 }
+
+// ===== Close Popup (X) =====
+closePopup?.addEventListener("click", () => {
+  dayPopup.classList.add("hidden");
+});
+
+// ===== Close Popup (Background Click) =====
+dayPopup?.addEventListener("click", (e) => {
+  if (e.target === dayPopup) {
+    dayPopup.classList.add("hidden");
+  }
+});
 
 /* ==========================================================
    PART 5.3 — Shift Button Selection (Official Manual)
@@ -1026,20 +1038,19 @@ shiftButtons.forEach(btn => {
 
   btn.addEventListener("click", () => {
 
-    // ===== Remove old active button =====
+    // Remove previous active
     shiftButtons.forEach(item =>
       item.classList.remove("active")
     );
 
-    // ===== Active current button =====
+    // Active current
     btn.classList.add("active");
 
-    // ===== Save selected shift only =====
+    // Save selected shift only
     selectedShift = btn.dataset.shift;
 
-    // Manual Mode:
-    // Start Time / End Time / Break / OT ကို မပြောင်းဘူး။
-    // User ရိုက်ထားတဲ့ value တွေကို မဖျက်ဘူး။
+    // Manual Mode
+    // Time / Break / OT / Note ကို မပြောင်းဘူး။
 
   });
 
