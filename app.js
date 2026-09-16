@@ -1057,7 +1057,8 @@ shiftButtons.forEach(btn => {
 });
 
 /* ==========================================================
-   PART 5.4 — Auto OT Calculator (WORKPAY KR OFFICIAL v1.1)
+   PART 5.4 — Auto OT / Night / Holiday Calculator
+   WORKPAY KR OFFICIAL v1.4
 ========================================================== */
 
 // ===== HH:MM → Minutes =====
@@ -1068,7 +1069,7 @@ function timeToMinutes(time) {
   return hour * 60 + minute;
 }
 
-// ===== Auto Calculate OT + Night + Holiday Hours =====
+// ===== Auto Calculate =====
 function calculateOTHours() {
 
   if (!popupStart.value || !popupEnd.value) return;
@@ -1076,9 +1077,9 @@ function calculateOTHours() {
   let startMin = timeToMinutes(popupStart.value);
   let endMin = timeToMinutes(popupEnd.value);
 
-  // Cross Midnight
+  // Next day (17:30→01:30 / 20:30→08:30)
   if (endMin <= startMin) {
-    endMin += 24 * 60;
+    endMin += 1440;
   }
 
   const breakMinutes = Number(popupBreak.value) || 0;
@@ -1092,11 +1093,8 @@ function calculateOTHours() {
   // ===== Night Hours (22:00 ~ 06:00) =====
   let nightMinutes = 0;
 
-  const nightStart = 22 * 60;
-  const nightEnd = 30 * 60;
-
-  const overlapStart = Math.max(startMin, nightStart);
-  const overlapEnd = Math.min(endMin, nightEnd);
+  const overlapStart = Math.max(startMin, 22 * 60);
+  const overlapEnd = Math.min(endMin, 30 * 60);
 
   if (overlapEnd > overlapStart) {
     nightMinutes = overlapEnd - overlapStart;
@@ -1105,22 +1103,17 @@ function calculateOTHours() {
   const nightHours = nightMinutes / 60;
 
   // ===== Holiday Hours =====
-  const weekDay =
-    new Date(selectedDate + "T00:00:00").getDay();
+  const date = new Date(selectedDate + "T00:00:00");
+  const isSaturday = date.getDay() === 6;
 
-  let holidayHours = 0;
+  const isPublicHoliday =
+    koreaHolidays[currentYear] &&
+    koreaHolidays[currentYear][selectedDate];
 
-  // Saturday Night 17:30 → 01:30
-  if (
-    weekDay === 6 &&
-    selectedShift === "night"
-  ) {
-    holidayHours = Math.min(workedHours, 8);
-  }
+  let holidayValue = 0;
 
-  // Sunday / Public Holiday Shift
-  if (selectedShift === "holiday") {
-    holidayHours = Math.min(workedHours, 8);
+  if (selectedShift === "holiday" || isSaturday || isPublicHoliday) {
+    holidayValue = Math.min(workedHours, 8);
   }
 
   // ===== Update Popup =====
@@ -1130,11 +1123,8 @@ function calculateOTHours() {
     popupNight.value = nightHours.toFixed(1);
   }
 
-  const popupHoliday =
-    document.getElementById("popupHolidayHours");
-
   if (popupHoliday) {
-    popupHoliday.value = holidayHours.toFixed(1);
+    popupHoliday.value = holidayValue.toFixed(1);
   }
 
 }
@@ -1145,15 +1135,34 @@ function calculateOTHours() {
   input?.addEventListener("change", calculateOTHours);
 });
 
+
 /* ==========================================================
-   PART 5.5 — Save Calendar Day (WORKPAY KR OFFICIAL v1.1)
+   PART 5.5 — Save Calendar Day (WORKPAY KR OFFICIAL)
 ========================================================== */
 
 saveDayBtn?.addEventListener("click", () => {
 
-  const popupHoliday =
-    document.getElementById("popupHolidayHours");
+  let startMin = timeToMinutes(popupStart.value);
+  let endMin = timeToMinutes(popupEnd.value);
 
+  if (endMin <= startMin) {
+    endMin += 1440;
+  }
+
+  const breakMinutes = Number(popupBreak.value) || 0;
+
+  const workedHours =
+    Math.max(0, (endMin - startMin - breakMinutes) / 60);
+
+  const date = new Date(selectedDate + "T00:00:00");
+
+  const isSaturday = date.getDay() === 6;
+
+  const isPublicHoliday =
+    koreaHolidays[currentYear] &&
+    koreaHolidays[currentYear][selectedDate];
+
+  // ===== Save =====
   shiftData[selectedDate] = {
 
     shift: selectedShift,
@@ -1162,23 +1171,29 @@ saveDayBtn?.addEventListener("click", () => {
     end: popupEnd.value,
 
     breakStart: popupBreakStart.value,
-    breakMinutes: Number(popupBreak.value) || 0,
+    breakMinutes: breakMinutes,
+
+    basicHours:
+      selectedShift === "off"
+        ? 0
+        : Math.min(workedHours, 8),
 
     otHours: Number(popupOT.value) || 0,
-    nightHours: Number(popupNight?.value) || 0,
-    holidayHours: Number(popupHoliday?.value) || 0,
+
+    nightHours: Number(popupNight?.value || 0),
+
+    holidayHours:
+      selectedShift === "holiday" || isSaturday || isPublicHoliday
+        ? Math.min(workedHours, 8)
+        : 0,
 
     note: popupNote.value
 
   };
 
   saveShiftData();
-
   renderCalendar();
-
-  if (typeof syncCalendarToCalculator === "function") {
-    syncCalendarToCalculator();
-  }
+  syncCalendarToCalculator();
 
   if (typeof updateHomeDashboard === "function") {
     updateHomeDashboard();
@@ -1228,7 +1243,8 @@ const nightHoursInput = document.getElementById("nightHours");
 const holidayHoursInput = document.getElementById("holidayHours");
 
 /* ==========================================================
-   PART 6.2 — Sync Calendar To Calculator (WORKPAY KR RULE)
+   PART 6.2 — Sync Calendar To Calculator
+   WORKPAY KR OFFICIAL v1.4
 ========================================================== */
 
 function syncCalendarToCalculator() {
@@ -1240,61 +1256,22 @@ function syncCalendarToCalculator() {
   let nightHours = 0;
   let holidayHours = 0;
 
-  Object.entries(shiftData).forEach(([dateKey, day]) => {
+  Object.values(shiftData).forEach(day => {
 
-    if (!day.shift) return;
-
-    // Working Day Count
-    if (
-      day.shift === "day" ||
-      day.shift === "night" ||
-      day.shift === "holiday"
-    ) {
+    if (day.shift !== "off") {
       workingDays++;
     }
 
-    // Basic Hours
-    if (day.shift === "day") {
-      basicHours += 8;
-    }
-
-    // Night Shift = Basic 8h
-    if (day.shift === "night") {
-      basicHours += 8;
-    }
-
-    // Holiday Shift = Basic မယူဘူး
-    if (day.shift === "holiday") {
-      holidayHours += Number(day.holidayHours || 0);
-    }
-
-    // OT
+    basicHours += Number(day.basicHours || 0);
     otHours += Number(day.otHours || 0);
-
-    // Night Hours (Popup က save ထားတဲ့ value ကိုယူ)
     nightHours += Number(day.nightHours || 0);
-
-    // Saturday Night Rule
-    const weekDay = new Date(dateKey + "T00:00:00").getDay();
-
-    if (weekDay === 6 && day.shift === "night") {
-      holidayHours += Number(day.holidayHours || 8);
-    }
-
-    // Korea Public Holiday Night Rule
-    if (
-      koreaHolidays[currentYear] &&
-      koreaHolidays[currentYear][dateKey] &&
-      day.shift === "night"
-    ) {
-      holidayHours += Number(day.holidayHours || 8);
-    }
+    holidayHours += Number(day.holidayHours || 0);
 
   });
 
-  // Calculator Fill
   workingDaysInput.value = workingDays;
-  basicHoursInput.value = basicHours;
+
+  basicHoursInput.value = basicHours.toFixed(1);
   otHoursInput.value = otHours.toFixed(1);
   nightHoursInput.value = nightHours.toFixed(1);
   holidayHoursInput.value = holidayHours.toFixed(1);
@@ -1302,8 +1279,8 @@ function syncCalendarToCalculator() {
   if (typeof updateHomeDashboard === "function") {
     updateHomeDashboard();
   }
-}
 
+}
 /* ==========================================================
    PART 6.3 — App Refresh (Official)
 ========================================================== */
