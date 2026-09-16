@@ -1054,16 +1054,16 @@ shiftButtons.forEach(btn => {
 });
 
 /* ==========================================================
-   PART 5.4 — Auto OT Calculator (Official FIX)
+   PART 5.4 — Auto OT Calculator (Official)
 ========================================================== */
 
-// HH:MM → Minutes
+// ===== HH:MM → Minutes =====
 function timeToMinutes(time) {
   const [hour, minute] = time.split(":").map(Number);
   return hour * 60 + minute;
 }
 
-// Auto Calculate Working Hours / OT / Night
+// ===== Auto Calculate OT + Night Hours =====
 function calculateOTHours() {
 
   if (!popupStart.value || !popupEnd.value) return;
@@ -1071,7 +1071,7 @@ function calculateOTHours() {
   let startMin = timeToMinutes(popupStart.value);
   let endMin = timeToMinutes(popupEnd.value);
 
-  // Next Day Shift (17:30 → 01:30, 20:30 → 08:30)
+  // Next Day Shift (17:30 → 01:30 / 20:30 → 08:30)
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
@@ -1079,16 +1079,17 @@ function calculateOTHours() {
   const breakMinutes = Number(popupBreak.value) || 0;
 
   // Total Working Hours
-  const totalHours = (endMin - startMin - breakMinutes) / 60;
+  const totalHours =
+    (endMin - startMin - breakMinutes) / 60;
 
   // OT = Hours over 8
   const otHours = Math.max(0, totalHours - 8);
 
-  // Night Hours (22:00 ~ 06:00)
+  // ===== Night Hours (22:00 ~ 06:00) =====
   let nightMinutes = 0;
 
-  const nightStart = 22 * 60;      // 22:00
-  const nightEnd = 30 * 60;         // 06:00 (next day = 30:00)
+  const nightStart = 22 * 60;   // 22:00
+  const nightEnd = 30 * 60;     // 06:00 next day
 
   const overlapStart = Math.max(startMin, nightStart);
   const overlapEnd = Math.min(endMin, nightEnd);
@@ -1102,7 +1103,6 @@ function calculateOTHours() {
   // Update Popup
   popupOT.value = otHours.toFixed(1);
 
-  // Night input ရှိရင် Update
   const popupNight = document.getElementById("popupNight");
   if (popupNight) {
     popupNight.value = nightHours.toFixed(1);
@@ -1110,74 +1110,82 @@ function calculateOTHours() {
 
 }
 
-// Auto Update
+// ===== Auto Update =====
 [popupStart, popupEnd, popupBreak].forEach(input => {
+
   input?.addEventListener("input", calculateOTHours);
   input?.addEventListener("change", calculateOTHours);
+
 });
 
 /* ==========================================================
-   PART 5.4 — Auto OT Calculator (Official FIX)
+   PART 5.5 — Save Calendar Day (Official)
 ========================================================== */
 
-// HH:MM → Minutes
-function timeToMinutes(time) {
-  const [hour, minute] = time.split(":").map(Number);
-  return hour * 60 + minute;
-}
+saveDayBtn?.addEventListener("click", () => {
 
-// Auto Calculate Working Hours / OT / Night
-function calculateOTHours() {
-
-  if (!popupStart.value || !popupEnd.value) return;
+  // Date Info
+  const weekDay =
+    new Date(selectedDate + "T00:00:00").getDay();
 
   let startMin = timeToMinutes(popupStart.value);
   let endMin = timeToMinutes(popupEnd.value);
 
-  // Next Day Shift (17:30 → 01:30, 20:30 → 08:30)
   if (endMin <= startMin) {
     endMin += 24 * 60;
   }
 
   const breakMinutes = Number(popupBreak.value) || 0;
 
-  // Total Working Hours
-  const totalHours = (endMin - startMin - breakMinutes) / 60;
+  const workedHours =
+    Math.max(0, (endMin - startMin - breakMinutes) / 60);
 
-  // OT = Hours over 8
-  const otHours = Math.max(0, totalHours - 8);
+  // ===== Save Shift Data =====
+  shiftData[selectedDate] = {
 
-  // Night Hours (22:00 ~ 06:00)
-  let nightMinutes = 0;
+    shift: selectedShift,
 
-  const nightStart = 22 * 60;      // 22:00
-  const nightEnd = 30 * 60;         // 06:00 (next day = 30:00)
+    start: popupStart.value,
+    end: popupEnd.value,
 
-  const overlapStart = Math.max(startMin, nightStart);
-  const overlapEnd = Math.min(endMin, nightEnd);
+    breakStart: popupBreakStart.value,
+    breakMinutes: breakMinutes,
 
-  if (overlapEnd > overlapStart) {
-    nightMinutes = overlapEnd - overlapStart;
+    otHours: Number(popupOT.value),
+
+    // Saturday Holiday Rule
+    holidayHours:
+      weekDay === 6
+        ? Math.min(workedHours, 8)
+        : Number(
+            shiftData[selectedDate]?.holidayHours || 0
+          ),
+
+    note: popupNote.value
+
+  };
+
+  // Save LocalStorage
+  saveShiftData();
+
+  // Refresh Calendar
+  renderCalendar();
+
+  // Refresh Calculator
+  if (typeof syncCalendarToCalculator === "function") {
+    syncCalendarToCalculator();
   }
 
-  const nightHours = nightMinutes / 60;
-
-  // Update Popup
-  popupOT.value = otHours.toFixed(1);
-
-  // Night input ရှိရင် Update
-  const popupNight = document.getElementById("popupNight");
-  if (popupNight) {
-    popupNight.value = nightHours.toFixed(1);
+  // Refresh Dashboard
+  if (typeof updateHomeDashboard === "function") {
+    updateHomeDashboard();
   }
 
-}
+  // Close Popup
+  dayPopup.classList.add("hidden");
 
-// Auto Update
-[popupStart, popupEnd, popupBreak].forEach(input => {
-  input?.addEventListener("input", calculateOTHours);
-  input?.addEventListener("change", calculateOTHours);
 });
+
 
 
 /* ==========================================================
@@ -1220,34 +1228,38 @@ const nightHoursInput = document.getElementById("nightHours");
 const holidayHoursInput = document.getElementById("holidayHours");
 
 /* ==========================================================
-   PART 6.2 — Sync Calendar To Calculator (Official FIX)
+   PART 6.2 — Sync Calendar To Calculator
 ========================================================== */
 
 function syncCalendarToCalculator() {
 
   let workingDays = 0;
+
   let basicHours = 0;
   let otHours = 0;
   let nightHours = 0;
   let holidayHours = 0;
 
-  Object.entries(shiftData).forEach(([dateKey, day]) => {
+  Object.values(shiftData).forEach(day => {
 
-    const weekDay = new Date(dateKey + "T00:00:00").getDay();
-
-    // Working Day Count
+    // ===== Working Days =====
     if (
       day.shift === "day" ||
       day.shift === "night" ||
       day.shift === "holiday"
     ) {
+
       workingDays++;
+
+      // Basic Hours (8h/day)
+      basicHours += 8;
+
     }
 
-    // OT
+    // ===== OT =====
     otHours += Number(day.otHours || 0);
 
-    // Night Hours (Popup ကတွက်ထားတဲ့ OT ကိုမပျက်စေဘူး)
+    // ===== Night Shift =====
     if (day.shift === "night") {
 
       let start = timeToMinutes(day.start || "20:30");
@@ -1255,35 +1267,15 @@ function syncCalendarToCalculator() {
 
       if (end <= start) end += 1440;
 
-      const nightStart = 22 * 60;
-      const nightEnd = 30 * 60;
-
-      const overlapStart = Math.max(start, nightStart);
-      const overlapEnd = Math.min(end, nightEnd);
-
-      if (overlapEnd > overlapStart) {
-        nightHours += (overlapEnd - overlapStart) / 60;
-      }
-
-    }
-
-    // Saturday Rule (1.5x)
-    if (weekDay === 6) {
-
-      let start = timeToMinutes(day.start || "17:30");
-      let end = timeToMinutes(day.end || "01:30");
-
-      if (end <= start) end += 1440;
-
       const worked =
-        (end - start - Number(day.breakMinutes || 0)) / 60;
+        (end - start - Number(day.breakMinutes || 60)) / 60;
 
-      holidayHours += Math.min(worked, 8);
+      nightHours += Math.max(0, worked);
 
     }
 
-    // Sunday / Holiday Shift
-    else if (day.shift === "holiday") {
+    // ===== Holiday Shift =====
+    if (day.shift === "holiday") {
 
       let start = timeToMinutes(day.start || "08:30");
       let end = timeToMinutes(day.end || "17:30");
@@ -1297,28 +1289,33 @@ function syncCalendarToCalculator() {
 
     }
 
-    // Weekday Basic Hours
-    else {
-
-      basicHours += 8;
-
-    }
-
   });
 
-  // Calculator Fill
+  // ===== Fill Calculator =====
   workingDaysInput.value = workingDays;
+
   basicHoursInput.value = basicHours;
   otHoursInput.value = otHours.toFixed(1);
   nightHoursInput.value = nightHours.toFixed(1);
   holidayHoursInput.value = holidayHours.toFixed(1);
 
-  if (typeof updateHomeDashboard === "function") {
-    updateHomeDashboard();
-  }
+  // ===== Refresh Home Dashboard =====
+  updateHomeDashboard();
 
 }
 
+// Refresh Calendar
+renderCalendar();
+
+// Calendar → Calculator
+syncCalendarToCalculator();
+
+// Home Dashboard
+updateHomeDashboard();
+
+renderCalendar();
+syncCalendarToCalculator();
+updateHomeDashboard();
 
 /* ==========================================================
    PART 6.3 — App Refresh (Official)
