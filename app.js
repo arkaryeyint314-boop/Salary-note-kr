@@ -971,16 +971,14 @@ const deleteDayBtn = document.getElementById("deleteDayBtn");
 let selectedDate = "";
 let selectedShift = "day";
 /* ==========================================================
-   PART 5.2 — Open / Close Day Popup (WORKPAY KR OFFICIAL v1.6)
+   PART 5.2 — Open / Close Day Popup (WORKPAY KR STABLE FIX)
 ========================================================== */
 
 function openDayPopup(dateKey) {
 
-  // Selected Date
   selectedDate = dateKey;
   popupDate.textContent = dateKey;
 
-  // Saved Data
   const saved = shiftData[dateKey] || {};
 
   // ===== Restore Shift =====
@@ -1003,8 +1001,14 @@ function openDayPopup(dateKey) {
 
   // ===== Restore Calculated Hours =====
   popupOT.value = saved.otHours ?? 0;
-  popupNight.value = saved.nightHours ?? 0;
-  popupHoliday.value = saved.holidayHours ?? 0;
+
+  if (popupNight) {
+    popupNight.value = saved.nightHours ?? 0;
+  }
+
+  if (popupHoliday) {
+    popupHoliday.value = saved.holidayHours ?? 0;
+  }
 
   // ===== Restore Note =====
   popupNote.value = saved.note || "";
@@ -1012,7 +1016,7 @@ function openDayPopup(dateKey) {
   // ===== Show Popup =====
   dayPopup.classList.remove("hidden");
 
-  // Auto Calculate (Start/End ရှိရင် Update)
+  // Auto Calculate (Start/End ရှိရင်)
   if (popupStart.value && popupEnd.value) {
     calculateOTHours();
   }
@@ -1025,7 +1029,7 @@ closePopup?.addEventListener("click", () => {
   dayPopup.classList.add("hidden");
 });
 
-/* ===== Close Popup (Tap Background) ===== */
+/* ===== Close Popup (Background Tap) ===== */
 
 dayPopup?.addEventListener("click", (e) => {
   if (e.target === dayPopup) {
