@@ -452,6 +452,11 @@
 
         <h3 id="extraTotal">₩0</h3>
 
+        <div class="ruleStatusTotals">
+          <span id="confirmedRuleTotal">Confirmed ₩0</span>
+          <span id="provisionalRuleTotal">Provisional ₩0</span>
+        </div>
+
         <small>
           (+) Add salary / (-) Deduction from salary
         </small>
@@ -466,7 +471,7 @@
 
     <button
       class="primaryBtn"
-      onclick="calculateSalary()"
+      onclick="calculateSalary(true)"
       data-lang="calculate_salary"
     >
       Calculate Salary
@@ -536,6 +541,21 @@
 
         </div>
 
+        <!-- Shift Template Fixed Extra Pay -->
+        <div class="miniResult orange">
+
+          <p data-lang="shift_rule_pay">
+            Shift Rule Pay
+          </p>
+
+          <h4 id="templatePay">₩0</h4>
+
+          <small id="templatePayStatus" class="resultHint">
+            Confirmed ₩0 · Provisional ₩0
+          </small>
+
+        </div>
+
       </div>
 
     </section>
@@ -552,6 +572,9 @@
     <section class="card">
 
       <h2>Monthly History</h2>
+      <p class="cardSub">
+        Saved calculations keep the wage, rules, and calendar data used that month.
+      </p>
 
       <!-- Salary History List -->
       <div id="historyList">
@@ -687,6 +710,191 @@
 
     </section>
 
+    <!-- ===== Factory Shift Templates ===== -->
+    <section class="card" id="shiftTemplatesCard">
+
+      <div class="cardHeader">
+        <div>
+          <h3>🗓️ Shift Templates</h3>
+          <p class="cardSub">
+            Save factory shifts and fill the calendar by date range.
+          </p>
+        </div>
+
+        <button id="addShiftTemplateBtn" class="smallBtn" type="button">
+          + Add Shift
+        </button>
+      </div>
+
+      <div id="shiftTemplateList"></div>
+
+      <button id="openApplyTemplateBtn" class="secondaryBtn" type="button">
+        📅 Apply to Calendar
+      </button>
+
+    </section>
+
+    <!-- ===== Shift Template Popup ===== -->
+    <div id="shiftTemplatePopup" class="day-popup hidden">
+
+      <div class="popup-card">
+
+        <div class="popup-header">
+          <h3 id="shiftTemplatePopupTitle">Shift Template</h3>
+          <button id="closeShiftTemplatePopup" type="button">✕</button>
+        </div>
+
+        <div class="popup-body">
+
+          <div class="popup-field">
+            <label for="templateName">Template Name</label>
+            <input id="templateName" type="text" placeholder="Ngt / 3OT / Saturday Day">
+          </div>
+
+          <div class="popup-field">
+            <label for="templateShiftType">Shift Type</label>
+            <select id="templateShiftType">
+              <option value="day">☀️ Day</option>
+              <option value="night">🌙 Night</option>
+              <option value="holiday">🎌 Holiday / Weekend</option>
+              <option value="off">😴 Off</option>
+            </select>
+          </div>
+
+          <div class="popup-row">
+            <div class="popup-field">
+              <label for="templateStart">Start Time</label>
+              <input id="templateStart" type="time">
+            </div>
+
+            <div class="popup-field">
+              <label for="templateEnd">End Time</label>
+              <input id="templateEnd" type="time">
+            </div>
+          </div>
+
+          <div class="popup-row">
+            <div class="popup-field">
+              <label for="templateBreakStart">Break Start</label>
+              <input id="templateBreakStart" type="time">
+            </div>
+
+            <div class="popup-field">
+              <label for="templateBreakMinutes">Break (min)</label>
+              <input id="templateBreakMinutes" type="number" min="0" max="240" step="15" value="0">
+            </div>
+          </div>
+
+          <div class="popup-field">
+            <label for="templatePayMode">Pay Calculation</label>
+            <select id="templatePayMode">
+              <option value="hourly">Calculate from hours and factory rates</option>
+              <option value="fixed">Fixed extra pay for this shift</option>
+            </select>
+          </div>
+
+          <div class="popup-field">
+            <label for="templateRuleStatus">Pay Rule Status</label>
+            <select id="templateRuleStatus">
+              <option value="confirmed">✅ Confirmed by factory / payslip</option>
+              <option value="provisional">🧪 Provisional estimate</option>
+            </select>
+          </div>
+
+          <div id="templateFixedPayField" class="popup-field hidden">
+            <label for="templateExtraPay">Extra Pay (₩)</label>
+            <input id="templateExtraPay" type="number" min="0" step="10" placeholder="85140">
+            <small class="formHint">
+              Extra pay above basic hours, not the full salary.
+            </small>
+          </div>
+
+          <div class="popup-field">
+            <label for="templateNote">Note</label>
+            <textarea id="templateNote" rows="2" placeholder="Factory-specific pay note..."></textarea>
+          </div>
+
+          <div class="popup-actions">
+            <button id="saveShiftTemplateBtn" class="save-btn" type="button">
+              💾 Save Template
+            </button>
+            <button id="cancelShiftTemplateBtn" class="delete-btn" type="button">
+              Cancel
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ===== Apply Shift Template Popup ===== -->
+    <div id="applyTemplatePopup" class="day-popup hidden">
+
+      <div class="popup-card">
+
+        <div class="popup-header">
+          <h3>Apply Shift to Calendar</h3>
+          <button id="closeApplyTemplatePopup" type="button">✕</button>
+        </div>
+
+        <div class="popup-body">
+
+          <div class="popup-field">
+            <label for="applyTemplateSelect">Shift Template</label>
+            <select id="applyTemplateSelect"></select>
+          </div>
+
+          <div class="popup-row">
+            <div class="popup-field">
+              <label for="applyStartDate">From</label>
+              <input id="applyStartDate" type="date">
+            </div>
+
+            <div class="popup-field">
+              <label for="applyEndDate">To</label>
+              <input id="applyEndDate" type="date">
+            </div>
+          </div>
+
+          <div class="popup-field">
+            <label>Apply on weekdays</label>
+            <div class="weekdayPicker">
+              <label><input type="checkbox" value="0" checked> Sun</label>
+              <label><input type="checkbox" value="1" checked> Mon</label>
+              <label><input type="checkbox" value="2" checked> Tue</label>
+              <label><input type="checkbox" value="3" checked> Wed</label>
+              <label><input type="checkbox" value="4" checked> Thu</label>
+              <label><input type="checkbox" value="5" checked> Fri</label>
+              <label><input type="checkbox" value="6" checked> Sat</label>
+            </div>
+          </div>
+
+          <label class="checkboxRow">
+            <input id="overwriteTemplateDates" type="checkbox">
+            <span>Replace existing calendar entries</span>
+          </label>
+
+          <p class="formHint">
+            Existing entries stay unchanged unless replace is selected.
+          </p>
+
+          <div class="popup-actions">
+            <button id="applyTemplateBtn" class="save-btn" type="button">
+              ✅ Apply Template
+            </button>
+            <button id="cancelApplyTemplateBtn" class="delete-btn" type="button">
+              Cancel
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
     <!-- ======================================================
          Factory Rule Popup
     ======================================================= -->
@@ -698,7 +906,7 @@
         <!-- Popup Header -->
         <div class="popup-header">
 
-          <h3>Factory Pay Rule</h3>
+          <h3 id="rulePopupTitle">Factory Pay Rule</h3>
 
           <button id="closeRulePopup">✕</button>
 
@@ -719,6 +927,14 @@
 
         </select>
 
+        <!-- Rule Status -->
+        <label>Rule Status</label>
+
+        <select id="ruleStatus">
+          <option value="confirmed">✅ Confirmed by factory / payslip</option>
+          <option value="provisional">🧪 Provisional estimate</option>
+        </select>
+
         <!-- Rule Name -->
         <label>Rule Name</label>
 
@@ -736,6 +952,15 @@
           type="number"
           placeholder="150000"
         >
+
+        <!-- Rule Note -->
+        <label>Evidence / Note</label>
+
+        <textarea
+          id="ruleNote"
+          rows="2"
+          placeholder="Payslip label, contract, or why this amount is provisional..."
+        ></textarea>
 
         <!-- Save Button -->
         <div class="popup-actions">
