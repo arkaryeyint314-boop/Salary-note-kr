@@ -334,18 +334,6 @@
         readonly
       >
 
-      <!-- Meal Allowance -->
-      <label data-lang="meal_allowance">
-        Meal Allowance
-      </label>
-
-      <input
-        id="mealAllowance"
-        type="number"
-        data-lang-placeholder="meal_allowance_placeholder"
-        placeholder="100000"
-      >
-
     </section>
 
     <!-- ======================================================
@@ -454,7 +442,7 @@
 
         <div class="ruleStatusTotals">
           <span id="confirmedRuleTotal">Confirmed ₩0</span>
-          <span id="provisionalRuleTotal">Provisional ₩0</span>
+          <span id="manualRuleTotal">User Manual ₩0</span>
         </div>
 
         <small>
@@ -667,6 +655,53 @@
 
     </section>
 
+    <!-- ===== Custom Pay Formula ===== -->
+    <section class="card" id="payFormulaCard">
+      <div class="cardHeader">
+        <div>
+          <h3>⚙️ Pay Formula Settings</h3>
+          <p class="cardSub">
+            Korea pay-law rates are the default. Edit them only when your
+            factory calculates pay differently.
+          </p>
+        </div>
+      </div>
+
+      <div class="formulaSettingsGrid">
+        <div>
+          <label for="regularHoursPerDay">Regular hours per day</label>
+          <input id="regularHoursPerDay" type="number" min="1" max="24" step="0.5">
+        </div>
+        <div>
+          <label for="otMultiplier">Overtime rate</label>
+          <input id="otMultiplier" type="number" min="0" max="5" step="0.1">
+        </div>
+        <div>
+          <label for="nightMultiplier">Night extra rate</label>
+          <input id="nightMultiplier" type="number" min="0" max="5" step="0.1">
+        </div>
+        <div>
+          <label for="holidayMultiplier">Holiday rate</label>
+          <input id="holidayMultiplier" type="number" min="0" max="5" step="0.1">
+        </div>
+      </div>
+
+      <p class="formulaHint">
+        Default: 8 hours · OT 1.5× · Night extra 0.5× · Holiday 1.5×.
+        To pay a factory shift such as Saturday 17:30–01:30 as holiday work,
+        save that Shift Template with “Holiday / Weekend” as its Shift Type.
+      </p>
+
+      <div class="formulaActions">
+        <button id="savePayFormulaBtn" class="smallBtn" type="button">
+          Save Formula
+        </button>
+        <button id="resetPayFormulaBtn" class="secondaryBtn" type="button">
+          Reset Korea Defaults
+        </button>
+      </div>
+    </section>
+
     <!-- ===== Factory Shift Templates ===== -->
     <section class="card" id="shiftTemplatesCard">
 
@@ -743,10 +778,10 @@
           </div>
 
           <div class="popup-field">
-            <label for="templateRuleStatus">Pay Rule Status</label>
+            <label for="templateRuleStatus">Pay Data Source</label>
             <select id="templateRuleStatus">
               <option value="confirmed">✅ Confirmed by factory / payslip</option>
-              <option value="provisional">🧪 Provisional estimate</option>
+              <option value="manual">✍️ User Manual</option>
             </select>
           </div>
 
@@ -875,12 +910,12 @@
 
         </select>
 
-        <!-- Rule Status -->
-        <label>Rule Status</label>
+        <!-- Rule Data Source -->
+        <label>Pay Data Source</label>
 
         <select id="ruleStatus">
           <option value="confirmed">✅ Confirmed by factory / payslip</option>
-          <option value="provisional">🧪 Provisional estimate</option>
+          <option value="manual">✍️ User Manual</option>
         </select>
 
         <!-- Rule Name -->
@@ -902,12 +937,12 @@
         >
 
         <!-- Rule Note -->
-        <label>Evidence / Note</label>
+        <label>Note</label>
 
         <textarea
           id="ruleNote"
           rows="2"
-          placeholder="Payslip label, contract, or why this amount is provisional..."
+          placeholder="Payslip label, contract, or how you entered this amount..."
         ></textarea>
 
         <!-- Save Button -->
