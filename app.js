@@ -2312,10 +2312,20 @@ function getSelectedApplyWeekdays() {
   return new Set(
     Array.from(
       document.querySelectorAll(
-        "#applyTemplatePopup .weekdayPicker input:checked"
+        "#applyTemplatePopup .weekdayBtn.active"
       )
-    ).map(input => Number(input.value))
+    ).map(button => Number(button.dataset.weekday))
   );
+}
+
+function setApplyWeekdaySelection(selected) {
+  document.querySelectorAll(
+    "#applyTemplatePopup .weekdayBtn"
+  ).forEach(button => {
+    const active = selected.has(Number(button.dataset.weekday));
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 
 function getApplyDates(startValue, endValue, weekdays) {
@@ -2442,6 +2452,27 @@ document.getElementById("closeApplyTemplatePopup")
 document.getElementById("cancelApplyTemplateBtn")
 ?.addEventListener("click", closeApplyTemplate);
 
+document.querySelectorAll("#applyTemplatePopup .weekdayBtn")
+.forEach(button => {
+  button.addEventListener("click", () => {
+    button.classList.toggle("active");
+    button.setAttribute(
+      "aria-pressed",
+      String(button.classList.contains("active"))
+    );
+  });
+});
+
+document.getElementById("selectAllWeekdaysBtn")
+?.addEventListener("click", () => {
+  setApplyWeekdaySelection(new Set([0, 1, 2, 3, 4, 5, 6]));
+});
+
+document.getElementById("clearWeekdaysBtn")
+?.addEventListener("click", () => {
+  setApplyWeekdaySelection(new Set());
+});
+
 document.getElementById("applyTemplateBtn")
 ?.addEventListener("click", () => {
   const templateId =
@@ -2550,6 +2581,83 @@ document.getElementById("applyTemplateBtn")
       ? ` ${existingDates.length} existing entries were kept.`
       : "")
   );
+});
+
+document.getElementById("removeAppliedTemplateBtn")
+?.addEventListener("click", () => {
+  const templateId =
+    document.getElementById("applyTemplateSelect").value;
+  const template =
+    shiftTemplates.find(item => item.id === templateId);
+  const startValue =
+    document.getElementById("applyStartDate").value;
+  const endValue =
+    document.getElementById("applyEndDate").value;
+  const weekdays = getSelectedApplyWeekdays();
+
+  if (!template || !startValue || !endValue) {
+    alert("Choose a template and date range.");
+    return;
+  }
+
+  const start = new Date(startValue + "T00:00:00");
+  const end = new Date(endValue + "T00:00:00");
+
+  if (
+    Number.isNaN(start.getTime()) ||
+    Number.isNaN(end.getTime()) ||
+    end < start
+  ) {
+    alert("Please enter a valid date range.");
+    return;
+  }
+
+  const rangeDays =
+    Math.floor((end - start) / 86400000) + 1;
+
+  if (rangeDays > 366) {
+    alert("Please remove one year or less at a time.");
+    return;
+  }
+
+  if (weekdays.size === 0) {
+    alert("Choose at least one weekday.");
+    return;
+  }
+
+  const matchingDates =
+    getApplyDates(startValue, endValue, weekdays)
+      .filter(dateKey =>
+        shiftData[dateKey]?.source === "template" &&
+        shiftData[dateKey]?.templateId === templateId
+      );
+
+  if (matchingDates.length === 0) {
+    alert("No matching applied shifts were found.");
+    return;
+  }
+
+  const preview =
+    matchingDates.slice(0, 10).join(", ") +
+    (matchingDates.length > 10 ? "…" : "");
+
+  if (!confirm(
+    `Remove "${template.name}" from ${matchingDates.length} dates?` +
+    `\n${preview}` +
+    "\nManual entries and other templates will not be deleted."
+  )) return;
+
+  matchingDates.forEach(dateKey => {
+    delete shiftData[dateKey];
+  });
+
+  saveShiftData();
+  renderCalendar();
+  syncCalendarToCalculator();
+  updateHomeDashboard();
+  closeApplyTemplate();
+
+  alert(`${matchingDates.length} applied shifts removed.`);
 });
 
 shiftTemplatePopup?.addEventListener("click", event => {
