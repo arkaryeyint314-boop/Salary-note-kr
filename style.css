@@ -2917,6 +2917,45 @@ body:not(.light) .miniResult{
   margin:8px 0 16px;
 }
 
+.dayEntryMode{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:8px 0 12px;
+}
+
+.dayEntryModeBtn{
+  min-height:42px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:800;
+}
+
+.dayEntryModeBtn.active{
+  border-color:var(--primary);
+  background:var(--primary);
+  color:#FFFFFF;
+}
+
+.manualShiftPicker{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin:8px 0 16px;
+}
+
+.manualShiftPicker.hidden,
+.templateShiftPicker.hidden{
+  display:none;
+}
+
+.manualShiftPicker .shift-btn{
+  width:auto;
+}
+
 .dayTemplateBtn{
   min-height:40px;
   padding:9px 13px;
