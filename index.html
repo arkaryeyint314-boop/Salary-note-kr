@@ -801,14 +801,18 @@
 
           <div class="popup-field">
             <label>Apply on weekdays</label>
+            <div class="weekdayQuickActions">
+              <button id="selectAllWeekdaysBtn" type="button">Select all</button>
+              <button id="clearWeekdaysBtn" type="button">Clear</button>
+            </div>
             <div class="weekdayPicker">
-              <label><input type="checkbox" value="0" checked> Sun</label>
-              <label><input type="checkbox" value="1" checked> Mon</label>
-              <label><input type="checkbox" value="2" checked> Tue</label>
-              <label><input type="checkbox" value="3" checked> Wed</label>
-              <label><input type="checkbox" value="4" checked> Thu</label>
-              <label><input type="checkbox" value="5" checked> Fri</label>
-              <label><input type="checkbox" value="6" checked> Sat</label>
+              <button type="button" class="weekdayBtn active" data-weekday="0" aria-pressed="true">Sun</button>
+              <button type="button" class="weekdayBtn active" data-weekday="1" aria-pressed="true">Mon</button>
+              <button type="button" class="weekdayBtn active" data-weekday="2" aria-pressed="true">Tue</button>
+              <button type="button" class="weekdayBtn active" data-weekday="3" aria-pressed="true">Wed</button>
+              <button type="button" class="weekdayBtn active" data-weekday="4" aria-pressed="true">Thu</button>
+              <button type="button" class="weekdayBtn active" data-weekday="5" aria-pressed="true">Fri</button>
+              <button type="button" class="weekdayBtn active" data-weekday="6" aria-pressed="true">Sat</button>
             </div>
           </div>
 
@@ -824,6 +828,9 @@
           <div class="popup-actions">
             <button id="applyTemplateBtn" class="save-btn" type="button">
               ✅ Apply Template
+            </button>
+            <button id="removeAppliedTemplateBtn" class="delete-btn" type="button">
+              🗑 Remove Applied Shifts
             </button>
             <button id="cancelApplyTemplateBtn" class="delete-btn" type="button">
               Cancel
