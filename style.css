@@ -2910,6 +2910,42 @@ body:not(.light) .miniResult{
   margin:14px 0;
 }
 
+.dayTemplatePicker{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin:8px 0 16px;
+}
+
+.dayTemplateBtn{
+  min-height:40px;
+  padding:9px 13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+}
+
+.dayTemplateBtn.active{
+  border-color:var(--primary);
+  background:var(--primary);
+  color:#FFFFFF;
+  box-shadow:0 7px 16px rgba(79,70,229,.22);
+}
+
+.dayTemplateEmpty{
+  width:100%;
+  padding:12px;
+  border:1px dashed var(--line);
+  border-radius:12px;
+  color:var(--sub);
+  text-align:center;
+  font-size:12px;
+}
+
 .emptyTemplateState{
   color:var(--sub);
   text-align:center;
