@@ -63,4 +63,4 @@
 - Users can edit a factory rule to promote it from provisional to confirmed after checking a payslip, contract, or factory explanation; an evidence/note field records the reason.
 - Calculator totals include both statuses but display confirmed and provisional subtotals separately. Applied calendar entries copy the status, so changing a template later does not retroactively relabel historical dates.
 - Profile intentionally omits the old Appearance and Work Profile cards. Language, factory pay rules, and shift templates remain.
-- The Calendar day popup shows only the shift-template names created in Profile instead of generic Day/Night/Holiday/Off buttons. Selecting a name fills that date's shift type, times, break, note, pay mode, fixed amount, and rule status before saving.
+- The Calendar day popup has separate Manual and Template modes. Manual mode lets the user choose Day/Night/Holiday/Off and enter times directly, while Template mode shows only shift-template names created in Profile. Selecting a template name fills that date's shift type, times, break, note, pay mode, fixed amount, and rule status before saving.
