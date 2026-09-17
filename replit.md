@@ -53,6 +53,7 @@
 
 - Shift templates are stored in `workpay_shift_templates` and always use the standard hourly formula based on their saved times and factory rates. Fixed extra pay is intentionally not supported because it can duplicate OT, night, or holiday premiums.
 - Templates are applied by inclusive date range plus selected weekdays.
+- Apply Shift uses touch-friendly weekday buttons with Select all and Clear controls. The same template, date range, and weekday selection can bulk-remove previously applied template entries; manual entries and dates from other templates are preserved.
 - Existing calendar entries are preserved by default. Replacement requires an explicit checkbox and confirmation preview; unknown entry fields and an existing note are retained when the template has no note.
 - Applied entries copy template times and break rules into each date so later template edits do not retroactively change prior calendar months.
 - A manual day save intentionally detaches that date from its template and returns it to the standard hourly formula.
