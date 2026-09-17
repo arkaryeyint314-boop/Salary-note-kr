@@ -541,21 +541,6 @@
 
         </div>
 
-        <!-- Shift Template Fixed Extra Pay -->
-        <div class="miniResult orange">
-
-          <p data-lang="shift_rule_pay">
-            Shift Rule Pay
-          </p>
-
-          <h4 id="templatePay">₩0</h4>
-
-          <small id="templatePayStatus" class="resultHint">
-            Confirmed ₩0 · Provisional ₩0
-          </small>
-
-        </div>
-
       </div>
 
     </section>
@@ -758,27 +743,11 @@
           </div>
 
           <div class="popup-field">
-            <label for="templatePayMode">Pay Calculation</label>
-            <select id="templatePayMode">
-              <option value="hourly">Calculate from hours and factory rates</option>
-              <option value="fixed">Fixed extra pay for this shift</option>
-            </select>
-          </div>
-
-          <div class="popup-field">
             <label for="templateRuleStatus">Pay Rule Status</label>
             <select id="templateRuleStatus">
               <option value="confirmed">✅ Confirmed by factory / payslip</option>
               <option value="provisional">🧪 Provisional estimate</option>
             </select>
-          </div>
-
-          <div id="templateFixedPayField" class="popup-field hidden">
-            <label for="templateExtraPay">Extra Pay (₩)</label>
-            <input id="templateExtraPay" type="number" min="0" step="10" placeholder="85140">
-            <small class="formHint">
-              Extra pay above basic hours, not the full salary.
-            </small>
           </div>
 
           <div class="popup-field">
