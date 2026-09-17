@@ -1062,6 +1062,10 @@ const deleteDayBtn = document.getElementById("deleteDayBtn");
 // ===== Popup State =====
 let selectedDate = "";
 let selectedShift = "day";
+let selectedDayTemplateId = null;
+let selectedDayPayMode = "hourly";
+let selectedDayExtraPay = 0;
+let selectedDayRuleStatus = "provisional";
 /* ==========================================================
    PART 5.2 — Open / Close Day Popup (WORKPAY KR STABLE FIX)
 ========================================================== */
@@ -1075,6 +1079,16 @@ function openDayPopup(dateKey) {
 
   // ===== Restore Shift =====
   selectedShift = saved.shift || "day";
+  selectedDayTemplateId =
+    saved.source === "template" ? saved.templateId || null : null;
+  selectedDayPayMode =
+    saved.source === "template" ? saved.payMode || "hourly" : "hourly";
+  selectedDayExtraPay =
+    saved.source === "template" ? Number(saved.extraPay) || 0 : 0;
+  selectedDayRuleStatus =
+    saved.ruleStatus === "confirmed" ? "confirmed" : "provisional";
+
+  renderDayTemplatePicker();
 
   shiftButtons.forEach(btn => {
     btn.classList.toggle(
@@ -1352,10 +1366,23 @@ saveDayBtn?.addEventListener("click", () => {
 
     note: popupNote.value || "",
 
-    // A manually saved day returns to the standard hourly formula.
-    source: "manual",
-    payMode: "hourly",
-    extraPay: 0
+    source: selectedDayTemplateId ? "template" : "manual",
+    templateId: selectedDayTemplateId || undefined,
+    templateName:
+      selectedDayTemplateId
+        ? shiftTemplates.find(item => item.id === selectedDayTemplateId)?.name
+        : undefined,
+    payMode:
+      selectedDayTemplateId ? selectedDayPayMode : "hourly",
+    ruleStatus:
+      selectedDayTemplateId
+        ? selectedDayRuleStatus
+        : "provisional",
+    extraPay:
+      selectedDayTemplateId &&
+      selectedDayPayMode === "fixed"
+        ? selectedDayExtraPay
+        : 0
 
   };
 
@@ -2088,6 +2115,65 @@ function openShiftTemplateEditor(templateId = null) {
   shiftTemplatePopup?.classList.remove("hidden");
 }
 
+function applyTemplateToOpenDay(templateId) {
+  const template =
+    shiftTemplates.find(item => item.id === templateId);
+  if (!template) return;
+
+  selectedDayTemplateId = template.id;
+  selectedShift = template.shift || "day";
+  selectedDayPayMode = template.payMode || "hourly";
+  selectedDayExtraPay =
+    selectedDayPayMode === "fixed"
+      ? Number(template.extraPay) || 0
+      : 0;
+  selectedDayRuleStatus =
+    template.ruleStatus === "confirmed"
+      ? "confirmed"
+      : "provisional";
+
+  popupStart.value = template.start || "";
+  popupEnd.value = template.end || "";
+  popupBreakStart.value = template.breakStart || "";
+  popupBreak.value = Number(template.breakMinutes) || 0;
+  popupNote.value = template.note || "";
+
+  calculateOTHours();
+  renderDayTemplatePicker();
+}
+
+function renderDayTemplatePicker() {
+  const picker = document.getElementById("dayTemplatePicker");
+  if (!picker) return;
+
+  if (shiftTemplates.length === 0) {
+    picker.innerHTML = `
+      <p class="dayTemplateEmpty">
+        No templates yet. Add one in Profile first.
+      </p>
+    `;
+    return;
+  }
+
+  picker.innerHTML = shiftTemplates.map(template => `
+    <button
+      type="button"
+      class="dayTemplateBtn ${
+        selectedDayTemplateId === template.id ? "active" : ""
+      }"
+      data-template-id="${template.id}"
+    >
+      ${escapeTemplateText(template.name)}
+    </button>
+  `).join("");
+
+  picker.querySelectorAll(".dayTemplateBtn").forEach(button => {
+    button.addEventListener("click", () => {
+      applyTemplateToOpenDay(button.dataset.templateId);
+    });
+  });
+}
+
 function renderShiftTemplates() {
   const list = document.getElementById("shiftTemplateList");
   const applySelect = document.getElementById("applyTemplateSelect");
@@ -2169,6 +2255,8 @@ function renderShiftTemplates() {
       `)
       .join("");
   }
+
+  renderDayTemplatePicker();
 }
 
 function formatLocalDate(date) {
