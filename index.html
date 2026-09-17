@@ -656,34 +656,6 @@
     </section>
 
     <!-- ======================================================
-         Theme / Appearance Settings
-    ======================================================= -->
-
-    <section class="card">
-
-      <h3 data-lang="appearance_title">
-        🎨 Appearance
-      </h3>
-
-      <div class="languageList">
-
-        <button class="language active" data-lang="theme_auto">
-          Auto
-        </button>
-
-        <button class="language" data-lang="theme_light">
-          Light
-        </button>
-
-        <button class="language" data-lang="theme_dark">
-          Dark
-        </button>
-
-      </div>
-
-    </section>
-
-    <!-- ======================================================
          PART 18 — FACTORY PAY RULES
          Save Factory Allowance / Deduction Template
     ======================================================= -->
@@ -975,83 +947,6 @@
 
     </div>
 
-    <!-- ======================================================
-     PART 15.1 — Work Profile + Factory Template
-====================================================== -->
-
-<section class="card">
-
-  <h3 data-lang="work_profile_title">
-    🏭 Work Profile
-  </h3>
-
-  <!-- ================= Factory Template ================= -->
-
-  <div class="factory-template-card">
-
-    <div class="factory-template-header">
-
-      <div>
-        <h4>Factory Template</h4>
-        <p>Save your factory work rules</p>
-      </div>
-
-      <button id="openFactoryTemplate" type="button">
-        Edit
-      </button>
-
-    </div>
-
-    <div class="factory-template-info">
-
-      <div class="factory-info-row">
-        <span>Factory</span>
-        <strong id="factoryName">My Factory</strong>
-      </div>
-
-      <div class="factory-info-row">
-        <span>Hourly Wage</span>
-        <strong id="factoryWage">₩10,320</strong>
-      </div>
-
-      <div class="factory-info-row">
-        <span>Meal Allowance</span>
-        <strong id="factoryMeal">₩100,000</strong>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- ================= Manual Work Profile ================= -->
-
-  <h4 class="profile-subtitle">Manual Work Profile</h4>
-
-  <!-- Company Name -->
-  <input
-    id="companyName"
-    data-lang-placeholder="company_name"
-    placeholder="Company Name"
-  >
-
-  <!-- Hourly Wage -->
-  <input
-    id="hourlyWageProfile"
-    type="number"
-    inputmode="numeric"
-    data-lang-placeholder="hourly_wage_placeholder"
-    placeholder="Hourly Wage (₩)"
-  >
-
-  <!-- Visa Type -->
-  <input
-    id="visaType"
-    data-lang-placeholder="visa_type"
-    placeholder="Visa Type (E9 / F2 / D2)"
-  >
-
-</section>
-
   </main>
 
   <!-- ========================================================
@@ -1133,28 +1028,10 @@
     <!-- ================= Popup Body ================= -->
     <div class="popup-body">
 
-      <!-- ================= Shift Type ================= -->
-      <label>Shift Type</label>
+      <!-- ================= Saved Shift Templates ================= -->
+      <label>Shift Template</label>
 
-      <div class="shift-buttons">
-
-        <button type="button" class="shift-btn" data-shift="day">
-          ☀️ Day
-        </button>
-
-        <button type="button" class="shift-btn" data-shift="night">
-          🌙 Night
-        </button>
-
-        <button type="button" class="shift-btn" data-shift="holiday">
-          🎌 Holiday
-        </button>
-
-        <button type="button" class="shift-btn" data-shift="off">
-          😴 Off
-        </button>
-
-      </div>
+      <div id="dayTemplatePicker" class="dayTemplatePicker"></div>
 
       <!-- ================= Working Time ================= -->
       <div class="popup-row">
