@@ -122,6 +122,7 @@ const translations = {
     insurance_title: "Insurance",
     ot_pay: "OT Pay",
     night_pay: "Night Pay",
+    shift_rule_pay: "Shift Rule Pay",
 
     /* ---------- Profile ---------- */
 
@@ -186,6 +187,7 @@ const translations = {
 
     ot_pay: "연장 수당",
     night_pay: "야간 수당",
+    shift_rule_pay: "근무표 고정 수당",
 
     profile_title: "내 프로필",
     profile_subtitle: "한국 미얀마 근로자",
@@ -246,6 +248,7 @@ const translations = {
 
     ot_pay: "OT ကြေး",
     night_pay: "ညဆိုင်းကြေး",
+    shift_rule_pay: "ဆိုင်းသတ်မှတ် အပိုကြေး",
 
     profile_title: "ကျွန်ုပ် ပရိုဖိုင်",
     profile_subtitle: "ကိုရီးယားရောက် မြန်မာအလုပ်သမား",
@@ -413,9 +416,26 @@ const today = new Date();
 let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
 
+function readStoredJson(key, fallback, validator) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+
+    const parsed = JSON.parse(raw);
+    return validator(parsed) ? parsed : fallback;
+  } catch (error) {
+    console.warn(`Could not read saved data for ${key}.`, error);
+    return fallback;
+  }
+}
+
 // ===== Calendar LocalStorage =====
 let shiftData =
-  JSON.parse(localStorage.getItem("workpay_shift_data")) || {};
+  readStoredJson(
+    "workpay_shift_data",
+    {},
+    value => value && typeof value === "object" && !Array.isArray(value)
+  );
 
 // ===== Month Names =====
 const monthNames = [
@@ -446,7 +466,13 @@ function getMonthSummary(year = currentYear, month = currentMonth) {
     basicHours: 0,
     otHours: 0,
     nightHours: 0,
-    holidayHours: 0
+    holidayHours: 0,
+    hourlyOtHours: 0,
+    hourlyNightHours: 0,
+    hourlyHolidayHours: 0,
+    fixedExtraPay: 0,
+    fixedConfirmedPay: 0,
+    fixedProvisionalPay: 0
   };
 
   getMonthShiftEntries(year, month).forEach(([, day]) => {
@@ -459,6 +485,21 @@ function getMonthSummary(year = currentYear, month = currentMonth) {
     summary.otHours += Number(day.otHours || 0);
     summary.nightHours += Number(day.nightHours || 0);
     summary.holidayHours += Number(day.holidayHours || 0);
+
+    if (day.payMode === "fixed") {
+      const fixedAmount = Number(day.extraPay || 0);
+      summary.fixedExtraPay += fixedAmount;
+
+      if (day.ruleStatus === "confirmed") {
+        summary.fixedConfirmedPay += fixedAmount;
+      } else {
+        summary.fixedProvisionalPay += fixedAmount;
+      }
+    } else {
+      summary.hourlyOtHours += Number(day.otHours || 0);
+      summary.hourlyNightHours += Number(day.nightHours || 0);
+      summary.hourlyHolidayHours += Number(day.holidayHours || 0);
+    }
 
   });
 
@@ -1128,71 +1169,144 @@ function timeToMinutes(time) {
   return hour * 60 + minute;
 }
 
+function intervalOverlap(startA, endA, startB, endB) {
+  return Math.max(0, Math.min(endA, endB) - Math.max(startA, startB));
+}
+
+function calculateShiftMetrics(
+  dateKey,
+  shift,
+  start,
+  end,
+  breakStart,
+  breakMinutesValue
+) {
+  if (shift === "off" || !start || !end) {
+    return {
+      workedHours: 0,
+      basicHours: 0,
+      otHours: 0,
+      nightHours: 0,
+      holidayHours: 0
+    };
+  }
+
+  const startMin = timeToMinutes(start);
+  let endMin = timeToMinutes(end);
+  if (endMin <= startMin) endMin += 1440;
+
+  const breakMinutes = Math.max(0, Number(breakMinutesValue) || 0);
+  let breakStartMin = null;
+  let breakEndMin = null;
+
+  if (breakStart && breakMinutes > 0) {
+    breakStartMin = timeToMinutes(breakStart);
+    if (breakStartMin < startMin) breakStartMin += 1440;
+    breakEndMin = Math.min(endMin, breakStartMin + breakMinutes);
+  }
+
+  const scheduledMinutes = Math.max(0, endMin - startMin);
+  const deductedBreakMinutes = Math.min(breakMinutes, scheduledMinutes);
+  const workedMinutes = Math.max(0, scheduledMinutes - deductedBreakMinutes);
+
+  // Night work is 22:00–06:00. Evaluate each night window that
+  // intersects the shift and remove any break overlap.
+  let nightMinutes = 0;
+  for (let dayOffset = -1; dayOffset <= 1; dayOffset++) {
+    const nightStart = dayOffset * 1440 + 22 * 60;
+    const nightEnd = (dayOffset + 1) * 1440 + 6 * 60;
+    let overlap =
+      intervalOverlap(startMin, endMin, nightStart, nightEnd);
+
+    if (breakStartMin !== null && breakEndMin !== null) {
+      overlap -= intervalOverlap(
+        breakStartMin,
+        breakEndMin,
+        nightStart,
+        nightEnd
+      );
+    }
+
+    nightMinutes += Math.max(0, overlap);
+  }
+
+  // Attribute overnight work to the actual calendar day it occurs on.
+  // Keep the existing first-eight-hours holiday policy for compatibility.
+  let holidayMinutes = 0;
+  const shiftDate = new Date(dateKey + "T00:00:00");
+
+  for (let dayOffset = 0; dayOffset <= 1; dayOffset++) {
+    const segmentStart = dayOffset * 1440;
+    const segmentEnd = (dayOffset + 1) * 1440;
+    let segmentMinutes =
+      intervalOverlap(startMin, endMin, segmentStart, segmentEnd);
+
+    if (breakStartMin !== null && breakEndMin !== null) {
+      segmentMinutes -= intervalOverlap(
+        breakStartMin,
+        breakEndMin,
+        segmentStart,
+        segmentEnd
+      );
+    }
+
+    const segmentDate = new Date(shiftDate);
+    segmentDate.setDate(segmentDate.getDate() + dayOffset);
+    const segmentDateKey = formatLocalDate(segmentDate);
+    const isHolidayDay =
+      segmentDate.getDay() === 6 ||
+      !!koreaHolidays?.[segmentDate.getFullYear()]?.[segmentDateKey];
+
+    if (shift === "holiday" || isHolidayDay) {
+      holidayMinutes += Math.max(0, segmentMinutes);
+    }
+  }
+
+  const workedHours = workedMinutes / 60;
+
+  return {
+    workedHours,
+    basicHours: Math.min(workedHours, 8),
+    otHours: Math.max(0, workedHours - 8),
+    nightHours: nightMinutes / 60,
+    holidayHours: Math.min(holidayMinutes / 60, 8)
+  };
+}
+
 // ===== Auto Calculate =====
 function calculateOTHours() {
 
-  if (!popupStart.value || !popupEnd.value) return;
-
-  let startMin = timeToMinutes(popupStart.value);
-  let endMin = timeToMinutes(popupEnd.value);
-
-  // Next day (17:30→01:30 / 20:30→08:30)
-  if (endMin <= startMin) {
-    endMin += 1440;
+  if (!popupStart.value || !popupEnd.value) {
+    popupOT.value = "0.0";
+    if (popupNight) popupNight.value = "0.0";
+    if (popupHoliday) popupHoliday.value = "0.0";
+    return;
   }
 
-  const breakMinutes = Number(popupBreak.value) || 0;
-
-  const workedHours =
-    Math.max(0, (endMin - startMin - breakMinutes) / 60);
-
-  // ===== OT =====
-  const otHours = Math.max(0, workedHours - 8);
-
-  // ===== Night Hours (22:00 ~ 06:00) =====
-  let nightMinutes = 0;
-
-  const overlapStart = Math.max(startMin, 22 * 60);
-  const overlapEnd = Math.min(endMin, 30 * 60);
-
-  if (overlapEnd > overlapStart) {
-    nightMinutes = overlapEnd - overlapStart;
-  }
-
-  const nightHours = nightMinutes / 60;
-
-  // ===== Holiday Hours =====
-  const date = new Date(selectedDate + "T00:00:00");
-  const isSaturday = date.getDay() === 6;
-
-  const selectedDateYear =
-    new Date(selectedDate + "T00:00:00").getFullYear();
-
-  const isPublicHoliday =
-    koreaHolidays[selectedDateYear] &&
-    koreaHolidays[selectedDateYear][selectedDate];
-
-  let holidayValue = 0;
-
-  if (selectedShift === "holiday" || isSaturday || isPublicHoliday) {
-    holidayValue = Math.min(workedHours, 8);
-  }
+  const metrics = calculateShiftMetrics(
+    selectedDate,
+    selectedShift,
+    popupStart.value,
+    popupEnd.value,
+    popupBreakStart.value,
+    popupBreak.value
+  );
 
   // ===== Update Popup =====
-  popupOT.value = otHours.toFixed(1);
+  popupOT.value = metrics.otHours.toFixed(1);
 
   if (popupNight) {
-    popupNight.value = nightHours.toFixed(1);
+    popupNight.value = metrics.nightHours.toFixed(1);
   }
 
   if (popupHoliday) {
-    popupHoliday.value = holidayValue.toFixed(1);
+    popupHoliday.value = metrics.holidayHours.toFixed(1);
   }
 
 }
 
 // ===== Auto Update =====
-[popupStart, popupEnd, popupBreak].forEach(input => {
+[popupStart, popupEnd, popupBreakStart, popupBreak].forEach(input => {
   input?.addEventListener("input", calculateOTHours);
   input?.addEventListener("change", calculateOTHours);
 });
@@ -1203,23 +1317,15 @@ function calculateOTHours() {
 
 saveDayBtn?.addEventListener("click", () => {
 
-  let startMin = timeToMinutes(popupStart.value);
-  let endMin = timeToMinutes(popupEnd.value);
-
-  if (endMin <= startMin) endMin += 1440;
-
   const breakMinutes = Number(popupBreak.value) || 0;
-
-  const workedHours =
-    Math.max(0, (endMin - startMin - breakMinutes) / 60);
-
-  const date = new Date(selectedDate + "T00:00:00");
-  const weekDay = date.getDay();
-
-  // Saturday OR Korea Public Holiday
-  const isHolidayDay =
-    weekDay === 6 ||
-    !!koreaHolidays?.[date.getFullYear()]?.[selectedDate];
+  const metrics = calculateShiftMetrics(
+    selectedDate,
+    selectedShift,
+    popupStart.value,
+    popupEnd.value,
+    popupBreakStart.value,
+    breakMinutes
+  );
 
   // ===== Save =====
   shiftData[selectedDate] = {
@@ -1233,22 +1339,23 @@ saveDayBtn?.addEventListener("click", () => {
     breakMinutes,
 
     // ✅ Basic Hours (Day / Night / Holiday)
-    basicHours:
-      selectedShift === "off" ? 0 : Math.min(workedHours, 8),
+    basicHours: metrics.basicHours,
 
     // ✅ OT Hours
-    otHours: Number(popupOT.value) || 0,
+    otHours: metrics.otHours,
 
     // ✅ Night Hours
-    nightHours: Number(popupNight.value) || 0,
+    nightHours: metrics.nightHours,
 
     // ✅ Holiday Hours
-    holidayHours:
-      (selectedShift === "holiday" || isHolidayDay)
-        ? Math.min(workedHours, 8)
-        : 0,
+    holidayHours: metrics.holidayHours,
 
-    note: popupNote.value || ""
+    note: popupNote.value || "",
+
+    // A manually saved day returns to the standard hourly formula.
+    source: "manual",
+    payMode: "hourly",
+    extraPay: 0
 
   };
 
@@ -1355,6 +1462,7 @@ const grossSalaryText = document.getElementById("grossSalary");
 const insuranceText = document.getElementById("insurance");
 const otPayText = document.getElementById("otPay");
 const nightPayText = document.getElementById("nightPay");
+const templatePayText = document.getElementById("templatePay");
 const netSalaryText = document.getElementById("netSalary");
 
 /* ==========================================================
@@ -1385,16 +1493,18 @@ function calculateInsurance(grossSalary) {
    PART 9.2 — Calculate Salary (Official)
 ========================================================== */
 
-function calculateSalary() {
+function calculateSalary(saveHistory = false) {
 
   // ===== User Input =====
   const wage = Number(hourlyWageInput.value) || 0;
   const meal = Number(mealAllowanceInput.value) || 0;
 
   const basicHours = Number(basicHoursInput.value) || 0;
-  const otHours = Number(otHoursInput.value) || 0;
-  const nightHours = Number(nightHoursInput.value) || 0;
-  const holidayHours = Number(holidayHoursInput.value) || 0;
+  const monthSummary = getMonthSummary();
+  const otHours = monthSummary.hourlyOtHours;
+  const nightHours = monthSummary.hourlyNightHours;
+  const holidayHours = monthSummary.hourlyHolidayHours;
+  const fixedExtraPay = monthSummary.fixedExtraPay;
 
   // ===== Salary Formula =====
   const basicPay = wage * basicHours;
@@ -1411,6 +1521,7 @@ function calculateSalary() {
     otPay +
     nightPay +
     holidayPay +
+    fixedExtraPay +
     meal;
 
   // ===== Factory Rules (+ / -) =====
@@ -1437,6 +1548,22 @@ function calculateSalary() {
   nightPayText.textContent =
     `₩${Math.round(nightPay).toLocaleString()}`;
 
+  if (templatePayText) {
+    templatePayText.textContent =
+      `₩${Math.round(fixedExtraPay).toLocaleString()}`;
+  }
+
+  const templatePayStatus =
+    document.getElementById("templatePayStatus");
+  if (templatePayStatus) {
+    templatePayStatus.textContent =
+      `Confirmed ₩${Math.round(
+        monthSummary.fixedConfirmedPay
+      ).toLocaleString()} · Provisional ₩${Math.round(
+        monthSummary.fixedProvisionalPay
+      ).toLocaleString()}`;
+  }
+
   netSalaryText.textContent =
     `₩${Math.round(netSalary).toLocaleString()}`;
 
@@ -1446,6 +1573,23 @@ function calculateSalary() {
 
   // ===== Home Dashboard =====
   updateHomeDashboard();
+
+  if (saveHistory) {
+    saveSalaryHistorySnapshot({
+      wage,
+      meal,
+      basicPay,
+      otPay,
+      nightPay,
+      holidayPay,
+      fixedExtraPay,
+      extraTotal,
+      grossSalary,
+      insurance,
+      netSalary,
+      monthSummary
+    });
+  }
 
 }
 // ===== End calculateSalary()
@@ -1463,22 +1607,41 @@ function calculateSalary() {
 const rulePopup = document.getElementById("rulePopup");
 const addRuleBtn = document.getElementById("addRuleBtn");
 const closeRulePopup = document.getElementById("closeRulePopup");
+let editingFactoryRuleIndex = null;
+
+function openFactoryRuleEditor(index = null) {
+  const rule =
+    index === null ? null : factoryRules[index];
+
+  editingFactoryRuleIndex =
+    rule ? index : null;
+
+  document.getElementById("rulePopupTitle").textContent =
+    rule ? "Edit Factory Pay Rule" : "Factory Pay Rule";
+  document.getElementById("ruleType").value =
+    rule?.type || "plus";
+  document.getElementById("ruleStatus").value =
+    rule?.status === "confirmed" ? "confirmed" : "provisional";
+  document.getElementById("ruleName").value =
+    rule?.name || "";
+  document.getElementById("ruleAmount").value =
+    rule?.amount || "";
+  document.getElementById("ruleNote").value =
+    rule?.note || "";
+
+  rulePopup.classList.remove("hidden");
+}
 
 // ===== Popup Open =====
 addRuleBtn?.addEventListener("click", () => {
-
-  document.getElementById("ruleType").value = "plus";
-  document.getElementById("ruleName").value = "";
-  document.getElementById("ruleAmount").value = "";
-
-  rulePopup.classList.remove("hidden");
-
+  openFactoryRuleEditor();
 });
 
 // ===== Popup Close =====
 closeRulePopup?.addEventListener("click", () => {
 
   rulePopup.classList.add("hidden");
+  editingFactoryRuleIndex = null;
 
 });
 
@@ -1487,6 +1650,7 @@ rulePopup?.addEventListener("click", (e) => {
 
   if (e.target === rulePopup) {
     rulePopup.classList.add("hidden");
+    editingFactoryRuleIndex = null;
   }
 
 });
@@ -1496,7 +1660,11 @@ rulePopup?.addEventListener("click", (e) => {
 ========================================================== */
 
 let factoryRules =
-  JSON.parse(localStorage.getItem("factoryRules")) || [];
+  readStoredJson(
+    "factoryRules",
+    [],
+    value => Array.isArray(value)
+  );
 
 // Save Rules
 function saveFactoryRules() {
@@ -1545,18 +1713,34 @@ function renderFactoryRules() {
 
     item.className = "ruleItem";
 
+    const status =
+      rule.status === "confirmed" ? "confirmed" : "provisional";
+
     item.innerHTML = `
       <div>
         <div class="${rule.type}">
           ${rule.type === "plus" ? "🟢 +" : "🔴 -"} ${rule.name}
+          <span class="ruleStatusBadge ${status}">
+            ${status === "confirmed" ? "Confirmed" : "Provisional"}
+          </span>
         </div>
 
         <strong>₩${Number(rule.amount).toLocaleString()}</strong>
+        ${
+          rule.note
+            ? `<p class="ruleEvidence">${escapeTemplateText(rule.note)}</p>`
+            : ""
+        }
       </div>
 
-      <button class="removeBtn" data-index="${index}">
-        Delete
-      </button>
+      <div class="ruleItemActions">
+        <button class="templateEditBtn editRuleBtn" data-index="${index}" type="button">
+          Edit
+        </button>
+        <button class="removeBtn" data-index="${index}" type="button">
+          Delete
+        </button>
+      </div>
     `;
 
     list.appendChild(item);
@@ -1564,6 +1748,12 @@ function renderFactoryRules() {
   });
 
   // Delete Button
+  list.querySelectorAll(".editRuleBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      openFactoryRuleEditor(Number(btn.dataset.index));
+    });
+  });
+
   list.querySelectorAll(".removeBtn").forEach(btn => {
 
     btn.addEventListener("click", () => {
@@ -1594,11 +1784,17 @@ document.getElementById("saveRuleBtn")
   const type =
     document.getElementById("ruleType").value;
 
+  const status =
+    document.getElementById("ruleStatus").value;
+
   const name =
     document.getElementById("ruleName").value.trim();
 
   const amount =
     Number(document.getElementById("ruleAmount").value);
+
+  const note =
+    document.getElementById("ruleNote").value.trim();
 
   if (!name || amount <= 0) {
 
@@ -1608,19 +1804,26 @@ document.getElementById("saveRuleBtn")
 
   }
 
-  factoryRules.push({
-
+  const savedRule = {
     type,
     name,
-    amount
+    amount,
+    status,
+    note
+  };
 
-  });
+  if (editingFactoryRuleIndex === null) {
+    factoryRules.push(savedRule);
+  } else {
+    factoryRules[editingFactoryRuleIndex] = savedRule;
+  }
 
   saveFactoryRules();
 
   renderFactoryRules();
 
   rulePopup.classList.add("hidden");
+  editingFactoryRuleIndex = null;
 
 });
 
@@ -1642,6 +1845,8 @@ function renderCalculatorRules() {
   factoryRules.forEach((rule, index) => {
 
     const row = document.createElement("div");
+    const status =
+      rule.status === "confirmed" ? "confirmed" : "provisional";
 
     row.className = "payItemRow";
 
@@ -1651,6 +1856,10 @@ function renderCalculatorRules() {
         <span>
           ${rule.type === "plus" ? "🟢 +" : "🔴 -"}
           ${rule.name}
+        </span>
+
+        <span class="ruleStatusBadge ${status}">
+          ${status === "confirmed" ? "Confirmed" : "Provisional"}
         </span>
 
       </div>
@@ -1696,26 +1905,27 @@ function renderCalculatorRules() {
 
 function updateExtraTotal() {
 
-  let total = 0;
-
-  factoryRules.forEach(rule => {
-
-    if (rule.type === "plus") {
-
-      total += Number(rule.amount);
-
-    } else {
-
-      total -= Number(rule.amount);
-
-    }
-
-  });
+  const breakdown = getFactoryRuleBreakdown();
 
   document.getElementById("extraTotal").textContent =
-    `₩${total.toLocaleString()}`;
+    `₩${breakdown.total.toLocaleString()}`;
 
-  return total;
+  const confirmedTotal =
+    document.getElementById("confirmedRuleTotal");
+  const provisionalTotal =
+    document.getElementById("provisionalRuleTotal");
+
+  if (confirmedTotal) {
+    confirmedTotal.textContent =
+      `Confirmed ₩${breakdown.confirmed.toLocaleString()}`;
+  }
+
+  if (provisionalTotal) {
+    provisionalTotal.textContent =
+      `Provisional ₩${breakdown.provisional.toLocaleString()}`;
+  }
+
+  return breakdown.total;
 
 }
 
@@ -1728,24 +1938,33 @@ function updateExtraTotal() {
    PART 9.1 — Calculate Extra Total
 ========================================================== */
 
-function getExtraPayTotal() {
+function getFactoryRuleBreakdown() {
 
-  let total = 0;
+  const breakdown = {
+    confirmed: 0,
+    provisional: 0,
+    total: 0
+  };
 
   factoryRules.forEach(rule => {
 
     const amount = Number(rule.amount) || 0;
+    const signedAmount =
+      rule.type === "plus" ? amount : -amount;
+    const status =
+      rule.status === "confirmed" ? "confirmed" : "provisional";
 
-    if (rule.type === "plus") {
-      total += amount;
-    } else {
-      total -= amount;
-    }
+    breakdown[status] += signedAmount;
+    breakdown.total += signedAmount;
 
   });
 
-  return total;
+  return breakdown;
 
+}
+
+function getExtraPayTotal() {
+  return getFactoryRuleBreakdown().total;
 }
 
 /* ==========================================================
@@ -1760,6 +1979,690 @@ function refreshCalculatorRules() {
     calculateSalary();
   }
 
+}
+
+/* ==========================================================
+   PART 9.4 — FACTORY SHIFT TEMPLATES
+   Date range + weekday application
+========================================================== */
+
+const SHIFT_TEMPLATE_STORAGE_KEY = "workpay_shift_templates";
+
+let shiftTemplates =
+  readStoredJson(
+    SHIFT_TEMPLATE_STORAGE_KEY,
+    [],
+    value => Array.isArray(value)
+  );
+
+let editingShiftTemplateId = null;
+
+const shiftTemplatePopup =
+  document.getElementById("shiftTemplatePopup");
+const applyTemplatePopup =
+  document.getElementById("applyTemplatePopup");
+const templatePayMode =
+  document.getElementById("templatePayMode");
+const templateFixedPayField =
+  document.getElementById("templateFixedPayField");
+
+function saveShiftTemplates() {
+  localStorage.setItem(
+    SHIFT_TEMPLATE_STORAGE_KEY,
+    JSON.stringify(shiftTemplates)
+  );
+}
+
+function escapeTemplateText(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function setFixedPayVisibility() {
+  templateFixedPayField?.classList.toggle(
+    "hidden",
+    templatePayMode?.value !== "fixed"
+  );
+}
+
+function setTemplateShiftFieldState() {
+  const isOff =
+    document.getElementById("templateShiftType")?.value === "off";
+
+  [
+    "templateStart",
+    "templateEnd",
+    "templateBreakStart",
+    "templateBreakMinutes",
+    "templatePayMode",
+    "templateRuleStatus",
+    "templateExtraPay"
+  ].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.disabled = isOff;
+  });
+}
+
+function closeShiftTemplateEditor() {
+  shiftTemplatePopup?.classList.add("hidden");
+  editingShiftTemplateId = null;
+}
+
+function openShiftTemplateEditor(templateId = null) {
+  const template =
+    shiftTemplates.find(item => item.id === templateId) || null;
+
+  editingShiftTemplateId = template?.id || null;
+
+  const title = document.getElementById("shiftTemplatePopupTitle");
+  if (title) {
+    title.textContent = template ? "Edit Shift Template" : "New Shift Template";
+  }
+
+  document.getElementById("templateName").value =
+    template?.name || "";
+  document.getElementById("templateShiftType").value =
+    template?.shift || "day";
+  document.getElementById("templateStart").value =
+    template?.start || "08:30";
+  document.getElementById("templateEnd").value =
+    template?.end || "17:30";
+  document.getElementById("templateBreakStart").value =
+    template?.breakStart || "12:30";
+  document.getElementById("templateBreakMinutes").value =
+    template?.breakMinutes ?? 60;
+  document.getElementById("templatePayMode").value =
+    template?.payMode || "hourly";
+  document.getElementById("templateRuleStatus").value =
+    template?.ruleStatus === "confirmed" ? "confirmed" : "provisional";
+  document.getElementById("templateExtraPay").value =
+    template?.extraPay || "";
+  document.getElementById("templateNote").value =
+    template?.note || "";
+
+  setFixedPayVisibility();
+  setTemplateShiftFieldState();
+  shiftTemplatePopup?.classList.remove("hidden");
+}
+
+function renderShiftTemplates() {
+  const list = document.getElementById("shiftTemplateList");
+  const applySelect = document.getElementById("applyTemplateSelect");
+
+  if (list) {
+    list.innerHTML = "";
+
+    if (shiftTemplates.length === 0) {
+      list.innerHTML = `
+        <p class="emptyTemplateState">
+          No shift templates yet. Add your factory's first shift.
+        </p>
+      `;
+    }
+
+    shiftTemplates.forEach(template => {
+      const item = document.createElement("div");
+      const ruleStatus =
+        template.ruleStatus === "confirmed"
+          ? "confirmed"
+          : "provisional";
+      const payDescription =
+        template.payMode === "fixed"
+          ? `Fixed extra ₩${Number(template.extraPay || 0).toLocaleString()}`
+          : "Hourly formula";
+
+      item.className = "shiftTemplateItem";
+      item.innerHTML = `
+        <div class="shiftTemplateInfo">
+          <strong>${escapeTemplateText(template.name)}</strong>
+          <span class="ruleStatusBadge ${ruleStatus}">
+            ${ruleStatus === "confirmed" ? "Confirmed" : "Provisional"}
+          </span>
+          <span>
+            ${escapeTemplateText(template.start || "Off")}
+            ${template.end ? `–${escapeTemplateText(template.end)}` : ""}
+            · ${escapeTemplateText(payDescription)}
+          </span>
+        </div>
+        <div class="shiftTemplateActions">
+          <button class="templateEditBtn" data-id="${template.id}" type="button">
+            Edit
+          </button>
+          <button class="templateDeleteBtn" data-id="${template.id}" type="button">
+            Delete
+          </button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+
+    list.querySelectorAll(".templateEditBtn").forEach(button => {
+      button.addEventListener("click", () => {
+        openShiftTemplateEditor(button.dataset.id);
+      });
+    });
+
+    list.querySelectorAll(".templateDeleteBtn").forEach(button => {
+      button.addEventListener("click", () => {
+        const template =
+          shiftTemplates.find(item => item.id === button.dataset.id);
+
+        if (!template || !confirm(`Delete "${template.name}"?`)) return;
+
+        shiftTemplates =
+          shiftTemplates.filter(item => item.id !== button.dataset.id);
+        saveShiftTemplates();
+        renderShiftTemplates();
+      });
+    });
+  }
+
+  if (applySelect) {
+    applySelect.innerHTML = shiftTemplates
+      .map(template => `
+        <option value="${template.id}">
+          ${escapeTemplateText(template.name)}
+        </option>
+      `)
+      .join("");
+  }
+}
+
+function formatLocalDate(date) {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-");
+}
+
+function getTemplateCalendarEntry(dateKey, template) {
+  if (template.shift === "off") {
+    return {
+      shift: "off",
+      start: "",
+      end: "",
+      breakStart: "",
+      breakMinutes: 0,
+      basicHours: 0,
+      otHours: 0,
+      nightHours: 0,
+      holidayHours: 0,
+      note: template.note || "",
+      source: "template",
+      templateId: template.id,
+      templateName: template.name,
+      payMode: "hourly",
+      ruleStatus:
+        template.ruleStatus === "confirmed"
+          ? "confirmed"
+          : "provisional",
+      extraPay: 0
+    };
+  }
+
+  const breakMinutes = Number(template.breakMinutes) || 0;
+  const metrics = calculateShiftMetrics(
+    dateKey,
+    template.shift,
+    template.start,
+    template.end,
+    template.breakStart,
+    breakMinutes
+  );
+
+  return {
+    shift: template.shift,
+    start: template.start,
+    end: template.end,
+    breakStart: template.breakStart || "",
+    breakMinutes,
+    basicHours: Number(metrics.basicHours.toFixed(2)),
+    otHours: Number(metrics.otHours.toFixed(2)),
+    nightHours: Number(metrics.nightHours.toFixed(2)),
+    holidayHours: Number(metrics.holidayHours.toFixed(2)),
+    note: template.note || "",
+    source: "template",
+    templateId: template.id,
+    templateName: template.name,
+    payMode: template.payMode || "hourly",
+    ruleStatus:
+      template.ruleStatus === "confirmed"
+        ? "confirmed"
+        : "provisional",
+    extraPay:
+      template.payMode === "fixed"
+        ? Number(template.extraPay) || 0
+        : 0
+  };
+}
+
+function getSelectedApplyWeekdays() {
+  return new Set(
+    Array.from(
+      document.querySelectorAll(
+        "#applyTemplatePopup .weekdayPicker input:checked"
+      )
+    ).map(input => Number(input.value))
+  );
+}
+
+function getApplyDates(startValue, endValue, weekdays) {
+  const start = new Date(startValue + "T00:00:00");
+  const end = new Date(endValue + "T00:00:00");
+  const dates = [];
+
+  for (
+    let cursor = new Date(start);
+    cursor <= end;
+    cursor.setDate(cursor.getDate() + 1)
+  ) {
+    if (weekdays.has(cursor.getDay())) {
+      dates.push(formatLocalDate(cursor));
+    }
+  }
+
+  return dates;
+}
+
+document.getElementById("addShiftTemplateBtn")
+?.addEventListener("click", () => openShiftTemplateEditor());
+
+document.getElementById("closeShiftTemplatePopup")
+?.addEventListener("click", closeShiftTemplateEditor);
+
+document.getElementById("cancelShiftTemplateBtn")
+?.addEventListener("click", closeShiftTemplateEditor);
+
+templatePayMode?.addEventListener("change", setFixedPayVisibility);
+
+document.getElementById("templateShiftType")
+?.addEventListener("change", setTemplateShiftFieldState);
+
+document.getElementById("saveShiftTemplateBtn")
+?.addEventListener("click", () => {
+  const name =
+    document.getElementById("templateName").value.trim();
+  const shift =
+    document.getElementById("templateShiftType").value;
+  const start =
+    document.getElementById("templateStart").value;
+  const end =
+    document.getElementById("templateEnd").value;
+  const payMode =
+    document.getElementById("templatePayMode").value;
+  const extraPay =
+    Number(document.getElementById("templateExtraPay").value) || 0;
+
+  if (!name) {
+    alert("Please enter a template name.");
+    return;
+  }
+
+  if (shift !== "off" && (!start || !end)) {
+    alert("Please enter the shift start and end time.");
+    return;
+  }
+
+  if (payMode === "fixed" && extraPay <= 0) {
+    alert("Please enter the fixed extra pay amount.");
+    return;
+  }
+
+  const previous =
+    shiftTemplates.find(item => item.id === editingShiftTemplateId);
+  const template = {
+    id:
+      editingShiftTemplateId ||
+      `shift-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name,
+    shift,
+    start: shift === "off" ? "" : start,
+    end: shift === "off" ? "" : end,
+    breakStart:
+      shift === "off"
+        ? ""
+        : document.getElementById("templateBreakStart").value,
+    breakMinutes:
+      shift === "off"
+        ? 0
+        : Number(document.getElementById("templateBreakMinutes").value) || 0,
+    payMode: shift === "off" ? "hourly" : payMode,
+    ruleStatus:
+      document.getElementById("templateRuleStatus").value === "confirmed"
+        ? "confirmed"
+        : "provisional",
+    extraPay:
+      shift !== "off" && payMode === "fixed"
+        ? extraPay
+        : 0,
+    note: document.getElementById("templateNote").value.trim(),
+    createdAt: previous?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (editingShiftTemplateId) {
+    shiftTemplates = shiftTemplates.map(item =>
+      item.id === editingShiftTemplateId ? template : item
+    );
+  } else {
+    shiftTemplates.push(template);
+  }
+
+  saveShiftTemplates();
+  renderShiftTemplates();
+  closeShiftTemplateEditor();
+});
+
+function closeApplyTemplate() {
+  applyTemplatePopup?.classList.add("hidden");
+}
+
+document.getElementById("openApplyTemplateBtn")
+?.addEventListener("click", () => {
+  if (shiftTemplates.length === 0) {
+    alert("Add at least one shift template first.");
+    openShiftTemplateEditor();
+    return;
+  }
+
+  renderShiftTemplates();
+
+  const monthStart =
+    new Date(currentYear, currentMonth, 1);
+  const monthEnd =
+    new Date(currentYear, currentMonth + 1, 0);
+
+  document.getElementById("applyStartDate").value =
+    formatLocalDate(monthStart);
+  document.getElementById("applyEndDate").value =
+    formatLocalDate(monthEnd);
+  document.getElementById("overwriteTemplateDates").checked = false;
+
+  applyTemplatePopup?.classList.remove("hidden");
+});
+
+document.getElementById("closeApplyTemplatePopup")
+?.addEventListener("click", closeApplyTemplate);
+
+document.getElementById("cancelApplyTemplateBtn")
+?.addEventListener("click", closeApplyTemplate);
+
+document.getElementById("applyTemplateBtn")
+?.addEventListener("click", () => {
+  const templateId =
+    document.getElementById("applyTemplateSelect").value;
+  const template =
+    shiftTemplates.find(item => item.id === templateId);
+  const startValue =
+    document.getElementById("applyStartDate").value;
+  const endValue =
+    document.getElementById("applyEndDate").value;
+  const weekdays = getSelectedApplyWeekdays();
+  const overwrite =
+    document.getElementById("overwriteTemplateDates").checked;
+
+  if (!template || !startValue || !endValue) {
+    alert("Choose a template and date range.");
+    return;
+  }
+
+  const start = new Date(startValue + "T00:00:00");
+  const end = new Date(endValue + "T00:00:00");
+
+  if (
+    Number.isNaN(start.getTime()) ||
+    Number.isNaN(end.getTime())
+  ) {
+    alert("Please enter a valid start and end date.");
+    return;
+  }
+
+  const rangeDays =
+    Math.floor((end - start) / 86400000) + 1;
+
+  if (end < start) {
+    alert("The end date must be after the start date.");
+    return;
+  }
+
+  if (rangeDays > 366) {
+    alert("Please apply one year or less at a time.");
+    return;
+  }
+
+  if (weekdays.size === 0) {
+    alert("Choose at least one weekday.");
+    return;
+  }
+
+  const dates = getApplyDates(startValue, endValue, weekdays);
+  const existingDates =
+    dates.filter(dateKey =>
+      Object.prototype.hasOwnProperty.call(shiftData, dateKey)
+    );
+  const appliedDates =
+    overwrite
+      ? dates
+      : dates.filter(dateKey =>
+          !Object.prototype.hasOwnProperty.call(shiftData, dateKey)
+        );
+
+  if (dates.length === 0) {
+    alert("No dates match the selected weekdays.");
+    return;
+  }
+
+  const overwritePreview =
+    existingDates.length > 0
+      ? `\nExisting dates: ${existingDates.slice(0, 10).join(", ")}${
+          existingDates.length > 10 ? "…" : ""
+        }`
+      : "";
+  const message = overwrite
+    ? `Apply "${template.name}" to ${appliedDates.length} dates?` +
+      `\n${existingDates.length} existing entries will be replaced.` +
+      overwritePreview
+    : `Apply "${template.name}" to ${appliedDates.length} empty dates?` +
+      `\n${existingDates.length} existing entries will be kept.` +
+      overwritePreview;
+
+  if (!confirm(message)) return;
+
+  appliedDates.forEach(dateKey => {
+    const existing =
+      shiftData[dateKey] && typeof shiftData[dateKey] === "object"
+        ? shiftData[dateKey]
+        : {};
+    const templateEntry =
+      getTemplateCalendarEntry(dateKey, template);
+
+    shiftData[dateKey] = {
+      ...existing,
+      ...templateEntry,
+      note: templateEntry.note || existing.note || ""
+    };
+  });
+
+  saveShiftData();
+  renderCalendar();
+  syncCalendarToCalculator();
+  updateHomeDashboard();
+  closeApplyTemplate();
+
+  alert(
+    `${appliedDates.length} dates updated.` +
+    (existingDates.length && !overwrite
+      ? ` ${existingDates.length} existing entries were kept.`
+      : "")
+  );
+});
+
+shiftTemplatePopup?.addEventListener("click", event => {
+  if (event.target === shiftTemplatePopup) {
+    closeShiftTemplateEditor();
+  }
+});
+
+applyTemplatePopup?.addEventListener("click", event => {
+  if (event.target === applyTemplatePopup) {
+    closeApplyTemplate();
+  }
+});
+
+renderShiftTemplates();
+
+/* ==========================================================
+   PART 9.5 — VERSIONED MONTHLY SALARY HISTORY
+========================================================== */
+
+const SALARY_HISTORY_STORAGE_KEY = "workpay_salary_history_v1";
+
+let salaryHistory =
+  readStoredJson(
+    SALARY_HISTORY_STORAGE_KEY,
+    [],
+    value => Array.isArray(value)
+  );
+
+function copySnapshotData(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function saveSalaryHistorySnapshot(result) {
+  const period =
+    `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}`;
+  const calculatedAt = new Date().toISOString();
+  const entries = Object.fromEntries(
+    getMonthShiftEntries().map(([dateKey, entry]) => [
+      dateKey,
+      copySnapshotData(entry)
+    ])
+  );
+  const factoryRuleBreakdown =
+    getFactoryRuleBreakdown();
+
+  const snapshot = {
+    version: 1,
+    period,
+    calculatedAt,
+    inputs: {
+      hourlyWage: result.wage,
+      mealAllowance: result.meal
+    },
+    monthSummary: copySnapshotData(result.monthSummary),
+    factoryRules: copySnapshotData(factoryRules),
+    entries,
+    breakdown: {
+      basicPay: result.basicPay,
+      otPay: result.otPay,
+      nightPay: result.nightPay,
+      holidayPay: result.holidayPay,
+      fixedExtraPay: result.fixedExtraPay,
+      factoryRuleTotal: result.extraTotal,
+      factoryRuleConfirmed: factoryRuleBreakdown.confirmed,
+      factoryRuleProvisional: factoryRuleBreakdown.provisional,
+      grossSalary: result.grossSalary,
+      insurance: result.insurance,
+      netSalary: result.netSalary
+    }
+  };
+
+  const existingIndex =
+    salaryHistory.findIndex(item => item.period === period);
+
+  if (existingIndex >= 0) {
+    salaryHistory[existingIndex] = snapshot;
+  } else {
+    salaryHistory.push(snapshot);
+  }
+
+  salaryHistory.sort((a, b) =>
+    String(b.period).localeCompare(String(a.period))
+  );
+
+  localStorage.setItem(
+    SALARY_HISTORY_STORAGE_KEY,
+    JSON.stringify(salaryHistory)
+  );
+
+  renderSalaryHistory();
+}
+
+function renderSalaryHistory() {
+  const list = document.getElementById("historyList");
+  if (!list) return;
+
+  if (salaryHistory.length === 0) {
+    list.innerHTML = `
+      <p class="emptyTemplateState">
+        No saved calculation yet. Use Calculate Salary to save a month.
+      </p>
+    `;
+    return;
+  }
+
+  list.innerHTML = salaryHistory.map(snapshot => {
+    const summary = snapshot.monthSummary || {};
+    const breakdown = snapshot.breakdown || {};
+    const ruleCount = Array.isArray(snapshot.factoryRules)
+      ? snapshot.factoryRules.length
+      : 0;
+
+    return `
+      <article class="salaryHistoryItem">
+        <div class="salaryHistoryHeader">
+          <div>
+            <strong>${escapeTemplateText(snapshot.period)}</strong>
+            <span>
+              ${Number(summary.workDays || 0)} work days ·
+              ${ruleCount} factory rules
+            </span>
+          </div>
+          <strong>
+            ₩${Math.round(Number(breakdown.netSalary || 0)).toLocaleString()}
+          </strong>
+        </div>
+        <details>
+          <summary>Saved calculation details</summary>
+          <div class="salaryHistoryBreakdown">
+            <span>Hourly wage</span>
+            <strong>₩${Number(snapshot.inputs?.hourlyWage || 0).toLocaleString()}</strong>
+            <span>Basic pay</span>
+            <strong>₩${Math.round(Number(breakdown.basicPay || 0)).toLocaleString()}</strong>
+            <span>OT / Night / Holiday</span>
+            <strong>
+              ₩${Math.round(
+                Number(breakdown.otPay || 0) +
+                Number(breakdown.nightPay || 0) +
+                Number(breakdown.holidayPay || 0)
+              ).toLocaleString()}
+            </strong>
+            <span>Shift rule pay</span>
+            <strong>
+              ₩${Math.round(Number(breakdown.fixedExtraPay || 0)).toLocaleString()}
+              (${escapeTemplateText(
+                `C ₩${Math.round(Number(summary.fixedConfirmedPay || 0)).toLocaleString()} · P ₩${Math.round(Number(summary.fixedProvisionalPay || 0)).toLocaleString()}`
+              )})
+            </strong>
+            <span>Factory adjustments</span>
+            <strong>
+              C ₩${Math.round(Number(breakdown.factoryRuleConfirmed || 0)).toLocaleString()}
+              · P ₩${Math.round(Number(breakdown.factoryRuleProvisional || 0)).toLocaleString()}
+            </strong>
+            <span>Gross / Insurance</span>
+            <strong>
+              ₩${Math.round(Number(breakdown.grossSalary || 0)).toLocaleString()}
+              / -₩${Math.round(Number(breakdown.insurance || 0)).toLocaleString()}
+            </strong>
+          </div>
+        </details>
+      </article>
+    `;
+  }).join("");
 }
 
 /* ==========================================================
@@ -1782,6 +2685,8 @@ window.addEventListener("load", () => {
   // ===== Factory Rules =====
   renderFactoryRules();
   renderCalculatorRules();
+  renderShiftTemplates();
+  renderSalaryHistory();
 
   // ===== Home Dashboard =====
   updateHomeDashboard();
