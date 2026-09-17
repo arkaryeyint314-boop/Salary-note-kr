@@ -2308,11 +2308,21 @@ html{
 }
 
 .ruleItem{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
   background:var(--card);
   border:1px solid var(--line);
   border-radius:18px;
   padding:16px;
   transition:.2s;
+}
+
+.ruleItemActions{
+  display:flex;
+  flex-shrink:0;
+  gap:6px;
 }
 
 .ruleItem:hover{
@@ -2887,6 +2897,243 @@ body:not(.light) .miniResult{
     font-size:10px;
   }
 
+}
+
+/* ==========================================================
+   PART 16 — SHIFT TEMPLATE UI
+========================================================== */
+
+#shiftTemplateList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:14px 0;
+}
+
+.emptyTemplateState{
+  color:var(--sub);
+  text-align:center;
+  padding:18px 8px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  font-size:13px;
+}
+
+.shiftTemplateItem{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:15px;
+}
+
+.shiftTemplateInfo{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.shiftTemplateInfo strong{
+  color:var(--text);
+  font-size:14px;
+}
+
+.shiftTemplateInfo span{
+  color:var(--sub);
+  font-size:12px;
+  overflow-wrap:anywhere;
+}
+
+.shiftTemplateActions{
+  flex-shrink:0;
+  display:flex;
+  gap:6px;
+}
+
+.shiftTemplateActions button{
+  border:0;
+  border-radius:9px;
+  padding:8px 9px;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:700;
+}
+
+.templateEditBtn{
+  background:rgba(59,130,246,.14);
+  color:#3B82F6;
+}
+
+.templateDeleteBtn{
+  background:rgba(239,68,68,.14);
+  color:#EF4444;
+}
+
+.secondaryBtn{
+  width:100%;
+  border:1px solid var(--primary);
+  border-radius:14px;
+  padding:12px 14px;
+  color:var(--primary);
+  background:transparent;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.weekdayPicker{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:8px;
+  margin-top:8px;
+}
+
+.weekdayPicker label{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  padding:8px 6px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  color:var(--text);
+  font-size:12px;
+  cursor:pointer;
+}
+
+.weekdayPicker input,
+.checkboxRow input{
+  width:auto;
+  margin:0;
+  accent-color:var(--primary);
+}
+
+.checkboxRow{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:8px 0;
+  color:var(--text);
+  font-size:13px;
+}
+
+.formHint{
+  display:block;
+  margin-top:6px;
+  color:var(--sub);
+  font-size:11px;
+  line-height:1.45;
+}
+
+.salaryHistoryItem{
+  margin-top:12px;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--card);
+}
+
+.salaryHistoryHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.salaryHistoryHeader > div{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.salaryHistoryHeader span{
+  color:var(--sub);
+  font-size:12px;
+}
+
+.salaryHistoryItem details{
+  margin-top:12px;
+  border-top:1px solid var(--line);
+  padding-top:10px;
+}
+
+.salaryHistoryItem summary{
+  color:var(--primary);
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+}
+
+.salaryHistoryBreakdown{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px 12px;
+  margin-top:12px;
+  color:var(--text);
+  font-size:12px;
+}
+
+.salaryHistoryBreakdown span{
+  color:var(--sub);
+}
+
+.miniResult.orange{
+  border-color:rgba(249,115,22,.32);
+}
+
+.ruleStatusBadge{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  margin-left:6px;
+  padding:3px 7px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  line-height:1.2;
+}
+
+.ruleStatusBadge.confirmed{
+  color:#16A34A;
+  background:rgba(34,197,94,.14);
+}
+
+.ruleStatusBadge.provisional{
+  color:#D97706;
+  background:rgba(245,158,11,.16);
+}
+
+.ruleEvidence{
+  margin-top:6px;
+  color:var(--sub);
+  font-size:11px;
+  line-height:1.4;
+}
+
+.ruleStatusTotals{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px;
+  margin:7px 0;
+}
+
+.ruleStatusTotals span{
+  padding:4px 8px;
+  border-radius:999px;
+  background:var(--bg);
+  color:var(--sub);
+  font-size:10px;
+}
+
+.resultHint{
+  display:block;
+  margin-top:5px;
+  color:var(--sub);
+  font-size:9px;
+  line-height:1.35;
 }
 
 /* ==========================================================
