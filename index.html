@@ -1028,10 +1028,28 @@
     <!-- ================= Popup Body ================= -->
     <div class="popup-body">
 
-      <!-- ================= Saved Shift Templates ================= -->
-      <label>Shift Template</label>
+      <!-- ================= Entry Mode ================= -->
+      <label>Shift Entry</label>
 
-      <div id="dayTemplatePicker" class="dayTemplatePicker"></div>
+      <div class="dayEntryMode" role="tablist" aria-label="Shift entry method">
+        <button type="button" id="manualEntryBtn" class="dayEntryModeBtn active">
+          Manual
+        </button>
+        <button type="button" id="templateEntryBtn" class="dayEntryModeBtn">
+          Template
+        </button>
+      </div>
+
+      <div id="manualShiftPicker" class="manualShiftPicker">
+        <button type="button" class="shift-btn" data-shift="day">☀️ Day</button>
+        <button type="button" class="shift-btn" data-shift="night">🌙 Night</button>
+        <button type="button" class="shift-btn" data-shift="holiday">🎌 Holiday</button>
+        <button type="button" class="shift-btn" data-shift="off">Off</button>
+      </div>
+
+      <div id="templateShiftPicker" class="templateShiftPicker hidden">
+        <div id="dayTemplatePicker" class="dayTemplatePicker"></div>
+      </div>
 
       <!-- ================= Working Time ================= -->
       <div class="popup-row">
