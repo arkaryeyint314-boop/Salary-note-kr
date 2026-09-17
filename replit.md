@@ -34,10 +34,10 @@
 
   `actual extra pay = 식대 + 연장근로`
 
-- Cross-month payslip comparisons currently infer these provisional extra-pay amounts:
+- Cross-month payslip comparisons previously inferred these user-entered extra-pay amounts:
   - Full regular `Ngt`: approximately KRW 85,140 per shift.
   - `야 17:30–01:30` and `토 08:30–17:30`: approximately KRW 123,840 per shift.
-- These amounts are reconstructed from aggregate monthly payslips, not yet a confirmed payroll formula. Keep them labelled provisional in the app.
+- These amounts are reconstructed from aggregate monthly payslips, not yet a confirmed payroll formula. Keep them as User Manual data unless the user confirms them from a factory source or payslip.
 - The exact `3OT` amount and partial-night formula are not final. Do not force a formula when the payslip aggregates multiple shift types.
 - Never count the `식대` amount twice as both meal allowance and overtime.
 - Compare gross payroll amounts with gross amounts, and take-home/bank amounts with take-home amounts.
@@ -46,8 +46,8 @@
 
 - The app is for the user and other foreign workers in Korea to record shifts, calculate expected pay, compare payslips, and identify unexplained differences.
 - Other factories must be able to create or select their own factory rule template instead of inheriting this factory's rates.
-- A factory template should eventually store shift names, start/end times, break rules, weekday/weekend/holiday status, night window, overtime threshold, premium rates, payroll-label adjustments such as `식대`, and whether a rule is confirmed or provisional.
-- Actual pay and inferred pay must be shown separately. Do not present an inferred factory rule as a legal conclusion.
+- A factory template should eventually store shift names, start/end times, break rules, weekday/weekend/holiday status, night window, overtime threshold, premium rates, and payroll-label adjustments.
+- Confirmed factory data and User Manual data must be shown separately. Do not present a user-entered factory rule as a legal conclusion.
 
 ## Implemented shift-template behavior
 
@@ -60,8 +60,10 @@
 - Night hours use the 22:00–06:00 window, support overnight and early-morning shifts, and subtract a break when its start time is known.
 - Overnight weekend/public-holiday attribution follows the actual calendar date of each worked segment. Holiday pay remains capped to the first eight hours for backward compatibility until the factory-specific holiday-OT policy is confirmed.
 - Explicit Salary Calculator runs save one versioned snapshot per month in `workpay_salary_history_v1`, including wage inputs, copied rules, copied calendar entries, summary, and salary breakdown.
-- Factory pay rules and shift-template pay rules carry a `confirmed` or `provisional` status. Missing legacy statuses default to provisional so old inferred values are never silently presented as confirmed.
-- Users can edit a factory rule to promote it from provisional to confirmed after checking a payslip, contract, or factory explanation; an evidence/note field records the reason.
-- Calculator totals include both statuses but display confirmed and provisional subtotals separately. Applied calendar entries copy the status, so changing a template later does not retroactively relabel historical dates.
+- Factory pay rules and shift-template pay data carry a `confirmed` or `manual` source. Legacy `provisional` and missing statuses migrate to User Manual so old values are never silently presented as confirmed.
+- Users can promote User Manual data to Confirmed after checking a payslip, contract, or factory explanation; the note field records context.
+- Calculator totals include both sources but display Confirmed and User Manual subtotals separately. Applied calendar entries copy the source, so changing a template later does not retroactively relabel historical dates.
 - Profile intentionally omits the old Appearance and Work Profile cards. Language, factory pay rules, and shift templates remain.
 - The Calendar day popup has separate Manual and Template modes. Manual mode lets the user choose Day/Night/Holiday/Off and enter times directly, while Template mode shows only shift-template names created in Profile. Selecting a template name fills that date's shift type, times, break, note, and rule status before saving. Both modes use the same hourly formula.
+- Salary Calculator no longer has a separate Meal Allowance input; factory-specific additions or deductions belong in Factory Pay Rules, preventing `식대` from being counted twice.
+- Pay Formula Settings start with Korea defaults (8 regular hours, OT 1.5×, night extra 0.5×, holiday 1.5×) and can be edited per browser/factory. Shift Templates determine whether a factory-specific shift, such as Saturday 17:30–01:30, is treated as Holiday / Weekend.
