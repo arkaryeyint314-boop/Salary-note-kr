@@ -122,7 +122,6 @@ const translations = {
     insurance_title: "Insurance",
     ot_pay: "OT Pay",
     night_pay: "Night Pay",
-    shift_rule_pay: "Shift Rule Pay",
 
     /* ---------- Profile ---------- */
 
@@ -187,7 +186,6 @@ const translations = {
 
     ot_pay: "연장 수당",
     night_pay: "야간 수당",
-    shift_rule_pay: "근무표 고정 수당",
 
     profile_title: "내 프로필",
     profile_subtitle: "한국 미얀마 근로자",
@@ -248,7 +246,6 @@ const translations = {
 
     ot_pay: "OT ကြေး",
     night_pay: "ညဆိုင်းကြေး",
-    shift_rule_pay: "ဆိုင်းသတ်မှတ် အပိုကြေး",
 
     profile_title: "ကျွန်ုပ် ပရိုဖိုင်",
     profile_subtitle: "ကိုရီးယားရောက် မြန်မာအလုပ်သမား",
@@ -469,10 +466,7 @@ function getMonthSummary(year = currentYear, month = currentMonth) {
     holidayHours: 0,
     hourlyOtHours: 0,
     hourlyNightHours: 0,
-    hourlyHolidayHours: 0,
-    fixedExtraPay: 0,
-    fixedConfirmedPay: 0,
-    fixedProvisionalPay: 0
+    hourlyHolidayHours: 0
   };
 
   getMonthShiftEntries(year, month).forEach(([, day]) => {
@@ -486,20 +480,9 @@ function getMonthSummary(year = currentYear, month = currentMonth) {
     summary.nightHours += Number(day.nightHours || 0);
     summary.holidayHours += Number(day.holidayHours || 0);
 
-    if (day.payMode === "fixed") {
-      const fixedAmount = Number(day.extraPay || 0);
-      summary.fixedExtraPay += fixedAmount;
-
-      if (day.ruleStatus === "confirmed") {
-        summary.fixedConfirmedPay += fixedAmount;
-      } else {
-        summary.fixedProvisionalPay += fixedAmount;
-      }
-    } else {
-      summary.hourlyOtHours += Number(day.otHours || 0);
-      summary.hourlyNightHours += Number(day.nightHours || 0);
-      summary.hourlyHolidayHours += Number(day.holidayHours || 0);
-    }
+    summary.hourlyOtHours += Number(day.otHours || 0);
+    summary.hourlyNightHours += Number(day.nightHours || 0);
+    summary.hourlyHolidayHours += Number(day.holidayHours || 0);
 
   });
 
@@ -1067,8 +1050,6 @@ const templateShiftPicker = document.getElementById("templateShiftPicker");
 let selectedDate = "";
 let selectedShift = "day";
 let selectedDayTemplateId = null;
-let selectedDayPayMode = "hourly";
-let selectedDayExtraPay = 0;
 let selectedDayRuleStatus = "provisional";
 let selectedDayEntryMode = "manual";
 
@@ -1082,8 +1063,6 @@ function setDayEntryMode(mode) {
 
   if (selectedDayEntryMode === "manual") {
     selectedDayTemplateId = null;
-    selectedDayPayMode = "hourly";
-    selectedDayExtraPay = 0;
     selectedDayRuleStatus = "provisional";
   }
 
@@ -1107,10 +1086,6 @@ function openDayPopup(dateKey) {
   selectedShift = saved.shift || "day";
   selectedDayTemplateId =
     saved.source === "template" ? saved.templateId || null : null;
-  selectedDayPayMode =
-    saved.source === "template" ? saved.payMode || "hourly" : "hourly";
-  selectedDayExtraPay =
-    saved.source === "template" ? Number(saved.extraPay) || 0 : 0;
   selectedDayRuleStatus =
     saved.ruleStatus === "confirmed" ? "confirmed" : "provisional";
 
@@ -1400,17 +1375,10 @@ saveDayBtn?.addEventListener("click", () => {
       selectedDayTemplateId
         ? shiftTemplates.find(item => item.id === selectedDayTemplateId)?.name
         : undefined,
-    payMode:
-      selectedDayTemplateId ? selectedDayPayMode : "hourly",
     ruleStatus:
       selectedDayTemplateId
         ? selectedDayRuleStatus
-        : "provisional",
-    extraPay:
-      selectedDayTemplateId &&
-      selectedDayPayMode === "fixed"
-        ? selectedDayExtraPay
-        : 0
+        : "provisional"
 
   };
 
@@ -1517,7 +1485,6 @@ const grossSalaryText = document.getElementById("grossSalary");
 const insuranceText = document.getElementById("insurance");
 const otPayText = document.getElementById("otPay");
 const nightPayText = document.getElementById("nightPay");
-const templatePayText = document.getElementById("templatePay");
 const netSalaryText = document.getElementById("netSalary");
 
 /* ==========================================================
@@ -1559,7 +1526,6 @@ function calculateSalary(saveHistory = false) {
   const otHours = monthSummary.hourlyOtHours;
   const nightHours = monthSummary.hourlyNightHours;
   const holidayHours = monthSummary.hourlyHolidayHours;
-  const fixedExtraPay = monthSummary.fixedExtraPay;
 
   // ===== Salary Formula =====
   const basicPay = wage * basicHours;
@@ -1576,7 +1542,6 @@ function calculateSalary(saveHistory = false) {
     otPay +
     nightPay +
     holidayPay +
-    fixedExtraPay +
     meal;
 
   // ===== Factory Rules (+ / -) =====
@@ -1603,22 +1568,6 @@ function calculateSalary(saveHistory = false) {
   nightPayText.textContent =
     `₩${Math.round(nightPay).toLocaleString()}`;
 
-  if (templatePayText) {
-    templatePayText.textContent =
-      `₩${Math.round(fixedExtraPay).toLocaleString()}`;
-  }
-
-  const templatePayStatus =
-    document.getElementById("templatePayStatus");
-  if (templatePayStatus) {
-    templatePayStatus.textContent =
-      `Confirmed ₩${Math.round(
-        monthSummary.fixedConfirmedPay
-      ).toLocaleString()} · Provisional ₩${Math.round(
-        monthSummary.fixedProvisionalPay
-      ).toLocaleString()}`;
-  }
-
   netSalaryText.textContent =
     `₩${Math.round(netSalary).toLocaleString()}`;
 
@@ -1637,7 +1586,6 @@ function calculateSalary(saveHistory = false) {
       otPay,
       nightPay,
       holidayPay,
-      fixedExtraPay,
       extraTotal,
       grossSalary,
       insurance,
@@ -2056,11 +2004,6 @@ const shiftTemplatePopup =
   document.getElementById("shiftTemplatePopup");
 const applyTemplatePopup =
   document.getElementById("applyTemplatePopup");
-const templatePayMode =
-  document.getElementById("templatePayMode");
-const templateFixedPayField =
-  document.getElementById("templateFixedPayField");
-
 function saveShiftTemplates() {
   localStorage.setItem(
     SHIFT_TEMPLATE_STORAGE_KEY,
@@ -2068,19 +2011,50 @@ function saveShiftTemplates() {
   );
 }
 
+function migrateFixedPayDataToHourly() {
+  let templatesChanged = false;
+  let calendarChanged = false;
+
+  shiftTemplates = shiftTemplates.map(template => {
+    if (
+      Object.prototype.hasOwnProperty.call(template, "payMode") ||
+      Object.prototype.hasOwnProperty.call(template, "extraPay")
+    ) {
+      templatesChanged = true;
+      const { payMode, extraPay, ...hourlyTemplate } = template;
+      return hourlyTemplate;
+    }
+    return template;
+  });
+
+  Object.keys(shiftData).forEach(dateKey => {
+    const entry = shiftData[dateKey];
+    if (
+      entry &&
+      typeof entry === "object" &&
+      (
+        Object.prototype.hasOwnProperty.call(entry, "payMode") ||
+        Object.prototype.hasOwnProperty.call(entry, "extraPay")
+      )
+    ) {
+      calendarChanged = true;
+      const { payMode, extraPay, ...hourlyEntry } = entry;
+      shiftData[dateKey] = hourlyEntry;
+    }
+  });
+
+  if (templatesChanged) saveShiftTemplates();
+  if (calendarChanged) saveShiftData();
+}
+
+migrateFixedPayDataToHourly();
+
 function escapeTemplateText(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-}
-
-function setFixedPayVisibility() {
-  templateFixedPayField?.classList.toggle(
-    "hidden",
-    templatePayMode?.value !== "fixed"
-  );
 }
 
 function setTemplateShiftFieldState() {
@@ -2092,9 +2066,7 @@ function setTemplateShiftFieldState() {
     "templateEnd",
     "templateBreakStart",
     "templateBreakMinutes",
-    "templatePayMode",
-    "templateRuleStatus",
-    "templateExtraPay"
+    "templateRuleStatus"
   ].forEach(id => {
     const input = document.getElementById(id);
     if (input) input.disabled = isOff;
@@ -2129,16 +2101,11 @@ function openShiftTemplateEditor(templateId = null) {
     template?.breakStart || "12:30";
   document.getElementById("templateBreakMinutes").value =
     template?.breakMinutes ?? 60;
-  document.getElementById("templatePayMode").value =
-    template?.payMode || "hourly";
   document.getElementById("templateRuleStatus").value =
     template?.ruleStatus === "confirmed" ? "confirmed" : "provisional";
-  document.getElementById("templateExtraPay").value =
-    template?.extraPay || "";
   document.getElementById("templateNote").value =
     template?.note || "";
 
-  setFixedPayVisibility();
   setTemplateShiftFieldState();
   shiftTemplatePopup?.classList.remove("hidden");
 }
@@ -2151,11 +2118,6 @@ function applyTemplateToOpenDay(templateId) {
   selectedDayTemplateId = template.id;
   selectedDayEntryMode = "template";
   selectedShift = template.shift || "day";
-  selectedDayPayMode = template.payMode || "hourly";
-  selectedDayExtraPay =
-    selectedDayPayMode === "fixed"
-      ? Number(template.extraPay) || 0
-      : 0;
   selectedDayRuleStatus =
     template.ruleStatus === "confirmed"
       ? "confirmed"
@@ -2224,10 +2186,6 @@ function renderShiftTemplates() {
         template.ruleStatus === "confirmed"
           ? "confirmed"
           : "provisional";
-      const payDescription =
-        template.payMode === "fixed"
-          ? `Fixed extra ₩${Number(template.extraPay || 0).toLocaleString()}`
-          : "Hourly formula";
 
       item.className = "shiftTemplateItem";
       item.innerHTML = `
@@ -2239,7 +2197,7 @@ function renderShiftTemplates() {
           <span>
             ${escapeTemplateText(template.start || "Off")}
             ${template.end ? `–${escapeTemplateText(template.end)}` : ""}
-            · ${escapeTemplateText(payDescription)}
+            · Hourly formula
           </span>
         </div>
         <div class="shiftTemplateActions">
@@ -2312,12 +2270,10 @@ function getTemplateCalendarEntry(dateKey, template) {
       source: "template",
       templateId: template.id,
       templateName: template.name,
-      payMode: "hourly",
       ruleStatus:
         template.ruleStatus === "confirmed"
           ? "confirmed"
-          : "provisional",
-      extraPay: 0
+          : "provisional"
     };
   }
 
@@ -2345,15 +2301,10 @@ function getTemplateCalendarEntry(dateKey, template) {
     source: "template",
     templateId: template.id,
     templateName: template.name,
-    payMode: template.payMode || "hourly",
     ruleStatus:
       template.ruleStatus === "confirmed"
         ? "confirmed"
-        : "provisional",
-    extraPay:
-      template.payMode === "fixed"
-        ? Number(template.extraPay) || 0
-        : 0
+        : "provisional"
   };
 }
 
@@ -2394,8 +2345,6 @@ document.getElementById("closeShiftTemplatePopup")
 document.getElementById("cancelShiftTemplateBtn")
 ?.addEventListener("click", closeShiftTemplateEditor);
 
-templatePayMode?.addEventListener("change", setFixedPayVisibility);
-
 document.getElementById("templateShiftType")
 ?.addEventListener("change", setTemplateShiftFieldState);
 
@@ -2409,11 +2358,6 @@ document.getElementById("saveShiftTemplateBtn")
     document.getElementById("templateStart").value;
   const end =
     document.getElementById("templateEnd").value;
-  const payMode =
-    document.getElementById("templatePayMode").value;
-  const extraPay =
-    Number(document.getElementById("templateExtraPay").value) || 0;
-
   if (!name) {
     alert("Please enter a template name.");
     return;
@@ -2421,11 +2365,6 @@ document.getElementById("saveShiftTemplateBtn")
 
   if (shift !== "off" && (!start || !end)) {
     alert("Please enter the shift start and end time.");
-    return;
-  }
-
-  if (payMode === "fixed" && extraPay <= 0) {
-    alert("Please enter the fixed extra pay amount.");
     return;
   }
 
@@ -2447,15 +2386,10 @@ document.getElementById("saveShiftTemplateBtn")
       shift === "off"
         ? 0
         : Number(document.getElementById("templateBreakMinutes").value) || 0,
-    payMode: shift === "off" ? "hourly" : payMode,
     ruleStatus:
       document.getElementById("templateRuleStatus").value === "confirmed"
         ? "confirmed"
         : "provisional",
-    extraPay:
-      shift !== "off" && payMode === "fixed"
-        ? extraPay
-        : 0,
     note: document.getElementById("templateNote").value.trim(),
     createdAt: previous?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -2678,7 +2612,6 @@ function saveSalaryHistorySnapshot(result) {
       otPay: result.otPay,
       nightPay: result.nightPay,
       holidayPay: result.holidayPay,
-      fixedExtraPay: result.fixedExtraPay,
       factoryRuleTotal: result.extraTotal,
       factoryRuleConfirmed: factoryRuleBreakdown.confirmed,
       factoryRuleProvisional: factoryRuleBreakdown.provisional,
@@ -2757,13 +2690,6 @@ function renderSalaryHistory() {
                 Number(breakdown.nightPay || 0) +
                 Number(breakdown.holidayPay || 0)
               ).toLocaleString()}
-            </strong>
-            <span>Shift rule pay</span>
-            <strong>
-              ₩${Math.round(Number(breakdown.fixedExtraPay || 0)).toLocaleString()}
-              (${escapeTemplateText(
-                `C ₩${Math.round(Number(summary.fixedConfirmedPay || 0)).toLocaleString()} · P ₩${Math.round(Number(summary.fixedProvisionalPay || 0)).toLocaleString()}`
-              )})
             </strong>
             <span>Factory adjustments</span>
             <strong>
