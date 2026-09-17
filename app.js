@@ -107,7 +107,6 @@ const translations = {
     calculator_title: "Salary Calculator",
     hourly_wage: "Hourly Wage (₩)",
     working_days: "Working Days",
-    meal_allowance: "Meal Allowance",
     working_hours: "Working Hours",
 
     basic_hours: "Basic Hours",
@@ -141,7 +140,6 @@ const translations = {
     company_name: "Company Name",
     hourly_wage_placeholder: "Hourly Wage",
     working_days_placeholder: "Working Days",
-    meal_allowance_placeholder: "Meal Allowance",
 
     visa_type: "Visa Type (E9 / F2 / D2)"
 
@@ -169,7 +167,6 @@ const translations = {
 
     hourly_wage: "시급 (₩)",
     working_days: "근무일수",
-    meal_allowance: "식대",
 
     working_hours: "근무 시간",
 
@@ -201,7 +198,6 @@ const translations = {
     company_name: "회사 이름",
     hourly_wage_placeholder: "시급 입력",
     working_days_placeholder: "근무일수 입력",
-    meal_allowance_placeholder: "식대 입력",
 
     visa_type: "비자 종류 (E9 / F2 / D2)"
 
@@ -229,7 +225,6 @@ const translations = {
 
     hourly_wage: "တစ်နာရီလုပ်ခ (₩)",
     working_days: "အလုပ်ဆင်းရက်",
-    meal_allowance: "ထမင်းစရိတ်",
 
     working_hours: "အလုပ်ချိန်",
 
@@ -261,7 +256,6 @@ const translations = {
     company_name: "ကုမ္ပဏီအမည်",
     hourly_wage_placeholder: "တစ်နာရီလုပ်ခ",
     working_days_placeholder: "အလုပ်ဆင်းရက်",
-    meal_allowance_placeholder: "ထမင်းစရိတ်",
 
     visa_type: "ဗီဇာအမျိုးအစား (E9 / F2 / D2)"
 
@@ -433,6 +427,41 @@ let shiftData =
     {},
     value => value && typeof value === "object" && !Array.isArray(value)
   );
+
+const PAY_FORMULA_STORAGE_KEY = "workpay_pay_formula_v1";
+const KOREA_PAY_FORMULA_DEFAULTS = Object.freeze({
+  regularHoursPerDay: 8,
+  otMultiplier: 1.5,
+  nightMultiplier: 0.5,
+  holidayMultiplier: 1.5
+});
+
+function normalizePayFormula(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const normalized = {};
+
+  Object.entries(KOREA_PAY_FORMULA_DEFAULTS).forEach(([key, fallback]) => {
+    const number = Number(source[key]);
+    normalized[key] = Number.isFinite(number) && number >= 0
+      ? number
+      : fallback;
+  });
+
+  if (normalized.regularHoursPerDay <= 0) {
+    normalized.regularHoursPerDay =
+      KOREA_PAY_FORMULA_DEFAULTS.regularHoursPerDay;
+  }
+
+  return normalized;
+}
+
+let payFormula = normalizePayFormula(
+  readStoredJson(
+    PAY_FORMULA_STORAGE_KEY,
+    KOREA_PAY_FORMULA_DEFAULTS,
+    value => value && typeof value === "object" && !Array.isArray(value)
+  )
+);
 
 // ===== Month Names =====
 const monthNames = [
@@ -1050,7 +1079,7 @@ const templateShiftPicker = document.getElementById("templateShiftPicker");
 let selectedDate = "";
 let selectedShift = "day";
 let selectedDayTemplateId = null;
-let selectedDayRuleStatus = "provisional";
+let selectedDayRuleStatus = "manual";
 let selectedDayEntryMode = "manual";
 
 function setDayEntryMode(mode) {
@@ -1063,7 +1092,7 @@ function setDayEntryMode(mode) {
 
   if (selectedDayEntryMode === "manual") {
     selectedDayTemplateId = null;
-    selectedDayRuleStatus = "provisional";
+    selectedDayRuleStatus = "manual";
   }
 
   shiftButtons.forEach(btn => {
@@ -1087,7 +1116,7 @@ function openDayPopup(dateKey) {
   selectedDayTemplateId =
     saved.source === "template" ? saved.templateId || null : null;
   selectedDayRuleStatus =
-    saved.ruleStatus === "confirmed" ? "confirmed" : "provisional";
+    saved.ruleStatus === "confirmed" ? "confirmed" : "manual";
 
   setDayEntryMode(selectedDayTemplateId ? "template" : "manual");
 
@@ -1283,12 +1312,77 @@ function calculateShiftMetrics(
 
   return {
     workedHours,
-    basicHours: Math.min(workedHours, 8),
-    otHours: Math.max(0, workedHours - 8),
+    basicHours: Math.min(workedHours, payFormula.regularHoursPerDay),
+    otHours: Math.max(0, workedHours - payFormula.regularHoursPerDay),
     nightHours: nightMinutes / 60,
-    holidayHours: Math.min(holidayMinutes / 60, 8)
+    holidayHours: Math.min(
+      holidayMinutes / 60,
+      payFormula.regularHoursPerDay
+    )
   };
 }
+
+function renderPayFormulaSettings() {
+  Object.keys(KOREA_PAY_FORMULA_DEFAULTS).forEach(key => {
+    const input = document.getElementById(key);
+    if (input) input.value = payFormula[key];
+  });
+}
+
+function recalculateSavedShiftMetrics() {
+  Object.entries(shiftData).forEach(([dateKey, entry]) => {
+    if (!entry || typeof entry !== "object") return;
+
+    const metrics = calculateShiftMetrics(
+      dateKey,
+      entry.shift,
+      entry.start,
+      entry.end,
+      entry.breakStart,
+      entry.breakMinutes
+    );
+
+    shiftData[dateKey] = {
+      ...entry,
+      basicHours: Number(metrics.basicHours.toFixed(2)),
+      otHours: Number(metrics.otHours.toFixed(2)),
+      nightHours: Number(metrics.nightHours.toFixed(2)),
+      holidayHours: Number(metrics.holidayHours.toFixed(2))
+    };
+  });
+
+  saveShiftData();
+  renderCalendar();
+  syncCalendarToCalculator();
+}
+
+function savePayFormulaSettings(nextFormula) {
+  payFormula = normalizePayFormula(nextFormula);
+  localStorage.setItem(
+    PAY_FORMULA_STORAGE_KEY,
+    JSON.stringify(payFormula)
+  );
+  renderPayFormulaSettings();
+  recalculateSavedShiftMetrics();
+  calculateSalary();
+}
+
+document.getElementById("savePayFormulaBtn")
+?.addEventListener("click", () => {
+  const nextFormula = {};
+  Object.keys(KOREA_PAY_FORMULA_DEFAULTS).forEach(key => {
+    nextFormula[key] = document.getElementById(key)?.value;
+  });
+  savePayFormulaSettings(nextFormula);
+  alert("Pay formula saved.");
+});
+
+document.getElementById("resetPayFormulaBtn")
+?.addEventListener("click", () => {
+  savePayFormulaSettings(KOREA_PAY_FORMULA_DEFAULTS);
+});
+
+renderPayFormulaSettings();
 
 // ===== Auto Calculate =====
 function calculateOTHours() {
@@ -1378,7 +1472,7 @@ saveDayBtn?.addEventListener("click", () => {
     ruleStatus:
       selectedDayTemplateId
         ? selectedDayRuleStatus
-        : "provisional"
+        : "manual"
 
   };
 
@@ -1478,7 +1572,6 @@ if (typeof updateHomeDashboard === "function") {
 
 // ===== Salary Inputs =====
 const hourlyWageInput = document.getElementById("hourlyWage");
-const mealAllowanceInput = document.getElementById("mealAllowance");
 
 // ===== Result Cards =====
 const grossSalaryText = document.getElementById("grossSalary");
@@ -1519,8 +1612,6 @@ function calculateSalary(saveHistory = false) {
 
   // ===== User Input =====
   const wage = Number(hourlyWageInput.value) || 0;
-  const meal = Number(mealAllowanceInput.value) || 0;
-
   const basicHours = Number(basicHoursInput.value) || 0;
   const monthSummary = getMonthSummary();
   const otHours = monthSummary.hourlyOtHours;
@@ -1530,19 +1621,17 @@ function calculateSalary(saveHistory = false) {
   // ===== Salary Formula =====
   const basicPay = wage * basicHours;
 
-  const otPay = wage * 1.5 * otHours;
+  const otPay = wage * payFormula.otMultiplier * otHours;
 
-  const nightPay = wage * 0.5 * nightHours;
+  const nightPay = wage * payFormula.nightMultiplier * nightHours;
 
-  const holidayPay = wage * 1.5 * holidayHours;
+  const holidayPay = wage * payFormula.holidayMultiplier * holidayHours;
 
-  // Meal Allowance
   let grossSalary =
     basicPay +
     otPay +
     nightPay +
-    holidayPay +
-    meal;
+    holidayPay;
 
   // ===== Factory Rules (+ / -) =====
   const extraTotal = getExtraPayTotal();
@@ -1581,7 +1670,6 @@ function calculateSalary(saveHistory = false) {
   if (saveHistory) {
     saveSalaryHistorySnapshot({
       wage,
-      meal,
       basicPay,
       otPay,
       nightPay,
@@ -1624,7 +1712,7 @@ function openFactoryRuleEditor(index = null) {
   document.getElementById("ruleType").value =
     rule?.type || "plus";
   document.getElementById("ruleStatus").value =
-    rule?.status === "confirmed" ? "confirmed" : "provisional";
+    rule?.status === "confirmed" ? "confirmed" : "manual";
   document.getElementById("ruleName").value =
     rule?.name || "";
   document.getElementById("ruleAmount").value =
@@ -1668,6 +1756,13 @@ let factoryRules =
     [],
     value => Array.isArray(value)
   );
+
+factoryRules = factoryRules.map(rule => {
+  return {
+    ...rule,
+    status: rule.status === "confirmed" ? "confirmed" : "manual"
+  };
+});
 
 // Save Rules
 function saveFactoryRules() {
@@ -1717,14 +1812,14 @@ function renderFactoryRules() {
     item.className = "ruleItem";
 
     const status =
-      rule.status === "confirmed" ? "confirmed" : "provisional";
+      rule.status === "confirmed" ? "confirmed" : "manual";
 
     item.innerHTML = `
       <div>
         <div class="${rule.type}">
           ${rule.type === "plus" ? "🟢 +" : "🔴 -"} ${rule.name}
           <span class="ruleStatusBadge ${status}">
-            ${status === "confirmed" ? "Confirmed" : "Provisional"}
+            ${status === "confirmed" ? "Confirmed" : "User Manual"}
           </span>
         </div>
 
@@ -1849,7 +1944,7 @@ function renderCalculatorRules() {
 
     const row = document.createElement("div");
     const status =
-      rule.status === "confirmed" ? "confirmed" : "provisional";
+      rule.status === "confirmed" ? "confirmed" : "manual";
 
     row.className = "payItemRow";
 
@@ -1862,7 +1957,7 @@ function renderCalculatorRules() {
         </span>
 
         <span class="ruleStatusBadge ${status}">
-          ${status === "confirmed" ? "Confirmed" : "Provisional"}
+          ${status === "confirmed" ? "Confirmed" : "User Manual"}
         </span>
 
       </div>
@@ -1915,17 +2010,17 @@ function updateExtraTotal() {
 
   const confirmedTotal =
     document.getElementById("confirmedRuleTotal");
-  const provisionalTotal =
-    document.getElementById("provisionalRuleTotal");
+  const manualTotal =
+    document.getElementById("manualRuleTotal");
 
   if (confirmedTotal) {
     confirmedTotal.textContent =
       `Confirmed ₩${breakdown.confirmed.toLocaleString()}`;
   }
 
-  if (provisionalTotal) {
-    provisionalTotal.textContent =
-      `Provisional ₩${breakdown.provisional.toLocaleString()}`;
+  if (manualTotal) {
+    manualTotal.textContent =
+      `User Manual ₩${breakdown.manual.toLocaleString()}`;
   }
 
   return breakdown.total;
@@ -1945,7 +2040,7 @@ function getFactoryRuleBreakdown() {
 
   const breakdown = {
     confirmed: 0,
-    provisional: 0,
+    manual: 0,
     total: 0
   };
 
@@ -1955,7 +2050,7 @@ function getFactoryRuleBreakdown() {
     const signedAmount =
       rule.type === "plus" ? amount : -amount;
     const status =
-      rule.status === "confirmed" ? "confirmed" : "provisional";
+      rule.status === "confirmed" ? "confirmed" : "manual";
 
     breakdown[status] += signedAmount;
     breakdown.total += signedAmount;
@@ -2016,30 +2111,41 @@ function migrateFixedPayDataToHourly() {
   let calendarChanged = false;
 
   shiftTemplates = shiftTemplates.map(template => {
+    const normalizedStatus =
+      template.ruleStatus === "confirmed" ? "confirmed" : "manual";
     if (
       Object.prototype.hasOwnProperty.call(template, "payMode") ||
-      Object.prototype.hasOwnProperty.call(template, "extraPay")
+      Object.prototype.hasOwnProperty.call(template, "extraPay") ||
+      template.ruleStatus !== normalizedStatus
     ) {
       templatesChanged = true;
       const { payMode, extraPay, ...hourlyTemplate } = template;
-      return hourlyTemplate;
+      return {
+        ...hourlyTemplate,
+        ruleStatus: normalizedStatus
+      };
     }
     return template;
   });
 
   Object.keys(shiftData).forEach(dateKey => {
     const entry = shiftData[dateKey];
-    if (
-      entry &&
-      typeof entry === "object" &&
-      (
+    if (entry && typeof entry === "object") {
+      const normalizedStatus =
+        entry.ruleStatus === "confirmed" ? "confirmed" : "manual";
+      const needsMigration =
         Object.prototype.hasOwnProperty.call(entry, "payMode") ||
-        Object.prototype.hasOwnProperty.call(entry, "extraPay")
-      )
-    ) {
+        Object.prototype.hasOwnProperty.call(entry, "extraPay") ||
+        entry.ruleStatus !== normalizedStatus;
+
+      if (!needsMigration) return;
+
       calendarChanged = true;
       const { payMode, extraPay, ...hourlyEntry } = entry;
-      shiftData[dateKey] = hourlyEntry;
+      shiftData[dateKey] = {
+        ...hourlyEntry,
+        ruleStatus: normalizedStatus
+      };
     }
   });
 
@@ -2065,8 +2171,7 @@ function setTemplateShiftFieldState() {
     "templateStart",
     "templateEnd",
     "templateBreakStart",
-    "templateBreakMinutes",
-    "templateRuleStatus"
+    "templateBreakMinutes"
   ].forEach(id => {
     const input = document.getElementById(id);
     if (input) input.disabled = isOff;
@@ -2102,7 +2207,7 @@ function openShiftTemplateEditor(templateId = null) {
   document.getElementById("templateBreakMinutes").value =
     template?.breakMinutes ?? 60;
   document.getElementById("templateRuleStatus").value =
-    template?.ruleStatus === "confirmed" ? "confirmed" : "provisional";
+    template?.ruleStatus === "confirmed" ? "confirmed" : "manual";
   document.getElementById("templateNote").value =
     template?.note || "";
 
@@ -2121,7 +2226,7 @@ function applyTemplateToOpenDay(templateId) {
   selectedDayRuleStatus =
     template.ruleStatus === "confirmed"
       ? "confirmed"
-      : "provisional";
+      : "manual";
 
   popupStart.value = template.start || "";
   popupEnd.value = template.end || "";
@@ -2185,14 +2290,14 @@ function renderShiftTemplates() {
       const ruleStatus =
         template.ruleStatus === "confirmed"
           ? "confirmed"
-          : "provisional";
+          : "manual";
 
       item.className = "shiftTemplateItem";
       item.innerHTML = `
         <div class="shiftTemplateInfo">
           <strong>${escapeTemplateText(template.name)}</strong>
           <span class="ruleStatusBadge ${ruleStatus}">
-            ${ruleStatus === "confirmed" ? "Confirmed" : "Provisional"}
+            ${ruleStatus === "confirmed" ? "Confirmed" : "User Manual"}
           </span>
           <span>
             ${escapeTemplateText(template.start || "Off")}
@@ -2273,7 +2378,7 @@ function getTemplateCalendarEntry(dateKey, template) {
       ruleStatus:
         template.ruleStatus === "confirmed"
           ? "confirmed"
-          : "provisional"
+          : "manual"
     };
   }
 
@@ -2304,7 +2409,7 @@ function getTemplateCalendarEntry(dateKey, template) {
     ruleStatus:
       template.ruleStatus === "confirmed"
         ? "confirmed"
-        : "provisional"
+        : "manual"
   };
 }
 
@@ -2399,7 +2504,7 @@ document.getElementById("saveShiftTemplateBtn")
     ruleStatus:
       document.getElementById("templateRuleStatus").value === "confirmed"
         ? "confirmed"
-        : "provisional",
+        : "manual",
     note: document.getElementById("templateNote").value.trim(),
     createdAt: previous?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -2705,13 +2810,13 @@ function saveSalaryHistorySnapshot(result) {
     getFactoryRuleBreakdown();
 
   const snapshot = {
-    version: 1,
+    version: 2,
     period,
     calculatedAt,
     inputs: {
-      hourlyWage: result.wage,
-      mealAllowance: result.meal
+      hourlyWage: result.wage
     },
+    payFormula: copySnapshotData(payFormula),
     monthSummary: copySnapshotData(result.monthSummary),
     factoryRules: copySnapshotData(factoryRules),
     entries,
@@ -2722,7 +2827,7 @@ function saveSalaryHistorySnapshot(result) {
       holidayPay: result.holidayPay,
       factoryRuleTotal: result.extraTotal,
       factoryRuleConfirmed: factoryRuleBreakdown.confirmed,
-      factoryRuleProvisional: factoryRuleBreakdown.provisional,
+      factoryRuleManual: factoryRuleBreakdown.manual,
       grossSalary: result.grossSalary,
       insurance: result.insurance,
       netSalary: result.netSalary
@@ -2801,8 +2906,12 @@ function renderSalaryHistory() {
             </strong>
             <span>Factory adjustments</span>
             <strong>
-              C ₩${Math.round(Number(breakdown.factoryRuleConfirmed || 0)).toLocaleString()}
-              · P ₩${Math.round(Number(breakdown.factoryRuleProvisional || 0)).toLocaleString()}
+              Confirmed ₩${Math.round(Number(breakdown.factoryRuleConfirmed || 0)).toLocaleString()}
+              · User Manual ₩${Math.round(Number(
+                breakdown.factoryRuleManual ??
+                breakdown.factoryRuleProvisional ??
+                0
+              )).toLocaleString()}
             </strong>
             <span>Gross / Insurance</span>
             <strong>
