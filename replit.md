@@ -51,10 +51,10 @@
 
 ## Implemented shift-template behavior
 
-- Shift templates are stored in `workpay_shift_templates` and can use either the standard hourly formula or a fixed amount explicitly defined as extra pay above basic hours.
+- Shift templates are stored in `workpay_shift_templates` and always use the standard hourly formula based on their saved times and factory rates. Fixed extra pay is intentionally not supported because it can duplicate OT, night, or holiday premiums.
 - Templates are applied by inclusive date range plus selected weekdays.
 - Existing calendar entries are preserved by default. Replacement requires an explicit checkbox and confirmation preview; unknown entry fields and an existing note are retained when the template has no note.
-- Applied entries copy template times, break rules, pay mode, and fixed amount into each date so later template edits do not retroactively change prior calendar months.
+- Applied entries copy template times and break rules into each date so later template edits do not retroactively change prior calendar months.
 - A manual day save intentionally detaches that date from its template and returns it to the standard hourly formula.
 - Night hours use the 22:00–06:00 window, support overnight and early-morning shifts, and subtract a break when its start time is known.
 - Overnight weekend/public-holiday attribution follows the actual calendar date of each worked segment. Holiday pay remains capped to the first eight hours for backward compatibility until the factory-specific holiday-OT policy is confirmed.
@@ -63,4 +63,4 @@
 - Users can edit a factory rule to promote it from provisional to confirmed after checking a payslip, contract, or factory explanation; an evidence/note field records the reason.
 - Calculator totals include both statuses but display confirmed and provisional subtotals separately. Applied calendar entries copy the status, so changing a template later does not retroactively relabel historical dates.
 - Profile intentionally omits the old Appearance and Work Profile cards. Language, factory pay rules, and shift templates remain.
-- The Calendar day popup has separate Manual and Template modes. Manual mode lets the user choose Day/Night/Holiday/Off and enter times directly, while Template mode shows only shift-template names created in Profile. Selecting a template name fills that date's shift type, times, break, note, pay mode, fixed amount, and rule status before saving.
+- The Calendar day popup has separate Manual and Template modes. Manual mode lets the user choose Day/Night/Holiday/Off and enter times directly, while Template mode shows only shift-template names created in Profile. Selecting a template name fills that date's shift type, times, break, note, and rule status before saving. Both modes use the same hourly formula.
