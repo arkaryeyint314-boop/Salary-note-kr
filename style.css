@@ -3066,19 +3066,42 @@ body:not(.light) .miniResult{
   margin-top:8px;
 }
 
-.weekdayPicker label{
-  display:flex;
-  align-items:center;
-  gap:5px;
+.weekdayBtn{
   padding:8px 6px;
   border:1px solid var(--line);
   border-radius:10px;
+  background:var(--card);
   color:var(--text);
   font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+.weekdayBtn.active{
+  border-color:var(--primary);
+  background:var(--primary);
+  color:#FFFFFF;
+}
+
+.weekdayQuickActions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:6px;
+}
+
+.weekdayQuickActions button{
+  padding:5px 9px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--card);
+  color:var(--sub);
+  font-size:11px;
+  font-weight:700;
   cursor:pointer;
 }
 
-.weekdayPicker input,
 .checkboxRow input{
   width:auto;
   margin:0;
