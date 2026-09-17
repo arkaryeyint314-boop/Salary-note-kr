@@ -350,31 +350,14 @@ function updateHomeDashboard() {
   homeWage.textContent =
     `₩${wage.toLocaleString()}`;
 
-  // Calendar Summary
-  let workDays = 0;
-  let otHours = 0;
-  let nightHours = 0;
-  let holidayHours = 0;
-
-  Object.values(shiftData).forEach(day => {
-
-    if (day.shift === "day") workDays++;
-    if (day.shift === "night") workDays++;
-    if (day.shift === "holiday") workDays++;
-
-    otHours += Number(day.otHours || 0);
-
-    nightHours += Number(day.nightHours || 0);
-
-    holidayHours += Number(day.holidayHours || 0);
-
-  });
+  // Calendar Summary — only the month currently being viewed
+  const summary = getMonthSummary();
 
   // Summary Cards
-  homeDays.textContent = workDays;
-  homeOT.textContent = otHours.toFixed(1);
-  homeNight.textContent = nightHours.toFixed(1);
-  homeHoliday.textContent = holidayHours.toFixed(1);
+  homeDays.textContent = summary.workDays;
+  homeOT.textContent = summary.otHours.toFixed(1);
+  homeNight.textContent = summary.nightHours.toFixed(1);
+  homeHoliday.textContent = summary.holidayHours.toFixed(1);
 
   // Take Home Salary
   const net =
@@ -439,6 +422,68 @@ const monthNames = [
   "January","February","March","April","May","June",
   "July","August","September","October","November","December"
 ];
+
+/* ==========================================================
+   PART 4.2.2 — Month-scoped Calendar Summary
+   Keep dashboard and calculator totals tied to the month
+   currently shown in the calendar.
+========================================================== */
+
+function getMonthShiftEntries(year = currentYear, month = currentMonth) {
+
+  const monthPrefix =
+    `${year}-${String(month + 1).padStart(2, "0")}-`;
+
+  return Object.entries(shiftData)
+    .filter(([dateKey]) => dateKey.startsWith(monthPrefix));
+
+}
+
+function getMonthSummary(year = currentYear, month = currentMonth) {
+
+  const summary = {
+    workDays: 0,
+    basicHours: 0,
+    otHours: 0,
+    nightHours: 0,
+    holidayHours: 0
+  };
+
+  getMonthShiftEntries(year, month).forEach(([, day]) => {
+
+    if (day.shift && day.shift !== "off") {
+      summary.workDays++;
+    }
+
+    summary.basicHours += Number(day.basicHours || 0);
+    summary.otHours += Number(day.otHours || 0);
+    summary.nightHours += Number(day.nightHours || 0);
+    summary.holidayHours += Number(day.holidayHours || 0);
+
+  });
+
+  return summary;
+
+}
+
+function renderCalendarSummary() {
+
+  const summary = getMonthSummary();
+
+  const workDays = document.getElementById("summaryWorkDays");
+  const basicHours = document.getElementById("summaryBasicHours");
+  const otHours = document.getElementById("summaryOtHours");
+  const premiumHours = document.getElementById("summaryPremiumHours");
+
+  if (workDays) workDays.textContent = summary.workDays;
+  if (basicHours) basicHours.textContent = summary.basicHours.toFixed(1);
+  if (otHours) otHours.textContent = summary.otHours.toFixed(1);
+  if (premiumHours) {
+    premiumHours.textContent =
+      `${summary.nightHours.toFixed(1)} / ${summary.holidayHours.toFixed(1)}`;
+  }
+
+}
 
 /* ==========================================================
    PART 4.2.1 — Korea Public Holiday Database (2025–2035)
@@ -880,6 +925,8 @@ function renderCalendar() {
 
     calendarGrid.appendChild(cell);
   }
+
+  renderCalendarSummary();
 }
 
 /* ==========================================================
@@ -897,6 +944,7 @@ prevMonth?.addEventListener("click", () => {
   }
 
   renderCalendar();
+  syncCalendarToCalculator();
 
 });
 
@@ -911,6 +959,7 @@ nextMonth?.addEventListener("click", () => {
   }
 
   renderCalendar();
+  syncCalendarToCalculator();
 
 });
 
@@ -923,6 +972,7 @@ todayBtn?.addEventListener("click", () => {
   currentYear = now.getFullYear();
 
   renderCalendar();
+  syncCalendarToCalculator();
 
 });
 
@@ -933,6 +983,7 @@ jumpBtn?.addEventListener("click", () => {
   currentYear = Number(jumpYear.value);
 
   renderCalendar();
+  syncCalendarToCalculator();
 
 });
 
@@ -1057,8 +1108,8 @@ shiftButtons.forEach(btn => {
     // Save selected shift only
     selectedShift = btn.dataset.shift;
 
-    // Manual Mode
-    // Time / Break / OT / Note ကို မပြောင်းဘူး။
+    // Recalculate holiday hours immediately when the shift type changes.
+    calculateOTHours();
 
   });
 
@@ -1114,9 +1165,12 @@ function calculateOTHours() {
   const date = new Date(selectedDate + "T00:00:00");
   const isSaturday = date.getDay() === 6;
 
+  const selectedDateYear =
+    new Date(selectedDate + "T00:00:00").getFullYear();
+
   const isPublicHoliday =
-    koreaHolidays[currentYear] &&
-    koreaHolidays[currentYear][selectedDate];
+    koreaHolidays[selectedDateYear] &&
+    koreaHolidays[selectedDateYear][selectedDate];
 
   let holidayValue = 0;
 
@@ -1257,32 +1311,14 @@ const holidayHoursInput = document.getElementById("holidayHours");
 
 function syncCalendarToCalculator() {
 
-  let workingDays = 0;
+  const summary = getMonthSummary();
 
-  let basicHours = 0;
-  let otHours = 0;
-  let nightHours = 0;
-  let holidayHours = 0;
+  workingDaysInput.value = summary.workDays;
 
-  Object.values(shiftData).forEach(day => {
-
-    if (day.shift !== "off") {
-      workingDays++;
-    }
-
-    basicHours += Number(day.basicHours || 0);
-    otHours += Number(day.otHours || 0);
-    nightHours += Number(day.nightHours || 0);
-    holidayHours += Number(day.holidayHours || 0);
-
-  });
-
-  workingDaysInput.value = workingDays;
-
-  basicHoursInput.value = basicHours.toFixed(1);
-  otHoursInput.value = otHours.toFixed(1);
-  nightHoursInput.value = nightHours.toFixed(1);
-  holidayHoursInput.value = holidayHours.toFixed(1);
+  basicHoursInput.value = summary.basicHours.toFixed(1);
+  otHoursInput.value = summary.otHours.toFixed(1);
+  nightHoursInput.value = summary.nightHours.toFixed(1);
+  holidayHoursInput.value = summary.holidayHours.toFixed(1);
 
   if (typeof updateHomeDashboard === "function") {
     updateHomeDashboard();
