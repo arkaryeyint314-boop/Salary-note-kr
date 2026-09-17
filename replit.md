@@ -62,3 +62,5 @@
 - Factory pay rules and shift-template pay rules carry a `confirmed` or `provisional` status. Missing legacy statuses default to provisional so old inferred values are never silently presented as confirmed.
 - Users can edit a factory rule to promote it from provisional to confirmed after checking a payslip, contract, or factory explanation; an evidence/note field records the reason.
 - Calculator totals include both statuses but display confirmed and provisional subtotals separately. Applied calendar entries copy the status, so changing a template later does not retroactively relabel historical dates.
+- Profile intentionally omits the old Appearance and Work Profile cards. Language, factory pay rules, and shift templates remain.
+- The Calendar day popup shows only the shift-template names created in Profile instead of generic Day/Night/Holiday/Off buttons. Selecting a name fills that date's shift type, times, break, note, pay mode, fixed amount, and rule status before saving.
