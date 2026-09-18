@@ -47,7 +47,7 @@
 - The app is for the user and other foreign workers in Korea to record shifts, calculate expected pay, compare payslips, and identify unexplained differences.
 - Other factories must be able to create or select their own factory rule template instead of inheriting this factory's rates.
 - A factory template should eventually store shift names, start/end times, break rules, weekday/weekend/holiday status, night window, overtime threshold, premium rates, and payroll-label adjustments.
-- Confirmed factory data and User Manual data must be shown separately. Do not present a user-entered factory rule as a legal conclusion.
+- Verified-by-contract data and User Manual data must be shown separately. “Verified by contract” means supported by the user's contract or payroll evidence; it is not a legal-compliance determination.
 
 ## Implemented shift-template behavior
 
@@ -60,12 +60,13 @@
 - Night hours use the 22:00–06:00 window, support overnight and early-morning shifts, and subtract a break when its start time is known.
 - Overnight weekend/public-holiday attribution follows the shift's start date. A Friday night shift ending Saturday morning remains Friday work and gets no automatic Saturday holiday hours. A shift starting Saturday/public holiday, or explicitly saved with Holiday / Weekend type, is holiday work. Holiday pay remains capped to the configured regular-hours-per-day limit until the factory-specific holiday-OT policy is confirmed.
 - Explicit Salary Calculator runs save one versioned snapshot per month in `workpay_salary_history_v1`, including wage inputs, copied rules, copied calendar entries, summary, and salary breakdown.
-- Factory pay rules and shift-template pay data carry a `confirmed` or `manual` source. Legacy `provisional` and missing statuses migrate to User Manual so old values are never silently presented as confirmed.
-- Users can promote User Manual data to Confirmed after checking a payslip, contract, or factory explanation; the note field records context.
-- Calculator totals include both sources but display Confirmed and User Manual subtotals separately. Applied calendar entries copy the source, so changing a template later does not retroactively relabel historical dates.
+- Factory pay rules and shift-template pay data carry an internal `confirmed` or `manual` source. The UI labels these “Verified by contract” and “User Manual”; legacy `provisional` and missing statuses migrate to User Manual.
+- Users can promote User Manual data to Verified by contract after checking a contract or payroll evidence; the note field records context. This label does not itself certify legal compliance.
+- Calculator totals include both sources and display Verified by contract and User Manual subtotals separately. Applied calendar entries copy the source, so changing a template later does not retroactively relabel historical dates.
 - Profile intentionally omits the old Appearance and Work Profile cards. Language, factory pay rules, and shift templates remain.
 - The Calendar day popup has separate Manual and Template modes. Manual mode lets the user choose Day/Night/Holiday/Off and enter times directly, while Template mode shows only shift-template names created in Profile. Selecting a template name fills that date's shift type, times, break, note, and rule status before saving. Both modes use the same hourly formula.
 - Salary Calculator no longer has a separate Meal Allowance input; factory-specific additions or deductions belong in Factory Pay Rules, preventing `식대` from being counted twice.
 - Pay Formula Settings start with Korea defaults (8 regular hours, OT 1.5×, night extra 0.5×, holiday 1.5×) and can be edited per browser/factory. Shift Templates determine whether a factory-specific shift, such as Saturday 17:30–01:30, is treated as Holiday / Weekend.
+- Pay Formula Settings have separate Verified by contract and User Manual profiles. A Shift Template's Pay Data Source selects which profile calculates its saved calendar entries and its OT, night, and holiday premiums. Existing single-profile settings migrate to User Manual so custom factory values are preserved.
 - Salary Calculator accepts an optional Contract Monthly Basic Salary and saves it locally. When present, gross salary uses that fixed monthly amount as Basic Pay instead of `calendar basic hours × hourly wage`; hourly wage and calendar hours remain the basis for OT, night, and holiday premiums. When absent, the prior hourly-calendar calculation remains as a fallback for hourly workers.
 - The Calculation Breakdown below Calculate Salary shows the active method and each amount used in Gross Total. Monthly Contract mode shows Contract Monthly Basic Salary and hides Basic Hours Pay; hourly-calendar mode does the opposite. OT, night, holiday, and any non-zero factory adjustment remain visible with their hours/rates and amounts.
