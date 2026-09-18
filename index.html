@@ -459,7 +459,7 @@
         <h3 id="extraTotal">₩0</h3>
 
         <div class="ruleStatusTotals">
-          <span id="confirmedRuleTotal">Confirmed ₩0</span>
+          <span id="confirmedRuleTotal">Verified by contract ₩0</span>
           <span id="manualRuleTotal">User Manual ₩0</span>
         </div>
 
@@ -754,6 +754,16 @@
       </div>
 
       <div class="formulaSettingsGrid">
+        <div class="formulaSourceField">
+          <label for="payFormulaSource">Formula Source</label>
+          <select id="payFormulaSource">
+            <option value="manual">✍️ User Manual</option>
+            <option value="confirmed">✅ Verified by contract</option>
+          </select>
+          <small class="formulaSourceHint">
+            Shift Templates use the formula matching their Pay Data Source.
+          </small>
+        </div>
         <div>
           <label for="regularHoursPerDay">Regular hours per day</label>
           <input id="regularHoursPerDay" type="number" min="1" max="24" step="0.5">
@@ -866,7 +876,7 @@
           <div class="popup-field">
             <label for="templateRuleStatus">Pay Data Source</label>
             <select id="templateRuleStatus">
-              <option value="confirmed">✅ Confirmed by factory / payslip</option>
+              <option value="confirmed">✅ Verified by contract</option>
               <option value="manual">✍️ User Manual</option>
             </select>
           </div>
@@ -1000,7 +1010,7 @@
         <label>Pay Data Source</label>
 
         <select id="ruleStatus">
-          <option value="confirmed">✅ Confirmed by factory / payslip</option>
+          <option value="confirmed">✅ Verified by contract</option>
           <option value="manual">✍️ User Manual</option>
         </select>
 
