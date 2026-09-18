@@ -118,6 +118,19 @@ const translations = {
     holiday_hours: "Holiday Hours",
 
     calculate_salary: "Calculate Salary",
+    calculation_breakdown: "Calculation Breakdown",
+    calculation_method: "Method",
+    method_contract: "Monthly Contract",
+    method_hourly: "Calendar Basic Hours",
+    contract_basic_pay: "Contract Monthly Basic Salary",
+    fixed_monthly_amount: "Fixed monthly amount",
+    basic_hours_pay: "Basic Hours Pay",
+    ot_hours_pay: "OT Hours Pay",
+    night_hours_pay: "Night Hours Pay",
+    holiday_hours_pay: "Holiday Hours Pay",
+    factory_adjustments: "Factory Adjustments",
+    extra_pay_deduction: "Extra pay / deduction",
+    gross_total: "Gross Total",
 
     take_home_salary: "Take Home Salary",
     gross_salary: "Gross Salary",
@@ -183,6 +196,19 @@ const translations = {
     holiday_hours: "휴일 시간",
 
     calculate_salary: "급여 계산",
+    calculation_breakdown: "급여 계산 내역",
+    calculation_method: "계산 방식",
+    method_contract: "월급 계약 기준",
+    method_hourly: "달력 기본시간 기준",
+    contract_basic_pay: "계약 월 기본급",
+    fixed_monthly_amount: "고정 월 기본급",
+    basic_hours_pay: "기본시간 급여",
+    ot_hours_pay: "연장근로수당",
+    night_hours_pay: "야간근로수당",
+    holiday_hours_pay: "휴일근로수당",
+    factory_adjustments: "회사 추가·공제",
+    extra_pay_deduction: "추가 지급 / 공제",
+    gross_total: "총 지급액",
 
     take_home_salary: "실수령액",
     gross_salary: "총 급여",
@@ -245,6 +271,19 @@ const translations = {
     holiday_hours: "အနီရက်နာရီ",
 
     calculate_salary: "လစာတွက်မယ်",
+    calculation_breakdown: "လစာတွက်ချက်မှုအသေးစိတ်",
+    calculation_method: "တွက်ချက်သည့်နည်းလမ်း",
+    method_contract: "လစဉ်စာချုပ်လစာနည်း",
+    method_hourly: "Calendar ပုံမှန်နာရီနည်း",
+    contract_basic_pay: "စာချုပ်ပါ လစဉ်အခြေခံလစာ",
+    fixed_monthly_amount: "သတ်မှတ်ထားသော လစဉ်ပမာဏ",
+    basic_hours_pay: "ပုံမှန်နာရီကြေး",
+    ot_hours_pay: "OT နာရီကြေး",
+    night_hours_pay: "ညအလုပ်နာရီကြေး",
+    holiday_hours_pay: "အနီရက်နာရီကြေး",
+    factory_adjustments: "စက်ရုံအပိုကြေး / ဖြတ်တောက်ငွေ",
+    extra_pay_deduction: "အပိုပေးငွေ / ဖြတ်တောက်ငွေ",
+    gross_total: "စုစုပေါင်းလစာ",
 
     take_home_salary: "ရရှိမည့်လစာ",
     gross_salary: "စုစုပေါင်းလစာ",
@@ -1661,6 +1700,21 @@ function calculateSalary(saveHistory = false) {
 
   grossSalary += extraTotal;
 
+  renderCalculationBreakdown({
+    wage,
+    contractBasicSalary,
+    basicHours,
+    basicPay,
+    otHours,
+    otPay,
+    nightHours,
+    nightPay,
+    holidayHours,
+    holidayPay,
+    extraTotal,
+    grossSalary
+  });
+
   // ===== Insurance =====
   const insurance = calculateInsurance(grossSalary);
 
@@ -1710,6 +1764,56 @@ function calculateSalary(saveHistory = false) {
 
 }
 // ===== End calculateSalary()
+
+function formatWon(value) {
+  const rounded = Math.round(Number(value) || 0);
+  const sign = rounded < 0 ? "-" : "";
+  return `${sign}₩${Math.abs(rounded).toLocaleString()}`;
+}
+
+function renderCalculationBreakdown(result) {
+  const container = document.getElementById("calculationBreakdown");
+  if (!container) return;
+
+  const usesContract = result.contractBasicSalary > 0;
+  container.classList.remove("hidden");
+  document.getElementById("contractMethodLabel")
+    ?.classList.toggle("hidden", !usesContract);
+  document.getElementById("hourlyMethodLabel")
+    ?.classList.toggle("hidden", usesContract);
+  document.getElementById("contractBasicBreakdownRow")
+    ?.classList.toggle("hidden", !usesContract);
+  document.getElementById("hourlyBasicBreakdownRow")
+    ?.classList.toggle("hidden", usesContract);
+
+  document.getElementById("contractBasicBreakdownAmount").textContent =
+    formatWon(result.basicPay);
+  document.getElementById("basicBreakdownFormula").textContent =
+    `${Number(result.basicHours).toFixed(1)} hr × ${formatWon(result.wage)}`;
+  document.getElementById("basicBreakdownAmount").textContent =
+    formatWon(result.basicPay);
+
+  document.getElementById("otBreakdownFormula").textContent =
+    `${Number(result.otHours).toFixed(1)} hr × ${payFormula.otMultiplier}×`;
+  document.getElementById("otBreakdownAmount").textContent =
+    formatWon(result.otPay);
+  document.getElementById("nightBreakdownFormula").textContent =
+    `${Number(result.nightHours).toFixed(1)} hr × ${payFormula.nightMultiplier}×`;
+  document.getElementById("nightBreakdownAmount").textContent =
+    formatWon(result.nightPay);
+  document.getElementById("holidayBreakdownFormula").textContent =
+    `${Number(result.holidayHours).toFixed(1)} hr × ${payFormula.holidayMultiplier}×`;
+  document.getElementById("holidayBreakdownAmount").textContent =
+    formatWon(result.holidayPay);
+
+  const adjustmentRow =
+    document.getElementById("factoryAdjustmentBreakdownRow");
+  adjustmentRow?.classList.toggle("hidden", result.extraTotal === 0);
+  document.getElementById("factoryAdjustmentBreakdownAmount").textContent =
+    formatWon(result.extraTotal);
+  document.getElementById("breakdownGrossTotal").textContent =
+    formatWon(result.grossSalary);
+}
 
 /* ==========================================================
    PART 8 — FACTORY PAY RULES
