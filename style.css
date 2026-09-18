@@ -3242,6 +3242,14 @@ body:not(.light) .miniResult{
   margin-top:14px;
 }
 
+.inputHint{
+  display:block;
+  margin:-4px 0 12px;
+  color:var(--sub);
+  font-size:11px;
+  line-height:1.45;
+}
+
 .formulaSettingsGrid label{
   display:block;
   margin-bottom:6px;
