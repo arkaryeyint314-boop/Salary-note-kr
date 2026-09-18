@@ -1998,7 +1998,7 @@ function calculateSalary(saveHistory = false) {
 
   // ===== Extra Total Card =====
   document.getElementById("extraTotal").textContent =
-    `₩${extraTotal.toLocaleString()}`;
+    formatWon(extraTotal);
 
   // ===== Home Dashboard =====
   updateHomeDashboard();
@@ -2342,7 +2342,10 @@ function renderCalculatorRules() {
   const container =
     document.getElementById("payItemList");
 
-  if (!container) return;
+  if (!container) {
+    updateExtraTotal();
+    return;
+  }
 
   container.innerHTML = "";
 
@@ -2423,12 +2426,12 @@ function updateExtraTotal() {
 
   if (confirmedTotal) {
     confirmedTotal.textContent =
-      `Verified by contract ₩${breakdown.confirmed.toLocaleString()}`;
+      formatWon(breakdown.confirmed);
   }
 
   if (manualTotal) {
     manualTotal.textContent =
-      `User Manual ₩${breakdown.manual.toLocaleString()}`;
+      formatWon(breakdown.manual);
   }
 
   return breakdown.total;
