@@ -89,6 +89,7 @@ const translations = {
     tab_home: "Home",
     tab_calendar: "Calendar",
     tab_calculator: "Calculator",
+    tab_payslip: "Payslip",
     tab_history: "History",
     tab_profile: "Profile",
 
@@ -131,6 +132,14 @@ const translations = {
     factory_adjustments: "Factory Adjustments",
     extra_pay_deduction: "Extra pay / deduction",
     gross_total: "Gross Total",
+
+    payslip_title: "Payslip Check",
+    payslip_hint: "Compare a saved Calculator result with your factory payslip.",
+    calculator_snapshot: "Calculator snapshot",
+    no_calculator_snapshot: "No saved calculator snapshot",
+    actual_payslip: "Factory Payslip",
+    compare_payslip: "Compare Payslip",
+    comparison_result: "Comparison Result",
 
     take_home_salary: "Take Home Salary",
     gross_salary: "Gross Salary",
@@ -175,6 +184,7 @@ const translations = {
     tab_home: "홈",
     tab_calendar: "달력",
     tab_calculator: "계산기",
+    tab_payslip: "급여명세서",
     tab_history: "기록",
     tab_profile: "프로필",
 
@@ -217,6 +227,14 @@ const translations = {
     extra_pay_deduction: "추가 지급 / 공제",
     gross_total: "총 지급액",
 
+    payslip_title: "급여명세서 확인",
+    payslip_hint: "저장된 계산기 결과와 공장 급여명세서를 비교합니다.",
+    calculator_snapshot: "계산기 저장 기록",
+    no_calculator_snapshot: "저장된 계산기 기록 없음",
+    actual_payslip: "공장 급여명세서",
+    compare_payslip: "급여명세서 비교",
+    comparison_result: "비교 결과",
+
     take_home_salary: "실수령액",
     gross_salary: "총 급여",
     insurance_title: "4대 보험",
@@ -257,6 +275,7 @@ const translations = {
     tab_home: "ပင်မ",
     tab_calendar: "ပြက္ခဒိန်",
     tab_calculator: "တွက်စက်",
+    tab_payslip: "လစာစာရွက်",
     tab_history: "မှတ်တမ်း",
     tab_profile: "ပရိုဖိုင်",
 
@@ -298,6 +317,14 @@ const translations = {
     factory_adjustments: "စက်ရုံအပိုကြေး / ဖြတ်တောက်ငွေ",
     extra_pay_deduction: "အပိုပေးငွေ / ဖြတ်တောက်ငွေ",
     gross_total: "စုစုပေါင်းလစာ",
+
+    payslip_title: "လစာစာရွက် စစ်ဆေးမယ်",
+    payslip_hint: "သိမ်းထားသော Calculator ရလဒ်နှင့် စက်ရုံလစာစာရွက်ကို နှိုင်းယှဉ်ပါ။",
+    calculator_snapshot: "Calculator မှတ်တမ်း",
+    no_calculator_snapshot: "သိမ်းထားသော Calculator မှတ်တမ်းမရှိပါ",
+    actual_payslip: "စက်ရုံ လစာစာရွက်",
+    compare_payslip: "လစာစာရွက် နှိုင်းယှဉ်မယ်",
+    comparison_result: "နှိုင်းယှဉ်ရလဒ်",
 
     take_home_salary: "ရရှိမည့်လစာ",
     gross_salary: "စုစုပေါင်းလစာ",
@@ -3280,6 +3307,7 @@ function saveSalaryHistorySnapshot(result) {
   );
 
   renderSalaryHistory();
+  renderPayslipSnapshots();
 }
 
 function renderSalaryHistory() {
@@ -3353,9 +3381,260 @@ function renderSalaryHistory() {
 }
 
 /* ==========================================================
+   PART 9.6 — PAYSLIP CHECKING
+   Compare a saved Calculator snapshot with factory payslip data.
+========================================================== */
+
+const PAYSLIP_CHECKS_STORAGE_KEY = "workpay_payslip_checks_v1";
+
+let payslipChecks =
+  readStoredJson(
+    PAYSLIP_CHECKS_STORAGE_KEY,
+    [],
+    value => Array.isArray(value)
+  );
+
+const PAYSLIP_COMPARE_FIELDS = [
+  { key: "basicPay", label: "Basic salary", inputId: "payslipActualBasic" },
+  { key: "otPay", label: "OT pay", inputId: "payslipActualOt" },
+  { key: "nightPay", label: "Night pay", inputId: "payslipActualNight" },
+  { key: "holidayPay", label: "Holiday pay", inputId: "payslipActualHoliday" },
+  {
+    key: "factoryRuleTotal",
+    label: "Factory adjustment",
+    inputId: "payslipActualFactory"
+  },
+  { key: "grossSalary", label: "Gross salary", inputId: "payslipActualGross" },
+  { key: "insurance", label: "Insurance", inputId: "payslipActualInsurance" },
+  { key: "netSalary", label: "Net salary", inputId: "payslipActualNet" }
+];
+
+function getSelectedPayslipSnapshot() {
+  const period = document.getElementById("payslipSnapshotSelect")?.value;
+  return salaryHistory.find(snapshot => snapshot.period === period) || null;
+}
+
+function getPayslipCheckForPeriod(period) {
+  return payslipChecks.find(check => check.period === period) || null;
+}
+
+function clearPayslipInputs() {
+  PAYSLIP_COMPARE_FIELDS.forEach(field => {
+    const input = document.getElementById(field.inputId);
+    if (input) input.value = "";
+  });
+
+  const note = document.getElementById("payslipNote");
+  if (note) note.value = "";
+}
+
+function fillPayslipInputs(check) {
+  clearPayslipInputs();
+  if (!check) return;
+
+  PAYSLIP_COMPARE_FIELDS.forEach(field => {
+    const input = document.getElementById(field.inputId);
+    const value = check.actual?.[field.key];
+    if (input && value !== null && value !== undefined) {
+      input.value = value;
+    }
+  });
+
+  const note = document.getElementById("payslipNote");
+  if (note) note.value = check.note || "";
+}
+
+function renderPayslipExpectedSummary() {
+  const summary = document.getElementById("payslipExpectedSummary");
+  if (!summary) return;
+
+  const snapshot = getSelectedPayslipSnapshot();
+  if (!snapshot) {
+    summary.textContent = "Save a Calculator result first.";
+    return;
+  }
+
+  const breakdown = snapshot.breakdown || {};
+  summary.innerHTML = `
+    <strong>${escapeTemplateText(snapshot.period)} Calculator result</strong>
+    <span>Gross ${formatWon(breakdown.grossSalary)}</span>
+    <span>Net ${formatWon(breakdown.netSalary)}</span>
+  `;
+}
+
+function renderPayslipSnapshots() {
+  const select = document.getElementById("payslipSnapshotSelect");
+  if (!select) return;
+
+  const previousPeriod = select.value;
+  select.innerHTML = "";
+
+  if (salaryHistory.length === 0) {
+    select.innerHTML = `
+      <option value="">No saved calculator snapshot</option>
+    `;
+    clearPayslipInputs();
+    renderPayslipExpectedSummary();
+    return;
+  }
+
+  salaryHistory.forEach(snapshot => {
+    const option = document.createElement("option");
+    option.value = snapshot.period;
+    option.textContent =
+      `${snapshot.period} · ${formatWon(snapshot.breakdown?.netSalary)}`;
+    select.appendChild(option);
+  });
+
+  select.value = salaryHistory.some(snapshot =>
+    snapshot.period === previousPeriod
+  )
+    ? previousPeriod
+    : salaryHistory[0].period;
+
+  renderPayslipExpectedSummary();
+  fillPayslipInputs(getPayslipCheckForPeriod(select.value));
+}
+
+function readPayslipActualValues() {
+  const actual = {};
+  let enteredCount = 0;
+
+  PAYSLIP_COMPARE_FIELDS.forEach(field => {
+    const raw = document.getElementById(field.inputId)?.value.trim() || "";
+    if (!raw) return;
+
+    const value = Number(raw);
+    if (!Number.isFinite(value)) return;
+
+    actual[field.key] = value;
+    enteredCount++;
+  });
+
+  return { actual, enteredCount };
+}
+
+function savePayslipCheck(period, expected, actual, note) {
+  const check = {
+    version: 1,
+    period,
+    comparedAt: new Date().toISOString(),
+    expected: copySnapshotData(expected),
+    actual: copySnapshotData(actual),
+    note
+  };
+
+  const existingIndex = payslipChecks.findIndex(item =>
+    item.period === period
+  );
+
+  if (existingIndex >= 0) {
+    payslipChecks[existingIndex] = check;
+  } else {
+    payslipChecks.push(check);
+  }
+
+  localStorage.setItem(
+    PAYSLIP_CHECKS_STORAGE_KEY,
+    JSON.stringify(payslipChecks)
+  );
+}
+
+function renderPayslipComparison(snapshot, actual) {
+  const result = document.getElementById("payslipCompareResult");
+  const summary = document.getElementById("payslipComparisonSummary");
+  const rows = document.getElementById("payslipComparisonRows");
+  if (!result || !summary || !rows) return;
+
+  const expected = snapshot.breakdown || {};
+  const fields = PAYSLIP_COMPARE_FIELDS.filter(field =>
+    Object.prototype.hasOwnProperty.call(actual, field.key)
+  );
+
+  const comparedRows = fields.map(field => {
+    const expectedValue = Number(expected[field.key] || 0);
+    const actualValue = Number(actual[field.key] || 0);
+    const difference = actualValue - expectedValue;
+    const matches = Math.abs(difference) <= 1000;
+    const differenceClass = matches
+      ? "compareMatch"
+      : difference > 0
+        ? "comparePositive"
+        : "compareNegative";
+
+    return {
+      matches,
+      html: `
+        <div class="payslipComparisonRow">
+          <span>${field.label}</span>
+          <strong>${formatWon(expectedValue)}</strong>
+          <strong>${formatWon(actualValue)}</strong>
+          <strong class="${differenceClass}">
+            ${formatWon(difference)}
+          </strong>
+        </div>
+      `
+    };
+  });
+
+  const matchedCount = comparedRows.filter(row => row.matches).length;
+  summary.innerHTML = `
+    <strong>${escapeTemplateText(snapshot.period)}</strong>
+    <span>${matchedCount} of ${comparedRows.length} items within ₩1,000</span>
+  `;
+
+  rows.innerHTML = `
+    <div class="payslipComparisonRow payslipComparisonHeader">
+      <span>Item</span>
+      <strong>Expected</strong>
+      <strong>Actual</strong>
+      <strong>Difference</strong>
+    </div>
+    ${comparedRows.map(row => row.html).join("")}
+  `;
+
+  result.classList.remove("hidden");
+}
+
+/* ==========================================================
    PART 10 — APP INITIALIZE
    Load Everything When App Starts
 ========================================================== */
+
+document.getElementById("payslipSnapshotSelect")
+  ?.addEventListener("change", () => {
+    const select = document.getElementById("payslipSnapshotSelect");
+    renderPayslipExpectedSummary();
+    fillPayslipInputs(getPayslipCheckForPeriod(select?.value));
+    document.getElementById("payslipCompareResult")
+      ?.classList.add("hidden");
+  });
+
+document.getElementById("comparePayslipBtn")
+  ?.addEventListener("click", () => {
+    const snapshot = getSelectedPayslipSnapshot();
+    if (!snapshot) {
+      alert("Calculate and save a salary snapshot first.");
+      return;
+    }
+
+    const { actual, enteredCount } = readPayslipActualValues();
+    if (enteredCount === 0) {
+      alert("Enter at least one value from your factory payslip.");
+      return;
+    }
+
+    const note =
+      document.getElementById("payslipNote")?.value.trim() || "";
+
+    savePayslipCheck(
+      snapshot.period,
+      snapshot.breakdown || {},
+      actual,
+      note
+    );
+    renderPayslipComparison(snapshot, actual);
+  });
 
 /* ==========================================================
    PART 10.1 — Restore Local Data
@@ -3374,6 +3653,7 @@ window.addEventListener("load", () => {
   renderCalculatorRules();
   renderShiftTemplates();
   renderSalaryHistory();
+  renderPayslipSnapshots();
 
   // ===== Home Dashboard =====
   updateHomeDashboard();
