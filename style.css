@@ -728,33 +728,33 @@ body{
 /* ===== Day Shift ===== */
 .dayCell.day,
 .dayCell.dayColor{
-  background:#16A34A !important;
-  border:2px solid #22C55E !important;
-  color:#FFFFFF !important;
+  background:var(--shift-day-color,#16A34A) !important;
+  border:2px solid var(--shift-day-color,#16A34A) !important;
+  color:var(--shift-day-text,#FFFFFF) !important;
 }
 
 /* ===== Night Shift ===== */
 .dayCell.night,
 .dayCell.nightColor{
-  background:#6D28D9 !important;
-  border:2px solid #8B5CF6 !important;
-  color:#FFFFFF !important;
+  background:var(--shift-night-color,#6D28D9) !important;
+  border:2px solid var(--shift-night-color,#6D28D9) !important;
+  color:var(--shift-night-text,#FFFFFF) !important;
 }
 
 /* ===== Holiday Work ===== */
 .dayCell.holiday,
 .dayCell.holidayWorkColor{
-  background:#EA580C !important;
-  border:2px solid #FB923C !important;
-  color:#FFFFFF !important;
+  background:var(--shift-holiday-color,#EA580C) !important;
+  border:2px solid var(--shift-holiday-color,#EA580C) !important;
+  color:var(--shift-holiday-text,#FFFFFF) !important;
 }
 
 /* ===== Off Day ===== */
 .dayCell.off,
 .dayCell.offColor{
-  background:#475569 !important;
-  border:2px solid #94A3B8 !important;
-  color:#FFFFFF !important;
+  background:var(--shift-off-color,#475569) !important;
+  border:2px solid var(--shift-off-color,#475569) !important;
+  color:var(--shift-off-text,#FFFFFF) !important;
 }
 
 /* ===== Keep Today Ring ===== */
@@ -805,19 +805,19 @@ body{
 }
 
 .dayColor{
-  background:#22C55E;
+  background:var(--shift-day-color,#16A34A);
 }
 
 .nightColor{
-  background:#7C3AED;
+  background:var(--shift-night-color,#6D28D9);
 }
 
 .holidayWorkColor{
-  background:#F59E0B;
+  background:var(--shift-holiday-color,#EA580C);
 }
 
 .offColor{
-  background:#9CA3AF;
+  background:var(--shift-off-color,#475569);
 }
 
 .publicHolidayColor{
@@ -830,6 +830,85 @@ body{
 
 .dayCell{
   transition:all .2s ease;
+}
+
+/* ===== User Shift Color Settings ===== */
+
+.shiftColorGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+
+.shiftColorField{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:8px;
+  padding:11px 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--text);
+  cursor:pointer;
+}
+
+.shiftColorField span{
+  font-size:13px;
+  font-weight:700;
+}
+
+.shiftColorField input[type="color"]{
+  width:38px;
+  height:30px;
+  padding:2px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:transparent;
+  cursor:pointer;
+}
+
+.shiftColorField code{
+  grid-column:1 / -1;
+  color:var(--sub);
+  font-size:11px;
+}
+
+.shift-btn[data-shift="day"]{
+  border:1px solid var(--shift-day-color,#16A34A);
+}
+
+.shift-btn[data-shift="night"]{
+  border:1px solid var(--shift-night-color,#6D28D9);
+}
+
+.shift-btn[data-shift="holiday"]{
+  border:1px solid var(--shift-holiday-color,#EA580C);
+}
+
+.shift-btn[data-shift="off"]{
+  border:1px solid var(--shift-off-color,#475569);
+}
+
+.shift-btn.active[data-shift="day"]{
+  background:var(--shift-day-color,#16A34A);
+  color:var(--shift-day-text,#FFFFFF);
+}
+
+.shift-btn.active[data-shift="night"]{
+  background:var(--shift-night-color,#6D28D9);
+  color:var(--shift-night-text,#FFFFFF);
+}
+
+.shift-btn.active[data-shift="holiday"]{
+  background:var(--shift-holiday-color,#EA580C);
+  color:var(--shift-holiday-text,#FFFFFF);
+}
+
+.shift-btn.active[data-shift="off"]{
+  background:var(--shift-off-color,#475569);
+  color:var(--shift-off-text,#FFFFFF);
 }
 
 .dayCell:active{
@@ -2147,19 +2226,23 @@ html{
 }
 
 .shiftBadge.day{
-  background:#22C55E;
+  background:var(--shift-day-color,#16A34A);
+  color:var(--shift-day-text,#FFFFFF);
 }
 
 .shiftBadge.night{
-  background:#7C3AED;
+  background:var(--shift-night-color,#6D28D9);
+  color:var(--shift-night-text,#FFFFFF);
 }
 
 .shiftBadge.holiday{
-  background:#F59E0B;
+  background:var(--shift-holiday-color,#EA580C);
+  color:var(--shift-holiday-text,#FFFFFF);
 }
 
 .shiftBadge.off{
-  background:#64748B;
+  background:var(--shift-off-color,#475569);
+  color:var(--shift-off-text,#FFFFFF);
 }
 
 /* ===== OT Badge ===== */
