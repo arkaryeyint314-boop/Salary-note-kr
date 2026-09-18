@@ -436,24 +436,18 @@
          Rule + / - editing stays in Profile
     ======================================================= -->
 
-    <section class="card compactResultCard" id="customPayCard">
+     <section class="card compactResultCard" id="customPayCard">
 
       <div class="cardHeader">
         <div>
-          <h3>💰 Factory Pay Rules</h3>
-          <p class="cardSub">Result from the rules saved in Profile.</p>
+          <h3>📌 Rule Name</h3>
+          <p class="cardSub">Rules saved in Profile.</p>
         </div>
       </div>
 
+      <div id="calculatorRuleNameRows" class="factoryResultRows"></div>
+
       <div class="factoryResultRows">
-        <div class="factoryResultRow">
-          <span>Verified by contract</span>
-          <strong id="confirmedRuleTotal">₩0</strong>
-        </div>
-        <div class="factoryResultRow">
-          <span>User Manual</span>
-          <strong id="manualRuleTotal">₩0</strong>
-        </div>
         <div class="factoryResultRow total">
           <span data-lang="extra_pay_deduction">Extra pay / deduction</span>
           <strong id="extraTotal">₩0</strong>
@@ -1047,14 +1041,6 @@
             🔴 - Deduction
           </option>
 
-        </select>
-
-        <!-- Rule Data Source -->
-        <label>Pay Data Source</label>
-
-        <select id="ruleStatus">
-          <option value="confirmed">✅ Verified by contract</option>
-          <option value="manual">✍️ User Manual</option>
         </select>
 
         <!-- Rule Name -->
