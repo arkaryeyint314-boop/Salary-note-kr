@@ -1840,90 +1840,6 @@ input[readonly]{
 
 }
 
-.compareMatch{
-  color:var(--green);
-  font-weight:700;
-}
-
-.payslipInputGrid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:10px;
-}
-
-.payslipInputGrid > div{
-  min-width:0;
-}
-
-.payslipExpectedSummary{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px 12px;
-  padding:10px 12px;
-  border-radius:12px;
-  background:var(--bg);
-  border:1px solid var(--line);
-  color:var(--sub);
-  font-size:12px;
-}
-
-.payslipExpectedSummary strong{
-  width:100%;
-  color:var(--text);
-}
-
-.payslipComparisonSummary{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  margin-bottom:10px;
-  color:var(--sub);
-  font-size:12px;
-}
-
-.payslipComparisonSummary strong{
-  color:var(--text);
-}
-
-.payslipComparisonRows{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  overflow-x:auto;
-}
-
-.payslipComparisonRow{
-  display:grid;
-  grid-template-columns:minmax(110px, 1.4fr) repeat(3, minmax(72px, 1fr));
-  align-items:center;
-  gap:6px;
-  min-width:360px;
-  padding:9px 8px;
-  border-radius:10px;
-  background:var(--bg);
-  color:var(--sub);
-  font-size:11px;
-}
-
-.payslipComparisonRow strong{
-  color:var(--text);
-  text-align:right;
-  font-size:11px;
-}
-
-.payslipComparisonHeader{
-  background:transparent;
-  color:var(--sub);
-  padding-top:0;
-  padding-bottom:2px;
-}
-
-.payslipComparisonHeader strong{
-  color:var(--sub);
-  font-weight:600;
-}
-
 /* ==========================================================
    PART 9.3 — Bottom Navigation
 ========================================================== */
@@ -1940,7 +1856,7 @@ input[readonly]{
   margin:auto;
 
   display:grid;
-  grid-template-columns:repeat(6,1fr);
+  grid-template-columns:repeat(5,1fr);
 
   padding:10px 12px;
 
