@@ -146,6 +146,13 @@ const translations = {
     language_title: "🌐 Language",
     appearance_title: "🎨 Appearance",
     work_profile_title: "🏭 Work Profile",
+    shift_colors_title: "🎨 Shift Colors",
+    shift_colors_hint: "Choose the colors used for shifts in the calendar.",
+    shift_color_day: "☀️ Day Shift",
+    shift_color_night: "🌙 Night Shift",
+    shift_color_holiday: "🎌 Holiday Work",
+    shift_color_off: "😴 Off Day",
+    reset_shift_colors: "Reset Shift Colors",
 
     theme_auto: "Auto",
     theme_light: "Light",
@@ -223,6 +230,13 @@ const translations = {
     language_title: "🌐 언어",
     appearance_title: "🎨 테마",
     work_profile_title: "🏭 회사 정보",
+    shift_colors_title: "🎨 근무 색상",
+    shift_colors_hint: "달력에 표시할 근무 색상을 선택하세요.",
+    shift_color_day: "☀️ 주간 근무",
+    shift_color_night: "🌙 야간 근무",
+    shift_color_holiday: "🎌 휴일 근무",
+    shift_color_off: "😴 휴무",
+    reset_shift_colors: "근무 색상 초기화",
 
     theme_auto: "자동",
     theme_light: "라이트",
@@ -298,6 +312,13 @@ const translations = {
     language_title: "🌐 ဘာသာစကား",
     appearance_title: "🎨 Theme",
     work_profile_title: "🏭 အလုပ်အချက်အလက်",
+    shift_colors_title: "🎨 Shift အရောင်များ",
+    shift_colors_hint: "Calendar ထဲမှာ Shift တွေပြမယ့် အရောင်ကိုရွေးပါ။",
+    shift_color_day: "☀️ နေ့ဆိုင်း",
+    shift_color_night: "🌙 ညဆိုင်း",
+    shift_color_holiday: "🎌 အနီရက်အလုပ်",
+    shift_color_off: "😴 အလုပ်ပိတ်ရက်",
+    reset_shift_colors: "Shift အရောင်များ ပြန်ထားမယ်",
 
     theme_auto: "အလိုအလျောက်",
     theme_light: "အလင်း",
@@ -487,6 +508,117 @@ const KOREA_PAY_FORMULA_DEFAULTS = Object.freeze({
   holidayMultiplier: 1.5
 });
 const PAY_FORMULA_SOURCES = ["confirmed", "manual"];
+const SHIFT_COLOR_STORAGE_KEY = "workpay_shift_colors_v1";
+const DEFAULT_SHIFT_COLORS = Object.freeze({
+  day: "#16A34A",
+  night: "#6D28D9",
+  holiday: "#EA580C",
+  off: "#475569"
+});
+
+function normalizeHexColor(value, fallback) {
+  return /^#[0-9A-Fa-f]{6}$/.test(String(value || ""))
+    ? String(value).toUpperCase()
+    : fallback;
+}
+
+function loadShiftColors() {
+  const saved = readStoredJson(
+    SHIFT_COLOR_STORAGE_KEY,
+    {},
+    value => value && typeof value === "object" && !Array.isArray(value)
+  );
+
+  return Object.fromEntries(
+    Object.entries(DEFAULT_SHIFT_COLORS).map(([shift, fallback]) => [
+      shift,
+      normalizeHexColor(saved[shift], fallback)
+    ])
+  );
+}
+
+let shiftColors = loadShiftColors();
+
+function getShiftColor(shift) {
+  return shiftColors[shift] || DEFAULT_SHIFT_COLORS.off;
+}
+
+function getReadableTextColor(hexColor) {
+  const hex = normalizeHexColor(hexColor, "#475569").slice(1);
+  const channels = [0, 2, 4].map(index =>
+    Number.parseInt(hex.slice(index, index + 2), 16) / 255
+  );
+  const linear = channels.map(channel => channel <= 0.03928
+    ? channel / 12.92
+    : ((channel + 0.055) / 1.055) ** 2.4);
+  const luminance =
+    0.2126 * linear[0] +
+    0.7152 * linear[1] +
+    0.0722 * linear[2];
+
+  return luminance > 0.55
+    ? "#111827"
+    : "#FFFFFF";
+}
+
+function applyShiftColorVariables() {
+  const root = document.documentElement;
+
+  Object.keys(DEFAULT_SHIFT_COLORS).forEach(shift => {
+    root.style.setProperty(`--shift-${shift}-color`, getShiftColor(shift));
+    root.style.setProperty(
+      `--shift-${shift}-text`,
+      getReadableTextColor(getShiftColor(shift))
+    );
+  });
+}
+
+function saveShiftColors() {
+  localStorage.setItem(
+    SHIFT_COLOR_STORAGE_KEY,
+    JSON.stringify(shiftColors)
+  );
+  applyShiftColorVariables();
+}
+
+function renderShiftColorSettings() {
+  Object.keys(DEFAULT_SHIFT_COLORS).forEach(shift => {
+    const input = document.getElementById(`shiftColor${
+      shift.charAt(0).toUpperCase() + shift.slice(1)
+    }`);
+    const value = document.getElementById(`shiftColor${
+      shift.charAt(0).toUpperCase() + shift.slice(1)
+    }Value`);
+
+    if (input) input.value = getShiftColor(shift);
+    if (value) value.textContent = getShiftColor(shift);
+  });
+}
+
+applyShiftColorVariables();
+renderShiftColorSettings();
+
+Object.keys(DEFAULT_SHIFT_COLORS).forEach(shift => {
+  const input = document.getElementById(`shiftColor${
+    shift.charAt(0).toUpperCase() + shift.slice(1)
+  }`);
+
+  input?.addEventListener("input", event => {
+    shiftColors[shift] = normalizeHexColor(
+      event.target.value,
+      DEFAULT_SHIFT_COLORS[shift]
+    );
+    saveShiftColors();
+    renderShiftColorSettings();
+  });
+});
+
+document.getElementById("resetShiftColorsBtn")
+  ?.addEventListener("click", () => {
+    shiftColors = { ...DEFAULT_SHIFT_COLORS };
+    saveShiftColors();
+    renderShiftColorSettings();
+  });
 
 function normalizePayFormula(value) {
   const source = value && typeof value === "object" ? value : {};
