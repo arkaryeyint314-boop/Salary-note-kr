@@ -3332,6 +3332,18 @@ body:not(.light) .miniResult{
   font-weight:700;
 }
 
+.formulaSourceField{
+  grid-column:1 / -1;
+}
+
+.formulaSourceHint{
+  display:block;
+  margin-top:6px;
+  color:var(--sub);
+  font-size:11px;
+  line-height:1.4;
+}
+
 .formulaSettingsGrid input{
   width:100%;
 }
