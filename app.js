@@ -2119,8 +2119,6 @@ function openFactoryRuleEditor(index = null) {
     rule ? "Edit Factory Pay Rule" : "Factory Pay Rule";
   document.getElementById("ruleType").value =
     rule?.type || "plus";
-  document.getElementById("ruleStatus").value =
-    rule?.status === "confirmed" ? "confirmed" : "manual";
   document.getElementById("ruleName").value =
     rule?.name || "";
   document.getElementById("ruleAmount").value =
@@ -2240,10 +2238,20 @@ function renderFactoryRules() {
       </div>
 
       <div class="ruleItemActions">
-        <button class="templateEditBtn editRuleBtn" data-index="${index}" type="button">
+        <button
+          class="templateEditBtn editRuleBtn"
+          data-index="${index}"
+          type="button"
+          aria-label="Edit ${escapeTemplateText(rule.name)}"
+        >
           Edit
         </button>
-        <button class="removeBtn" data-index="${index}" type="button">
+        <button
+          class="removeBtn deleteRuleBtn"
+          data-index="${index}"
+          type="button"
+          aria-label="Delete ${escapeTemplateText(rule.name)}"
+        >
           Delete
         </button>
       </div>
@@ -2260,11 +2268,14 @@ function renderFactoryRules() {
     });
   });
 
-  list.querySelectorAll(".removeBtn").forEach(btn => {
+  list.querySelectorAll(".deleteRuleBtn").forEach(btn => {
 
     btn.addEventListener("click", () => {
 
       const index = Number(btn.dataset.index);
+
+      if (!Number.isInteger(index) || !factoryRules[index]) return;
+      if (!confirm(`Delete "${factoryRules[index].name}"?`)) return;
 
       factoryRules.splice(index, 1);
 
@@ -2290,9 +2301,6 @@ document.getElementById("saveRuleBtn")
   const type =
     document.getElementById("ruleType").value;
 
-  const status =
-    document.getElementById("ruleStatus").value;
-
   const name =
     document.getElementById("ruleName").value.trim();
 
@@ -2314,7 +2322,12 @@ document.getElementById("saveRuleBtn")
     type,
     name,
     amount,
-    status,
+    status:
+      editingFactoryRuleIndex === null
+        ? "manual"
+        : factoryRules[editingFactoryRuleIndex]?.status === "confirmed"
+          ? "confirmed"
+          : "manual",
     note
   };
 
@@ -2340,69 +2353,33 @@ document.getElementById("saveRuleBtn")
 function renderCalculatorRules() {
 
   const container =
-    document.getElementById("payItemList");
+    document.getElementById("calculatorRuleNameRows");
 
   if (!container) {
     updateExtraTotal();
     return;
   }
 
-  container.innerHTML = "";
+  container.innerHTML = factoryRules.length
+    ? factoryRules.map(rule => {
+        const signedAmount =
+          (rule.type === "minus" ? -1 : 1) * Number(rule.amount || 0);
 
-  let total = 0;
-
-  factoryRules.forEach((rule, index) => {
-
-    const row = document.createElement("div");
-    const status =
-      rule.status === "confirmed" ? "confirmed" : "manual";
-
-    row.className = "payItemRow";
-
-    row.innerHTML = `
-      <div class="payInfo">
-
-        <span>
-          ${rule.type === "plus" ? "🟢 +" : "🔴 -"}
-          ${rule.name}
-        </span>
-
-        <span class="ruleStatusBadge ${status}">
-          ${status === "confirmed" ? "Verified by contract" : "User Manual"}
-        </span>
-
+        return `
+          <div class="factoryResultRow calculatorRuleNameRow">
+            <span>
+              ${rule.type === "plus" ? "🟢 +" : "🔴 -"}
+              ${escapeTemplateText(rule.name)}
+            </span>
+            <strong>${formatWon(signedAmount)}</strong>
+          </div>
+        `;
+      }).join("")
+    : `
+      <div class="calculatorRuleEmpty">
+        No rules saved in Profile.
       </div>
-
-      <input
-        type="number"
-        class="payAmount"
-        data-index="${index}"
-        value="${rule.amount}"
-      >
     `;
-
-    container.appendChild(row);
-
-  });
-
-  // User Edit Amount
-  container.querySelectorAll(".payAmount")
-  .forEach(input => {
-
-    input.addEventListener("input", () => {
-
-      const index = Number(input.dataset.index);
-
-      factoryRules[index].amount =
-        Number(input.value) || 0;
-
-      saveFactoryRules();
-
-      updateExtraTotal();
-
-    });
-
-  });
 
   updateExtraTotal();
 
@@ -2417,22 +2394,7 @@ function updateExtraTotal() {
   const breakdown = getFactoryRuleBreakdown();
 
   document.getElementById("extraTotal").textContent =
-    `₩${breakdown.total.toLocaleString()}`;
-
-  const confirmedTotal =
-    document.getElementById("confirmedRuleTotal");
-  const manualTotal =
-    document.getElementById("manualRuleTotal");
-
-  if (confirmedTotal) {
-    confirmedTotal.textContent =
-      formatWon(breakdown.confirmed);
-  }
-
-  if (manualTotal) {
-    manualTotal.textContent =
-      formatWon(breakdown.manual);
-  }
+    formatWon(breakdown.total);
 
   return breakdown.total;
 
