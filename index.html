@@ -262,22 +262,22 @@
       <div class="legendGrid">
 
         <div class="legendItem">
-          <div class="legendColor dayColor"></div>
+          <div class="legendColor dayColor" data-shift-color="day"></div>
           <span>Day Shift</span>
         </div>
 
         <div class="legendItem">
-          <div class="legendColor nightColor"></div>
+          <div class="legendColor nightColor" data-shift-color="night"></div>
           <span>Night Shift</span>
         </div>
 
         <div class="legendItem">
-          <div class="legendColor holidayWorkColor"></div>
+          <div class="legendColor holidayWorkColor" data-shift-color="holiday"></div>
           <span>Holiday Work</span>
         </div>
 
         <div class="legendItem">
-          <div class="legendColor offColor"></div>
+          <div class="legendColor offColor" data-shift-color="off"></div>
           <span>Off Day</span>
         </div>
 
@@ -712,6 +712,46 @@
 
       </select>
 
+    </section>
+
+    <!-- ===== Shift Colors ===== -->
+    <section class="card" id="shiftColorsCard">
+      <div class="cardHeader">
+        <div>
+          <h3 data-lang="shift_colors_title">🎨 Shift Colors</h3>
+          <p class="cardSub" data-lang="shift_colors_hint">
+            Choose the colors used for shifts in the calendar.
+          </p>
+        </div>
+      </div>
+
+      <div class="shiftColorGrid">
+        <label class="shiftColorField">
+          <span data-lang="shift_color_day">☀️ Day Shift</span>
+          <input id="shiftColorDay" type="color" value="#16A34A" aria-label="Day Shift color">
+          <code id="shiftColorDayValue">#16A34A</code>
+        </label>
+        <label class="shiftColorField">
+          <span data-lang="shift_color_night">🌙 Night Shift</span>
+          <input id="shiftColorNight" type="color" value="#6D28D9" aria-label="Night Shift color">
+          <code id="shiftColorNightValue">#6D28D9</code>
+        </label>
+        <label class="shiftColorField">
+          <span data-lang="shift_color_holiday">🎌 Holiday Work</span>
+          <input id="shiftColorHoliday" type="color" value="#EA580C" aria-label="Holiday Work color">
+          <code id="shiftColorHolidayValue">#EA580C</code>
+        </label>
+        <label class="shiftColorField">
+          <span data-lang="shift_color_off">😴 Off Day</span>
+          <input id="shiftColorOff" type="color" value="#475569" aria-label="Off Day color">
+          <code id="shiftColorOffValue">#475569</code>
+        </label>
+      </div>
+
+      <button id="resetShiftColorsBtn" class="secondaryBtn" type="button"
+        data-lang="reset_shift_colors">
+        Reset Shift Colors
+      </button>
     </section>
 
     <!-- ======================================================
