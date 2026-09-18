@@ -432,41 +432,32 @@
     </section>
 
     <!-- ======================================================
-         PART 18.1 — Extra Pay / Deduction
-         (Dynamic Items From Factory Rules)
+         PART 18.1 — Factory Pay Rule Result
+         Rule + / - editing stays in Profile
     ======================================================= -->
 
-    <section class="card" id="customPayCard">
+    <section class="card compactResultCard" id="customPayCard">
 
       <div class="cardHeader">
-
-        <h3>💰 Extra Pay / Deduction</h3>
-
-        <button id="addPayItem" class="smallBtn">
-          + Add
-        </button>
-
+        <div>
+          <h3>💰 Factory Pay Rules</h3>
+          <p class="cardSub">Result from the rules saved in Profile.</p>
+        </div>
       </div>
 
-      <!-- Dynamic Pay / Deduction List -->
-      <div id="payItemList"></div>
-
-      <!-- Total -->
-      <div class="summaryBox">
-
-        <span>Total Extra / Deduction</span>
-
-        <h3 id="extraTotal">₩0</h3>
-
-        <div class="ruleStatusTotals">
-          <span id="confirmedRuleTotal">Verified by contract ₩0</span>
-          <span id="manualRuleTotal">User Manual ₩0</span>
+      <div class="factoryResultRows">
+        <div class="factoryResultRow">
+          <span>Verified by contract</span>
+          <strong id="confirmedRuleTotal">₩0</strong>
         </div>
-
-        <small>
-          (+) Add salary / (-) Deduction from salary
-        </small>
-
+        <div class="factoryResultRow">
+          <span>User Manual</span>
+          <strong id="manualRuleTotal">₩0</strong>
+        </div>
+        <div class="factoryResultRow total">
+          <span data-lang="extra_pay_deduction">Extra pay / deduction</span>
+          <strong id="extraTotal">₩0</strong>
+        </div>
       </div>
 
     </section>
