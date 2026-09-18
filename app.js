@@ -106,6 +106,9 @@ const translations = {
 
     calculator_title: "Salary Calculator",
     hourly_wage: "Hourly Wage (₩)",
+    contract_basic_salary: "Contract Monthly Basic Salary (₩)",
+    contract_basic_salary_hint:
+      "When entered, this replaces Basic Hours × Hourly Wage. Hourly wage is still used for OT, night, and holiday premiums.",
     working_days: "Working Days",
     working_hours: "Working Hours",
 
@@ -139,6 +142,7 @@ const translations = {
 
     company_name: "Company Name",
     hourly_wage_placeholder: "Hourly Wage",
+    contract_basic_salary_placeholder: "Monthly basic salary",
     working_days_placeholder: "Working Days",
 
     visa_type: "Visa Type (E9 / F2 / D2)"
@@ -166,6 +170,9 @@ const translations = {
     calculator_title: "급여 계산기",
 
     hourly_wage: "시급 (₩)",
+    contract_basic_salary: "계약 월 기본급 (₩)",
+    contract_basic_salary_hint:
+      "입력하면 기본시간 × 시급 대신 적용됩니다. 시급은 연장·야간·휴일수당 계산에 계속 사용됩니다.",
     working_days: "근무일수",
 
     working_hours: "근무 시간",
@@ -197,6 +204,7 @@ const translations = {
 
     company_name: "회사 이름",
     hourly_wage_placeholder: "시급 입력",
+    contract_basic_salary_placeholder: "계약 월 기본급 입력",
     working_days_placeholder: "근무일수 입력",
 
     visa_type: "비자 종류 (E9 / F2 / D2)"
@@ -224,6 +232,9 @@ const translations = {
     calculator_title: "လစာတွက်စက်",
 
     hourly_wage: "တစ်နာရီလုပ်ခ (₩)",
+    contract_basic_salary: "စာချုပ်ပါ လစဉ်အခြေခံလစာ (₩)",
+    contract_basic_salary_hint:
+      "ထည့်ထားလျှင် ပုံမှန်နာရီ × တစ်နာရီလုပ်ခအစား ဤပမာဏကိုသုံးမည်။ OT၊ ညနှင့် အနီရက်အပိုကြေးများကို တစ်နာရီလုပ်ခဖြင့် ဆက်တွက်မည်။",
     working_days: "အလုပ်ဆင်းရက်",
 
     working_hours: "အလုပ်ချိန်",
@@ -255,6 +266,7 @@ const translations = {
 
     company_name: "ကုမ္ပဏီအမည်",
     hourly_wage_placeholder: "တစ်နာရီလုပ်ခ",
+    contract_basic_salary_placeholder: "စာချုပ်ပါ လစဉ်အခြေခံလစာ",
     working_days_placeholder: "အလုပ်ဆင်းရက်",
 
     visa_type: "ဗီဇာအမျိုးအစား (E9 / F2 / D2)"
@@ -1552,6 +1564,31 @@ if (typeof updateHomeDashboard === "function") {
 
 // ===== Salary Inputs =====
 const hourlyWageInput = document.getElementById("hourlyWage");
+const contractBasicSalaryInput =
+  document.getElementById("contractBasicSalary");
+const CONTRACT_BASIC_SALARY_STORAGE_KEY =
+  "workpay_contract_basic_salary";
+
+if (contractBasicSalaryInput) {
+  contractBasicSalaryInput.value =
+    localStorage.getItem(CONTRACT_BASIC_SALARY_STORAGE_KEY) || "";
+
+  contractBasicSalaryInput.addEventListener("input", () => {
+    const value = Math.max(
+      0,
+      Number(contractBasicSalaryInput.value) || 0
+    );
+
+    if (value > 0) {
+      localStorage.setItem(
+        CONTRACT_BASIC_SALARY_STORAGE_KEY,
+        String(value)
+      );
+    } else {
+      localStorage.removeItem(CONTRACT_BASIC_SALARY_STORAGE_KEY);
+    }
+  });
+}
 
 // ===== Result Cards =====
 const grossSalaryText = document.getElementById("grossSalary");
@@ -1592,6 +1629,8 @@ function calculateSalary(saveHistory = false) {
 
   // ===== User Input =====
   const wage = Number(hourlyWageInput.value) || 0;
+  const contractBasicSalary =
+    Math.max(0, Number(contractBasicSalaryInput?.value) || 0);
   const basicHours = Number(basicHoursInput.value) || 0;
   const monthSummary = getMonthSummary();
   const otHours = monthSummary.hourlyOtHours;
@@ -1599,7 +1638,11 @@ function calculateSalary(saveHistory = false) {
   const holidayHours = monthSummary.hourlyHolidayHours;
 
   // ===== Salary Formula =====
-  const basicPay = wage * basicHours;
+  const calculatedHourlyBasicPay = wage * basicHours;
+  const basicPay =
+    contractBasicSalary > 0
+      ? contractBasicSalary
+      : calculatedHourlyBasicPay;
 
   const otPay = wage * payFormula.otMultiplier * otHours;
 
@@ -1650,6 +1693,9 @@ function calculateSalary(saveHistory = false) {
   if (saveHistory) {
     saveSalaryHistorySnapshot({
       wage,
+      contractBasicSalary,
+      basicPayMethod:
+        contractBasicSalary > 0 ? "monthly-contract" : "hourly-calendar",
       basicPay,
       otPay,
       nightPay,
@@ -2790,11 +2836,13 @@ function saveSalaryHistorySnapshot(result) {
     getFactoryRuleBreakdown();
 
   const snapshot = {
-    version: 2,
+    version: 3,
     period,
     calculatedAt,
     inputs: {
-      hourlyWage: result.wage
+      hourlyWage: result.wage,
+      contractBasicSalary: result.contractBasicSalary,
+      basicPayMethod: result.basicPayMethod
     },
     payFormula: copySnapshotData(payFormula),
     monthSummary: copySnapshotData(result.monthSummary),
