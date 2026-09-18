@@ -483,6 +483,74 @@
       Calculate Salary
     </button>
 
+    <!-- ===== Calculation Breakdown ===== -->
+    <section id="calculationBreakdown" class="calculationBreakdown hidden">
+      <h3 data-lang="calculation_breakdown">Calculation Breakdown</h3>
+
+      <div class="breakdownMethod">
+        <span data-lang="calculation_method">Method</span>
+        <strong id="contractMethodLabel" class="hidden" data-lang="method_contract">
+          Monthly Contract
+        </strong>
+        <strong id="hourlyMethodLabel" class="hidden" data-lang="method_hourly">
+          Calendar Basic Hours
+        </strong>
+      </div>
+
+      <div id="contractBasicBreakdownRow" class="breakdownRow hidden">
+        <div>
+          <span data-lang="contract_basic_pay">Contract Monthly Basic Salary</span>
+          <small data-lang="fixed_monthly_amount">Fixed monthly amount</small>
+        </div>
+        <strong id="contractBasicBreakdownAmount">₩0</strong>
+      </div>
+
+      <div id="hourlyBasicBreakdownRow" class="breakdownRow hidden">
+        <div>
+          <span data-lang="basic_hours_pay">Basic Hours Pay</span>
+          <small id="basicBreakdownFormula">0 hr × ₩0</small>
+        </div>
+        <strong id="basicBreakdownAmount">₩0</strong>
+      </div>
+
+      <div class="breakdownRow">
+        <div>
+          <span data-lang="ot_hours_pay">OT Hours Pay</span>
+          <small id="otBreakdownFormula">0 hr × 1.5×</small>
+        </div>
+        <strong id="otBreakdownAmount">₩0</strong>
+      </div>
+
+      <div class="breakdownRow">
+        <div>
+          <span data-lang="night_hours_pay">Night Hours Pay</span>
+          <small id="nightBreakdownFormula">0 hr × 0.5×</small>
+        </div>
+        <strong id="nightBreakdownAmount">₩0</strong>
+      </div>
+
+      <div class="breakdownRow">
+        <div>
+          <span data-lang="holiday_hours_pay">Holiday Hours Pay</span>
+          <small id="holidayBreakdownFormula">0 hr × 1.5×</small>
+        </div>
+        <strong id="holidayBreakdownAmount">₩0</strong>
+      </div>
+
+      <div id="factoryAdjustmentBreakdownRow" class="breakdownRow hidden">
+        <div>
+          <span data-lang="factory_adjustments">Factory Adjustments</span>
+          <small data-lang="extra_pay_deduction">Extra pay / deduction</small>
+        </div>
+        <strong id="factoryAdjustmentBreakdownAmount">₩0</strong>
+      </div>
+
+      <div class="breakdownTotal">
+        <span data-lang="gross_total">Gross Total</span>
+        <strong id="breakdownGrossTotal">₩0</strong>
+      </div>
+    </section>
+
     <!-- ======================================================
          Salary Result
     ======================================================= -->
