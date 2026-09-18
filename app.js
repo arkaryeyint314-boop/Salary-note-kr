@@ -486,6 +486,7 @@ const KOREA_PAY_FORMULA_DEFAULTS = Object.freeze({
   nightMultiplier: 0.5,
   holidayMultiplier: 1.5
 });
+const PAY_FORMULA_SOURCES = ["confirmed", "manual"];
 
 function normalizePayFormula(value) {
   const source = value && typeof value === "object" ? value : {};
@@ -506,13 +507,55 @@ function normalizePayFormula(value) {
   return normalized;
 }
 
-let payFormula = normalizePayFormula(
-  readStoredJson(
+function normalizeFormulaSource(value) {
+  return value === "confirmed" ? "confirmed" : "manual";
+}
+
+function loadPayFormulaProfiles() {
+  const saved = readStoredJson(
     PAY_FORMULA_STORAGE_KEY,
-    KOREA_PAY_FORMULA_DEFAULTS,
+    null,
     value => value && typeof value === "object" && !Array.isArray(value)
-  )
-);
+  );
+
+  if (saved?.profiles) {
+    return {
+      confirmed: normalizePayFormula(saved.profiles.confirmed),
+      manual: normalizePayFormula(saved.profiles.manual)
+    };
+  }
+
+  // Migrate the previous single-profile setting to User Manual. The
+  // contract-verified profile starts from the Korea defaults.
+  const legacyFormula =
+    saved && Object.keys(saved).some(key =>
+      Object.prototype.hasOwnProperty.call(
+        KOREA_PAY_FORMULA_DEFAULTS,
+        key
+      )
+    )
+      ? normalizePayFormula(saved)
+      : normalizePayFormula(KOREA_PAY_FORMULA_DEFAULTS);
+
+  return {
+    confirmed: normalizePayFormula(KOREA_PAY_FORMULA_DEFAULTS),
+    manual: legacyFormula
+  };
+}
+
+let payFormulaProfiles = loadPayFormulaProfiles();
+let activePayFormulaSource = "manual";
+
+function getPayFormula(source = activePayFormulaSource) {
+  return payFormulaProfiles[normalizeFormulaSource(source)];
+}
+
+function savePayFormulaProfiles() {
+  localStorage.setItem(
+    PAY_FORMULA_STORAGE_KEY,
+    JSON.stringify({ version: 2, profiles: payFormulaProfiles })
+  );
+}
 
 // ===== Month Names =====
 const monthNames = [
@@ -546,7 +589,19 @@ function getMonthSummary(year = currentYear, month = currentMonth) {
     holidayHours: 0,
     hourlyOtHours: 0,
     hourlyNightHours: 0,
-    hourlyHolidayHours: 0
+    hourlyHolidayHours: 0,
+    formulaHours: {
+      confirmed: {
+        otHours: 0,
+        nightHours: 0,
+        holidayHours: 0
+      },
+      manual: {
+        otHours: 0,
+        nightHours: 0,
+        holidayHours: 0
+      }
+    }
   };
 
   getMonthShiftEntries(year, month).forEach(([, day]) => {
@@ -563,6 +618,11 @@ function getMonthSummary(year = currentYear, month = currentMonth) {
     summary.hourlyOtHours += Number(day.otHours || 0);
     summary.hourlyNightHours += Number(day.nightHours || 0);
     summary.hourlyHolidayHours += Number(day.holidayHours || 0);
+
+    const source = normalizeFormulaSource(day.ruleStatus);
+    summary.formulaHours[source].otHours += Number(day.otHours || 0);
+    summary.formulaHours[source].nightHours += Number(day.nightHours || 0);
+    summary.formulaHours[source].holidayHours += Number(day.holidayHours || 0);
 
   });
 
@@ -1276,7 +1336,8 @@ function calculateShiftMetrics(
   start,
   end,
   breakStart,
-  breakMinutesValue
+  breakMinutesValue,
+  formula = getPayFormula()
 ) {
   if (shift === "off" || !start || !end) {
     return {
@@ -1343,12 +1404,12 @@ function calculateShiftMetrics(
 
   return {
     workedHours,
-    basicHours: Math.min(workedHours, payFormula.regularHoursPerDay),
-    otHours: Math.max(0, workedHours - payFormula.regularHoursPerDay),
+    basicHours: Math.min(workedHours, formula.regularHoursPerDay),
+    otHours: Math.max(0, workedHours - formula.regularHoursPerDay),
     nightHours: nightMinutes / 60,
     holidayHours: Math.min(
       holidayMinutes / 60,
-      payFormula.regularHoursPerDay
+      formula.regularHoursPerDay
     )
   };
 }
@@ -1356,8 +1417,15 @@ function calculateShiftMetrics(
 function renderPayFormulaSettings() {
   Object.keys(KOREA_PAY_FORMULA_DEFAULTS).forEach(key => {
     const input = document.getElementById(key);
-    if (input) input.value = payFormula[key];
+    if (input) input.value = getPayFormula(activePayFormulaSource)[key];
   });
+
+  document.getElementById("payFormulaSource")?.setAttribute(
+    "aria-label",
+    activePayFormulaSource === "confirmed"
+      ? "Verified by contract formula"
+      : "User Manual formula"
+  );
 }
 
 function recalculateSavedShiftMetrics() {
@@ -1370,7 +1438,8 @@ function recalculateSavedShiftMetrics() {
       entry.start,
       entry.end,
       entry.breakStart,
-      entry.breakMinutes
+      entry.breakMinutes,
+      getPayFormula(entry.ruleStatus)
     );
 
     shiftData[dateKey] = {
@@ -1388,15 +1457,19 @@ function recalculateSavedShiftMetrics() {
 }
 
 function savePayFormulaSettings(nextFormula) {
-  payFormula = normalizePayFormula(nextFormula);
-  localStorage.setItem(
-    PAY_FORMULA_STORAGE_KEY,
-    JSON.stringify(payFormula)
-  );
+  payFormulaProfiles[activePayFormulaSource] =
+    normalizePayFormula(nextFormula);
+  savePayFormulaProfiles();
   renderPayFormulaSettings();
   recalculateSavedShiftMetrics();
   calculateSalary();
 }
+
+document.getElementById("payFormulaSource")
+?.addEventListener("change", event => {
+  activePayFormulaSource = normalizeFormulaSource(event.target.value);
+  renderPayFormulaSettings();
+});
 
 document.getElementById("savePayFormulaBtn")
 ?.addEventListener("click", () => {
@@ -1431,7 +1504,8 @@ function calculateOTHours() {
     popupStart.value,
     popupEnd.value,
     popupBreakStart.value,
-    popupBreak.value
+    popupBreak.value,
+    getPayFormula(selectedDayRuleStatus)
   );
 
   // ===== Update Popup =====
@@ -1466,7 +1540,8 @@ saveDayBtn?.addEventListener("click", () => {
     popupStart.value,
     popupEnd.value,
     popupBreakStart.value,
-    breakMinutes
+    breakMinutes,
+    getPayFormula(selectedDayRuleStatus)
   );
 
   // ===== Save =====
@@ -1675,6 +1750,7 @@ function calculateSalary(saveHistory = false) {
   const otHours = monthSummary.hourlyOtHours;
   const nightHours = monthSummary.hourlyNightHours;
   const holidayHours = monthSummary.hourlyHolidayHours;
+  const formulaHours = monthSummary.formulaHours;
 
   // ===== Salary Formula =====
   const calculatedHourlyBasicPay = wage * basicHours;
@@ -1683,11 +1759,29 @@ function calculateSalary(saveHistory = false) {
       ? contractBasicSalary
       : calculatedHourlyBasicPay;
 
-  const otPay = wage * payFormula.otMultiplier * otHours;
+  const premiumPayBySource = {};
+  PAY_FORMULA_SOURCES.forEach(source => {
+    const formula = getPayFormula(source);
+    const hours = formulaHours[source];
+    premiumPayBySource[source] = {
+      otPay: wage * formula.otMultiplier * hours.otHours,
+      nightPay: wage * formula.nightMultiplier * hours.nightHours,
+      holidayPay: wage * formula.holidayMultiplier * hours.holidayHours
+    };
+  });
 
-  const nightPay = wage * payFormula.nightMultiplier * nightHours;
-
-  const holidayPay = wage * payFormula.holidayMultiplier * holidayHours;
+  const otPay = PAY_FORMULA_SOURCES.reduce(
+    (total, source) => total + premiumPayBySource[source].otPay,
+    0
+  );
+  const nightPay = PAY_FORMULA_SOURCES.reduce(
+    (total, source) => total + premiumPayBySource[source].nightPay,
+    0
+  );
+  const holidayPay = PAY_FORMULA_SOURCES.reduce(
+    (total, source) => total + premiumPayBySource[source].holidayPay,
+    0
+  );
 
   let grossSalary =
     basicPay +
@@ -1711,6 +1805,8 @@ function calculateSalary(saveHistory = false) {
     nightPay,
     holidayHours,
     holidayPay,
+    formulaHours,
+    premiumPayBySource,
     extraTotal,
     grossSalary
   });
@@ -1771,6 +1867,25 @@ function formatWon(value) {
   return `${sign}₩${Math.abs(rounded).toLocaleString()}`;
 }
 
+function formatSourcePremiumFormula(formulaHours, key) {
+  return PAY_FORMULA_SOURCES
+    .map(source => {
+      const hours = Number(formulaHours?.[source]?.[key] || 0);
+      if (hours === 0) return "";
+      const label =
+        source === "confirmed" ? "Verified by contract" : "User Manual";
+      return `${label}: ${hours.toFixed(1)} hr × ${getPayFormula(source)[
+        key === "otHours"
+          ? "otMultiplier"
+          : key === "nightHours"
+            ? "nightMultiplier"
+            : "holidayMultiplier"
+      ]}×`;
+    })
+    .filter(Boolean)
+    .join(" · ") || "0 hr";
+}
+
 function renderCalculationBreakdown(result) {
   const container = document.getElementById("calculationBreakdown");
   if (!container) return;
@@ -1794,15 +1909,15 @@ function renderCalculationBreakdown(result) {
     formatWon(result.basicPay);
 
   document.getElementById("otBreakdownFormula").textContent =
-    `${Number(result.otHours).toFixed(1)} hr × ${payFormula.otMultiplier}×`;
+    formatSourcePremiumFormula(result.formulaHours, "otHours");
   document.getElementById("otBreakdownAmount").textContent =
     formatWon(result.otPay);
   document.getElementById("nightBreakdownFormula").textContent =
-    `${Number(result.nightHours).toFixed(1)} hr × ${payFormula.nightMultiplier}×`;
+    formatSourcePremiumFormula(result.formulaHours, "nightHours");
   document.getElementById("nightBreakdownAmount").textContent =
     formatWon(result.nightPay);
   document.getElementById("holidayBreakdownFormula").textContent =
-    `${Number(result.holidayHours).toFixed(1)} hr × ${payFormula.holidayMultiplier}×`;
+    formatSourcePremiumFormula(result.formulaHours, "holidayHours");
   document.getElementById("holidayBreakdownAmount").textContent =
     formatWon(result.holidayPay);
 
@@ -1949,7 +2064,7 @@ function renderFactoryRules() {
         <div class="${rule.type}">
           ${rule.type === "plus" ? "🟢 +" : "🔴 -"} ${rule.name}
           <span class="ruleStatusBadge ${status}">
-            ${status === "confirmed" ? "Confirmed" : "User Manual"}
+            ${status === "confirmed" ? "Verified by contract" : "User Manual"}
           </span>
         </div>
 
@@ -2087,7 +2202,7 @@ function renderCalculatorRules() {
         </span>
 
         <span class="ruleStatusBadge ${status}">
-          ${status === "confirmed" ? "Confirmed" : "User Manual"}
+          ${status === "confirmed" ? "Verified by contract" : "User Manual"}
         </span>
 
       </div>
@@ -2145,7 +2260,7 @@ function updateExtraTotal() {
 
   if (confirmedTotal) {
     confirmedTotal.textContent =
-      `Confirmed ₩${breakdown.confirmed.toLocaleString()}`;
+      `Verified by contract ₩${breakdown.confirmed.toLocaleString()}`;
   }
 
   if (manualTotal) {
@@ -2427,7 +2542,7 @@ function renderShiftTemplates() {
         <div class="shiftTemplateInfo">
           <strong>${escapeTemplateText(template.name)}</strong>
           <span class="ruleStatusBadge ${ruleStatus}">
-            ${ruleStatus === "confirmed" ? "Confirmed" : "User Manual"}
+            ${ruleStatus === "confirmed" ? "Verified by contract" : "User Manual"}
           </span>
           <span>
             ${escapeTemplateText(template.start || "Off")}
@@ -2519,7 +2634,8 @@ function getTemplateCalendarEntry(dateKey, template) {
     template.start,
     template.end,
     template.breakStart,
-    breakMinutes
+    breakMinutes,
+    getPayFormula(template.ruleStatus)
   );
 
   return {
@@ -2940,7 +3056,7 @@ function saveSalaryHistorySnapshot(result) {
     getFactoryRuleBreakdown();
 
   const snapshot = {
-    version: 3,
+    version: 4,
     period,
     calculatedAt,
     inputs: {
@@ -2948,7 +3064,7 @@ function saveSalaryHistorySnapshot(result) {
       contractBasicSalary: result.contractBasicSalary,
       basicPayMethod: result.basicPayMethod
     },
-    payFormula: copySnapshotData(payFormula),
+    payFormulaProfiles: copySnapshotData(payFormulaProfiles),
     monthSummary: copySnapshotData(result.monthSummary),
     factoryRules: copySnapshotData(factoryRules),
     entries,
@@ -3038,7 +3154,7 @@ function renderSalaryHistory() {
             </strong>
             <span>Factory adjustments</span>
             <strong>
-              Confirmed ₩${Math.round(Number(breakdown.factoryRuleConfirmed || 0)).toLocaleString()}
+              Verified by contract ₩${Math.round(Number(breakdown.factoryRuleConfirmed || 0)).toLocaleString()}
               · User Manual ₩${Math.round(Number(
                 breakdown.factoryRuleManual ??
                 breakdown.factoryRuleProvisional ??
