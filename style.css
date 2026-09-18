@@ -3503,6 +3503,167 @@ body:not(.light) .miniResult{
   margin:0;
 }
 
+/* ==========================================================
+   COMPACT CALCULATOR + PROFILE UI
+========================================================== */
+
+#calculator > .card,
+#profile > .card{
+  padding:13px 14px;
+  margin-bottom:12px;
+  border-radius:16px;
+}
+
+#calculator > .card h2,
+#calculator > .card h3,
+#profile > .card h2,
+#profile > .card h3{
+  margin-bottom:9px;
+}
+
+#calculator > .card label,
+#profile > .card label{
+  margin:9px 0 4px;
+  font-size:12px;
+}
+
+#calculator > .card input,
+#calculator > .card select,
+#calculator > .card textarea,
+#profile > .card input,
+#profile > .card select,
+#profile > .card textarea{
+  padding:10px 11px;
+  border-radius:10px;
+}
+
+#calculator .cardHeader,
+#profile .cardHeader{
+  margin-bottom:8px;
+}
+
+#calculator .cardSub,
+#profile .cardSub{
+  margin-bottom:9px;
+  font-size:11px;
+}
+
+#calculator .grid2Inputs{
+  gap:9px;
+}
+
+#calculator .resultSection{
+  margin-top:12px;
+}
+
+#calculator .resultCard{
+  padding:18px;
+  margin-bottom:12px;
+  border-radius:18px;
+}
+
+#calculator .resultCard h2{
+  margin-top:5px;
+  font-size:29px;
+}
+
+#calculator .miniResult{
+  padding:12px;
+  border-radius:14px;
+}
+
+#calculator .miniResult h4{
+  font-size:18px;
+}
+
+.factoryResultRows{
+  display:grid;
+  gap:6px;
+}
+
+.factoryResultRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:var(--bg);
+  color:var(--sub);
+  font-size:12px;
+}
+
+.factoryResultRow strong{
+  color:var(--text);
+  font-size:13px;
+}
+
+.factoryResultRow.total{
+  margin-top:2px;
+  border:1px solid var(--line);
+  color:var(--text);
+  font-weight:700;
+}
+
+.factoryResultRow.total strong{
+  color:var(--primary);
+  font-size:16px;
+}
+
+#profile > .profileCard{
+  padding:16px;
+  margin-bottom:12px;
+  border-radius:18px;
+}
+
+#profile .avatar{
+  width:56px;
+  height:56px;
+  margin-bottom:8px;
+  font-size:26px;
+}
+
+#profile .profileCard h2{
+  font-size:20px;
+}
+
+#profile #factoryRuleList,
+#profile #shiftTemplateList{
+  gap:8px;
+  margin:9px 0;
+}
+
+#profile .ruleItem,
+#profile .shiftTemplateItem{
+  padding:10px 11px;
+  border-radius:12px;
+}
+
+#profile .ruleTitle,
+#profile .shiftTemplateInfo strong{
+  font-size:13px;
+}
+
+#profile .ruleAmount{
+  font-size:15px;
+}
+
+#profile .ruleItemActions,
+#profile .shiftTemplateActions{
+  gap:4px;
+}
+
+#profile .ruleItemActions button,
+#profile .shiftTemplateActions button{
+  padding:6px 8px;
+  font-size:10px;
+}
+
+#profile .formulaHint{
+  margin-top:8px;
+  font-size:10px;
+}
+
 @media (max-width:420px){
   .formulaSettingsGrid{
     grid-template-columns:1fr;
