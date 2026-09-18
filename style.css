@@ -832,6 +832,12 @@ body{
   transition:all .2s ease;
 }
 
+.dayCell.customShiftColor{
+  background:var(--shift-custom-color) !important;
+  border-color:var(--shift-custom-color) !important;
+  color:var(--shift-custom-text,#FFFFFF) !important;
+}
+
 /* ===== User Shift Color Settings ===== */
 
 .shiftColorGrid{
@@ -873,6 +879,53 @@ body{
   grid-column:1 / -1;
   color:var(--sub);
   font-size:11px;
+}
+
+.templateColorControl{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.templateColorControl input[type="color"]{
+  width:44px;
+  height:34px;
+  padding:2px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:transparent;
+  cursor:pointer;
+}
+
+.templateColorControl code{
+  color:var(--sub);
+  font-size:12px;
+}
+
+.templateColorField .formulaHint{
+  margin:6px 0 0;
+}
+
+.templateColorDot{
+  display:inline-block;
+  width:11px;
+  height:11px;
+  margin-right:5px;
+  border-radius:50%;
+  background:var(--template-color);
+  vertical-align:middle;
+  box-shadow:0 0 0 1px rgba(148,163,184,.5);
+}
+
+.dayTemplateBtn{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+}
+
+.shiftTemplateInfo strong{
+  display:flex;
+  align-items:center;
 }
 
 .shift-btn[data-shift="day"]{
