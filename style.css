@@ -2491,13 +2491,17 @@ html{
 }
 
 .removeBtn{
-  width:34px;
-  height:34px;
+  min-width:72px;
+  min-height:40px;
+  padding:8px 10px;
   border:none;
   border-radius:10px;
   background:#FEE2E2;
   color:#DC2626;
   cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  touch-action:manipulation;
 }
 
 /* ==========================================================
@@ -3177,6 +3181,15 @@ body:not(.light) .miniResult{
 .templateEditBtn{
   background:rgba(59,130,246,.14);
   color:#3B82F6;
+  min-width:72px;
+  min-height:40px;
+  padding:8px 10px;
+  border:0;
+  border-radius:9px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  touch-action:manipulation;
 }
 
 .templateDeleteBtn{
@@ -3610,6 +3623,19 @@ body:not(.light) .miniResult{
   font-size:16px;
 }
 
+.calculatorRuleNameRow strong{
+  color:var(--text);
+}
+
+.calculatorRuleEmpty{
+  padding:10px;
+  border-radius:10px;
+  background:var(--bg);
+  color:var(--sub);
+  font-size:12px;
+  text-align:center;
+}
+
 #profile > .profileCard{
   padding:16px;
   margin-bottom:12px;
@@ -3655,8 +3681,12 @@ body:not(.light) .miniResult{
 
 #profile .ruleItemActions button,
 #profile .shiftTemplateActions button{
-  padding:6px 8px;
-  font-size:10px;
+  min-width:72px;
+  min-height:40px;
+  padding:9px 10px;
+  font-size:12px;
+  line-height:1;
+  touch-action:manipulation;
 }
 
 #profile .formulaHint{
