@@ -543,6 +543,13 @@ function getShiftColor(shift) {
   return shiftColors[shift] || DEFAULT_SHIFT_COLORS.off;
 }
 
+function getTemplateColor(template) {
+  return normalizeHexColor(
+    template?.color,
+    getShiftColor(template?.shift || "day")
+  );
+}
+
 function getReadableTextColor(hexColor) {
   const hex = normalizeHexColor(hexColor, "#475569").slice(1);
   const channels = [0, 2, 4].map(index =>
@@ -1202,6 +1209,19 @@ function renderCalendar() {
       cell.classList.add("offColor");
     }
 
+    if (saved.source === "template" && saved.color) {
+      const templateColor = normalizeHexColor(
+        saved.color,
+        getShiftColor(saved.shift)
+      );
+      cell.classList.add("customShiftColor");
+      cell.style.setProperty("--shift-custom-color", templateColor);
+      cell.style.setProperty(
+        "--shift-custom-text",
+        getReadableTextColor(templateColor)
+      );
+    }
+
     /* ===== Calendar Cell ===== */
 
     cell.innerHTML = `
@@ -1322,6 +1342,7 @@ const templateShiftPicker = document.getElementById("templateShiftPicker");
 let selectedDate = "";
 let selectedShift = "day";
 let selectedDayTemplateId = null;
+let selectedDayTemplateColor = null;
 let selectedDayRuleStatus = "manual";
 let selectedDayEntryMode = "manual";
 
@@ -1335,6 +1356,7 @@ function setDayEntryMode(mode) {
 
   if (selectedDayEntryMode === "manual") {
     selectedDayTemplateId = null;
+    selectedDayTemplateColor = null;
     selectedDayRuleStatus = "manual";
   }
 
@@ -1358,6 +1380,8 @@ function openDayPopup(dateKey) {
   selectedShift = saved.shift || "day";
   selectedDayTemplateId =
     saved.source === "template" ? saved.templateId || null : null;
+  selectedDayTemplateColor =
+    saved.source === "template" ? saved.color || null : null;
   selectedDayRuleStatus =
     saved.ruleStatus === "confirmed" ? "confirmed" : "manual";
 
@@ -1707,6 +1731,13 @@ saveDayBtn?.addEventListener("click", () => {
       selectedDayTemplateId
         ? shiftTemplates.find(item => item.id === selectedDayTemplateId)?.name
         : undefined,
+    color: selectedDayTemplateId
+      ? normalizeHexColor(
+          selectedDayTemplateColor ||
+            shiftTemplates.find(item => item.id === selectedDayTemplateId)?.color,
+          getShiftColor(selectedShift)
+        )
+      : undefined,
     ruleStatus:
       selectedDayTemplateId
         ? selectedDayRuleStatus
@@ -2505,6 +2536,17 @@ function migrateFixedPayDataToHourly() {
     return template;
   });
 
+  shiftTemplates = shiftTemplates.map(template => {
+    const normalizedColor = getTemplateColor(template);
+    if (template.color === normalizedColor) return template;
+
+    templatesChanged = true;
+    return {
+      ...template,
+      color: normalizedColor
+    };
+  });
+
   Object.keys(shiftData).forEach(dateKey => {
     const entry = shiftData[dateKey];
     if (entry && typeof entry === "object") {
@@ -2583,6 +2625,9 @@ function openShiftTemplateEditor(templateId = null) {
     template?.breakStart || "12:30";
   document.getElementById("templateBreakMinutes").value =
     template?.breakMinutes ?? 60;
+  const templateColor = getTemplateColor(template || { shift: "day" });
+  document.getElementById("templateColor").value = templateColor;
+  document.getElementById("templateColorValue").textContent = templateColor;
   document.getElementById("templateRuleStatus").value =
     template?.ruleStatus === "confirmed" ? "confirmed" : "manual";
   document.getElementById("templateNote").value =
@@ -2598,6 +2643,7 @@ function applyTemplateToOpenDay(templateId) {
   if (!template) return;
 
   selectedDayTemplateId = template.id;
+  selectedDayTemplateColor = getTemplateColor(template);
   selectedDayEntryMode = "template";
   selectedShift = template.shift || "day";
   selectedDayRuleStatus =
@@ -2636,6 +2682,11 @@ function renderDayTemplatePicker() {
       }"
       data-template-id="${template.id}"
     >
+      <span
+        class="templateColorDot"
+        style="--template-color:${getTemplateColor(template)}"
+        aria-hidden="true"
+      ></span>
       ${escapeTemplateText(template.name)}
     </button>
   `).join("");
@@ -2672,7 +2723,14 @@ function renderShiftTemplates() {
       item.className = "shiftTemplateItem";
       item.innerHTML = `
         <div class="shiftTemplateInfo">
-          <strong>${escapeTemplateText(template.name)}</strong>
+          <strong>
+            <span
+              class="templateColorDot"
+              style="--template-color:${getTemplateColor(template)}"
+              aria-hidden="true"
+            ></span>
+            ${escapeTemplateText(template.name)}
+          </strong>
           <span class="ruleStatusBadge ${ruleStatus}">
             ${ruleStatus === "confirmed" ? "Verified by contract" : "User Manual"}
           </span>
@@ -2752,6 +2810,7 @@ function getTemplateCalendarEntry(dateKey, template) {
       source: "template",
       templateId: template.id,
       templateName: template.name,
+      color: getTemplateColor(template),
       ruleStatus:
         template.ruleStatus === "confirmed"
           ? "confirmed"
@@ -2784,6 +2843,7 @@ function getTemplateCalendarEntry(dateKey, template) {
     source: "template",
     templateId: template.id,
     templateName: template.name,
+    color: getTemplateColor(template),
     ruleStatus:
       template.ruleStatus === "confirmed"
         ? "confirmed"
@@ -2841,6 +2901,13 @@ document.getElementById("cancelShiftTemplateBtn")
 document.getElementById("templateShiftType")
 ?.addEventListener("change", setTemplateShiftFieldState);
 
+document.getElementById("templateColor")
+?.addEventListener("input", event => {
+  const value = normalizeHexColor(event.target.value, getShiftColor("day"));
+  const display = document.getElementById("templateColorValue");
+  if (display) display.textContent = value;
+});
+
 document.getElementById("saveShiftTemplateBtn")
 ?.addEventListener("click", () => {
   const name =
@@ -2879,6 +2946,10 @@ document.getElementById("saveShiftTemplateBtn")
       shift === "off"
         ? 0
         : Number(document.getElementById("templateBreakMinutes").value) || 0,
+    color: normalizeHexColor(
+      document.getElementById("templateColor").value,
+      getShiftColor(shift)
+    ),
     ruleStatus:
       document.getElementById("templateRuleStatus").value === "confirmed"
         ? "confirmed"
