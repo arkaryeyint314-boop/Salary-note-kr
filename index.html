@@ -636,23 +636,82 @@
 
   <main id="payslip" class="page">
 
-    <section class="card">
+    <section class="card payslipCard">
 
-      <h2>Payslip Compare</h2>
+      <h2 data-lang="payslip_title">Payslip Check</h2>
+      <p class="cardSub" data-lang="payslip_hint">
+        Compare a saved Calculator result with your factory payslip.
+      </p>
 
-      <!-- Expected Salary -->
-      <label>Expected Salary</label>
-      <input type="number" placeholder="2500000">
+      <label for="payslipSnapshotSelect" data-lang="calculator_snapshot">
+        Calculator snapshot
+      </label>
+      <select id="payslipSnapshotSelect">
+        <option value="" data-lang="no_calculator_snapshot">
+          No saved calculator snapshot
+        </option>
+      </select>
 
-      <!-- Actual Salary -->
-      <label>Actual Salary</label>
-      <input type="number" placeholder="2450000">
+      <div id="payslipExpectedSummary" class="payslipExpectedSummary">
+        Save a Calculator result first.
+      </div>
 
-      <!-- Compare Button -->
-      <button class="primaryBtn small">
-        Compare
+    </section>
+
+    <section class="card payslipCard">
+
+      <h3 data-lang="actual_payslip">Factory Payslip</h3>
+
+      <div class="payslipInputGrid">
+        <div>
+          <label for="payslipActualBasic">Basic salary</label>
+          <input id="payslipActualBasic" type="number" min="0" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualOt">OT pay</label>
+          <input id="payslipActualOt" type="number" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualNight">Night pay</label>
+          <input id="payslipActualNight" type="number" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualHoliday">Holiday pay</label>
+          <input id="payslipActualHoliday" type="number" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualFactory">Factory adjustment</label>
+          <input id="payslipActualFactory" type="number" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualGross">Gross salary</label>
+          <input id="payslipActualGross" type="number" min="0" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualInsurance">Insurance</label>
+          <input id="payslipActualInsurance" type="number" min="0" step="1" placeholder="₩">
+        </div>
+        <div>
+          <label for="payslipActualNet">Net salary</label>
+          <input id="payslipActualNet" type="number" min="0" step="1" placeholder="₩">
+        </div>
+      </div>
+
+      <label for="payslipNote">Note</label>
+      <textarea id="payslipNote" rows="2"
+        placeholder="Payslip label or anything to check later..."></textarea>
+
+      <button id="comparePayslipBtn" class="primaryBtn small" type="button"
+        data-lang="compare_payslip">
+        Compare Payslip
       </button>
 
+    </section>
+
+    <section id="payslipCompareResult" class="card payslipCard compareResult hidden">
+      <h3 data-lang="comparison_result">Comparison Result</h3>
+      <div id="payslipComparisonSummary" class="payslipComparisonSummary"></div>
+      <div id="payslipComparisonRows" class="payslipComparisonRows"></div>
     </section>
 
   </main>
@@ -1119,6 +1178,16 @@
 
       🧮
       <span>Calc</span>
+
+    </button>
+
+    <!-- Payslip -->
+    <button class="tab"
+            data-page="payslip"
+            data-lang="tab_payslip">
+
+      🧾
+      <span>Payslip</span>
 
     </button>
 
