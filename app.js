@@ -1276,37 +1276,17 @@ function calculateShiftMetrics(
     nightMinutes += Math.max(0, overlap);
   }
 
-  // Attribute overnight work to the actual calendar day it occurs on.
-  // Keep the existing first-eight-hours holiday policy for compatibility.
-  let holidayMinutes = 0;
+  // Classify holiday work from the shift's start date. A Friday night shift
+  // that ends on Saturday morning remains Friday work. Users can still mark
+  // any factory-specific shift explicitly as Holiday / Weekend.
   const shiftDate = new Date(dateKey + "T00:00:00");
-
-  for (let dayOffset = 0; dayOffset <= 1; dayOffset++) {
-    const segmentStart = dayOffset * 1440;
-    const segmentEnd = (dayOffset + 1) * 1440;
-    let segmentMinutes =
-      intervalOverlap(startMin, endMin, segmentStart, segmentEnd);
-
-    if (breakStartMin !== null && breakEndMin !== null) {
-      segmentMinutes -= intervalOverlap(
-        breakStartMin,
-        breakEndMin,
-        segmentStart,
-        segmentEnd
-      );
-    }
-
-    const segmentDate = new Date(shiftDate);
-    segmentDate.setDate(segmentDate.getDate() + dayOffset);
-    const segmentDateKey = formatLocalDate(segmentDate);
-    const isHolidayDay =
-      segmentDate.getDay() === 6 ||
-      !!koreaHolidays?.[segmentDate.getFullYear()]?.[segmentDateKey];
-
-    if (shift === "holiday" || isHolidayDay) {
-      holidayMinutes += Math.max(0, segmentMinutes);
-    }
-  }
+  const isHolidayStartDate =
+    shiftDate.getDay() === 6 ||
+    !!koreaHolidays?.[shiftDate.getFullYear()]?.[dateKey];
+  const holidayMinutes =
+    shift === "holiday" || isHolidayStartDate
+      ? workedMinutes
+      : 0;
 
   const workedHours = workedMinutes / 60;
 
