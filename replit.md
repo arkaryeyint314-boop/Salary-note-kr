@@ -58,7 +58,7 @@
 - Applied entries copy template times and break rules into each date so later template edits do not retroactively change prior calendar months.
 - A manual day save intentionally detaches that date from its template and returns it to the standard hourly formula.
 - Night hours use the 22:00–06:00 window, support overnight and early-morning shifts, and subtract a break when its start time is known.
-- Overnight weekend/public-holiday attribution follows the actual calendar date of each worked segment. Holiday pay remains capped to the first eight hours for backward compatibility until the factory-specific holiday-OT policy is confirmed.
+- Overnight weekend/public-holiday attribution follows the shift's start date. A Friday night shift ending Saturday morning remains Friday work and gets no automatic Saturday holiday hours. A shift starting Saturday/public holiday, or explicitly saved with Holiday / Weekend type, is holiday work. Holiday pay remains capped to the configured regular-hours-per-day limit until the factory-specific holiday-OT policy is confirmed.
 - Explicit Salary Calculator runs save one versioned snapshot per month in `workpay_salary_history_v1`, including wage inputs, copied rules, copied calendar entries, summary, and salary breakdown.
 - Factory pay rules and shift-template pay data carry a `confirmed` or `manual` source. Legacy `provisional` and missing statuses migrate to User Manual so old values are never silently presented as confirmed.
 - Users can promote User Manual data to Confirmed after checking a payslip, contract, or factory explanation; the note field records context.
