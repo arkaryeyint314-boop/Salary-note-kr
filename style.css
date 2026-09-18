@@ -3250,6 +3250,80 @@ body:not(.light) .miniResult{
   line-height:1.45;
 }
 
+.calculationBreakdown{
+  margin-top:16px;
+  padding:18px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  background:var(--card);
+  box-shadow:var(--shadow);
+}
+
+.calculationBreakdown h3{
+  margin:0 0 14px;
+}
+
+.breakdownMethod,
+.breakdownRow,
+.breakdownTotal{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+
+.breakdownMethod{
+  margin-bottom:8px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:var(--bg);
+  color:var(--sub);
+  font-size:12px;
+}
+
+.breakdownMethod strong{
+  color:var(--primary);
+  text-align:right;
+}
+
+.breakdownRow{
+  padding:12px 2px;
+  border-bottom:1px solid var(--line);
+}
+
+.breakdownRow > div{
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  gap:4px;
+}
+
+.breakdownRow span{
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+}
+
+.breakdownRow small{
+  color:var(--sub);
+  font-size:11px;
+}
+
+.breakdownRow > strong{
+  flex:none;
+  font-size:14px;
+}
+
+.breakdownTotal{
+  padding-top:16px;
+  font-weight:800;
+}
+
+.breakdownTotal strong{
+  color:var(--primary);
+  font-size:20px;
+}
+
 .formulaSettingsGrid label{
   display:block;
   margin-bottom:6px;
